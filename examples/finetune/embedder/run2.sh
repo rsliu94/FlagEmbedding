@@ -28,7 +28,7 @@ fi
 # Training
 torchrun --nproc_per_node 1 \
     -m FlagEmbedding.finetune.embedder.encoder_only.base \
-    --model_name_or_path BAAI/bge-large-en-v1.5 \
+    --model_name_or_path BAAI/bge-small-en-v1.5 \
     --train_data ./bge_finetune_data/finetune_data_validation_minedHN.jsonl \
     --corpus_path ./eval_data/corpus.jsonl \
     --eval_data ./eval_data/queries_v2.jsonl \
@@ -55,4 +55,4 @@ torchrun --nproc_per_node 1 \
     --warmup_ratio 0.1 \
     --gradient_checkpointing \
     --deepspeed ../ds_stage0.json \
-    --negatives_cross_device || exit 1
+    --negatives_cross_device True

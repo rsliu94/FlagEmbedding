@@ -89,6 +89,6 @@ class EncoderOnlyEmbedderRunner(AbsEmbedderRunner):
         if self.data_args.same_dataset_within_batch:
             trainer.add_callback(EmbedderTrainerCallbackForDataRefresh(self.train_dataset))
         if self.eval_dataset is not None:
-            logger.info('DEBUG Add EvaluateCallback')
+            logger.info('Add EvaluateCallback')
             trainer.add_callback(EvaluateCallback())
         return trainer

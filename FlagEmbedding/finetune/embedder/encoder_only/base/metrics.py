@@ -98,3 +98,27 @@ def mean_average_precision_at_k(ground_truth, sorted_indices, k):
 
     return np.mean(valid_aps) if valid_aps else np.nan
 
+def recall_at_k(ground_truth, predicted_indices, k=25):
+    """
+    Calculate Recall@k for cases with a single ground truth per query.
+    Skip queries with NaN ground truth.
+
+    Parameters:
+    - ground_truth: A list where each entry is a single relevant item ID or NaN.
+    - sorted_indices: A list of lists, where each inner list contains sorted retrieved item IDs for a query.
+    - k: The cutoff value for the top-k retrieved items.
+
+    Returns:
+    - Average Recall@k across valid queries.
+    """
+    valid_recalls = []
+
+    for gt, retrieved in zip(ground_truth, predicted_indices):
+        # if not np.isnan(gt):
+        if pd.notna(gt):
+            if gt in retrieved[:k]:
+                valid_recalls.append(1)
+            else:
+                valid_recalls.append(0)
+
+    return np.mean(valid_recalls) if valid_recalls else np.nan

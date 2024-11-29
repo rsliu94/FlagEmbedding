@@ -187,6 +187,7 @@ class AbsEmbedderRunner(ABC):
         # handle 'True'
         if self.training_args.resume_from_checkpoint and self.training_args.resume_from_checkpoint == 'True':
             self.training_args.resume_from_checkpoint = True
+        import pdb; pdb.set_trace()
         self.trainer.train(resume_from_checkpoint=self.training_args.resume_from_checkpoint)
         self.trainer.save_model()
         # self.trainer.evaluate()

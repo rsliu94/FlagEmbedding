@@ -8,7 +8,7 @@ import numpy as np
 from tqdm import tqdm
 from sklearn.metrics.pairwise import cosine_similarity
 from FlagEmbedding.abc.finetune.embedder import AbsEmbedderTrainer
-from FlagEmbedding.finetune.embedder.encoder_only.base.metrics import mapk, apk, mean_average_precision_at_k
+from FlagEmbedding.finetune.embedder.encoder_only.base.metrics import mapk, apk, mean_average_precision_at_k, recall_at_k
 
 logger = logging.getLogger(__name__)
 
@@ -108,9 +108,13 @@ class EncoderOnlyEmbedderTrainer(AbsEmbedderTrainer):
             correct_ids.extend(correct_id)
         query_embeddings = np.concatenate(query_embeddings, axis=0)
         distances, indices = index.search(query_embeddings, k=25)
+        
         mapk_score = mean_average_precision_at_k(correct_ids, indices, 25)
-        logger.info(f"mapk_score: {mapk_score}")
+        logger.info(f"map@25_score: {mapk_score}")
+        
+        recall_score = recall_at_k(correct_ids, indices, 25)
+        logger.info(f"recall@25_score: {recall_score}")
         
         self._memory_tracker.stop_and_update_metrics()
 
-        return mapk_score
+        return {"map@25": mapk_score, "recall@25": recall_score}
