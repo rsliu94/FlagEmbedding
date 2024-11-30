@@ -8,10 +8,10 @@ train_data="\
 
 # set large epochs and small batch size for testing
 num_train_epochs=4
-per_device_train_batch_size=8
+per_device_train_batch_size=4
 
 # set num_gpus to 2 for testing
-num_gpus=1
+num_gpus=2
 
 if [ -z "$HF_HUB_CACHE" ]; then
     export HF_HUB_CACHE="$HOME/.cache/huggingface/hub"
