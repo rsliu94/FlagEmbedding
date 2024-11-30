@@ -4,7 +4,7 @@ import numpy as np
 from tqdm import tqdm
 from typing import Optional
 from dataclasses import dataclass, field
-
+import os
 import faiss
 from transformers import HfArgumentParser
 from FlagEmbedding import FlagAutoModel
@@ -195,6 +195,9 @@ def find_knn_neg(
         if len(filtered_inx) > negative_number:
             filtered_inx = random.sample(filtered_inx, negative_number)
         data['neg'] = [corpus[inx] for inx in filtered_inx]
+    
+    # mkdir if not exists
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
 
     with open(output_file, 'w') as f:
         for data in train_data:

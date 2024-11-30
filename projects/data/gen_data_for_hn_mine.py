@@ -21,7 +21,7 @@ print()
 def main():
     # Get environment and device setup
     env, PROJECT_ROOT = get_env_info()
-    OUTPUT_ROOT = os.path.join(PROJECT_ROOT, 'projects', 'data', 'hn_mine_data')
+    OUTPUT_ROOT = os.path.join(PROJECT_ROOT, 'projects', 'data', 'hn_mine_data_zero_round')
     # create output root if not exists
     if not os.path.exists(OUTPUT_ROOT):
         os.makedirs(OUTPUT_ROOT)

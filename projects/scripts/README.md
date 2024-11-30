@@ -37,10 +37,13 @@ python gen_data_for_hn_mine.py \
 ## 2. Finetune
 ```bash
 python hn_mine.py \
---embedder_name_or_path BAAI/bge-large-en-v1.5 \
---input_file ../examples/finetune/embedder/bge_finetune_data/finetune_data_submission.jsonl \
---output_file ../examples/finetune/embedder/bge_finetune_data/finetune_data_submission_minedHNjsonl \
---candidate_pool ../examples/finetune/embedder/bge_finetune_data/candidate_pool_submission.jsonl \
+--embedder_name_or_path BAAI/bge-en-icl \
+--embedder_model_class decoder-only-icl \
+--pooling_method last_token \
+--input_file ../data/hn_mine_data_zero_round/finetune_data_validation.jsonl \
+--output_file ../data/hn_mine_data_zero_round/finetune_data_validation_minedHN.jsonl \
+--candidate_pool ../data/hn_mine_data_zero_round/candidate_pool_validation.jsonl \
 --range_for_sampling 2-200 \
---negative_number 15
+--negative_number 15 \
+--devices cuda:0
 ```
