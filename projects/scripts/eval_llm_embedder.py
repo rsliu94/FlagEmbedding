@@ -69,7 +69,7 @@ def batch_to_device(batch, target_device):
     return batch
 
 if __name__ == "__main__":
-    env, PROJECT_ROOT = get_env_info()
+    env_name, PROJECT_ROOT = get_env_info()
     EVAL_DATA_DIR = f"{PROJECT_ROOT}/projects/data/embedder_eval_data"
     corpus_path = f"{EVAL_DATA_DIR}/corpus.jsonl"
     queries_path = f"{EVAL_DATA_DIR}/queries_{args.validation_version}.jsonl"

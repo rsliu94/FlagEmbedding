@@ -36,7 +36,7 @@ for arg, value in vars(args).items():
 print() 
 
 if __name__ == "__main__":
-    env, PROJECT_ROOT = get_env_info()
+    env_name, PROJECT_ROOT = get_env_info()
     RAW_DATA_DIR = f"{PROJECT_ROOT}/projects/data/raw_data"
     OUTPUT_DIR = f"{PROJECT_ROOT}/projects/data/embedder_eval_data"
     # mkdir if not exists

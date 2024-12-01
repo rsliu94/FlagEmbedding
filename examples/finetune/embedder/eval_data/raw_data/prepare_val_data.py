@@ -80,12 +80,12 @@ def prepare_val_data_v2(env, PROJECT_ROOT=None):
 
 
 if __name__ == "__main__":
-    env, PROJECT_ROOT = get_env_info()
-    print(f"Running on {env}")
+    env_name, PROJECT_ROOT = get_env_info()
+    print(f"Running on {env_name}")
     print(f"Project root: {PROJECT_ROOT}")
 
-    train_data_v1, val_data_v1 = prepare_val_data_v1(env, PROJECT_ROOT)
-    train_data_v2, val_data_v2 = prepare_val_data_v2(env, PROJECT_ROOT)
+    train_data_v1, val_data_v1 = prepare_val_data_v1(env_name, PROJECT_ROOT)
+    train_data_v2, val_data_v2 = prepare_val_data_v2(env_name, PROJECT_ROOT)
 
     train_data_v1.to_csv(f"/root/autodl-tmp/github/FlagEmbedding/examples/finetune/embedder/eval_data/raw_data/validation_v1/train.csv", index=False)
     val_data_v1.to_csv(f"/root/autodl-tmp/github/FlagEmbedding/examples/finetune/embedder/eval_data/raw_data/validation_v1/val.csv", index=False)

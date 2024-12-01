@@ -5,15 +5,15 @@ import numpy as np
 import pandas as pd
 from FlagEmbedding.utils import get_env_info
 
-def prepare_val_data(env, split_method, output_dir, PROJECT_ROOT=None):
+def prepare_val_data(env_name, split_method, output_dir, PROJECT_ROOT=None):
     np.random.seed(42)
-    if env == "Kaggle":
+    if env_name == "Kaggle":
         path = "/kaggle/input/eedi-mining-misconceptions-in-mathematics/train.csv"  
         print(f"Running on Kaggle from {path}")
         raw_data = pd.read_csv(path)
     else:
         path = f"{PROJECT_ROOT}/projects/data/raw_data/train.csv"   
-        print(f"Running on {env} from {path}")
+        print(f"Running on {env_name} from {path}")
         raw_data = pd.read_csv(path)
     print(f"Original raw_data shape: {raw_data.shape}")
     
@@ -52,10 +52,10 @@ def prepare_val_data(env, split_method, output_dir, PROJECT_ROOT=None):
 
 
 if __name__ == "__main__":
-    env, PROJECT_ROOT = get_env_info()
-    print(f"Running on {env}")
+    env_name, PROJECT_ROOT = get_env_info()
+    print(f"Running on {env_name}")
     print(f"Project root: {PROJECT_ROOT}")
     output_dir = f"{PROJECT_ROOT}/projects/data/raw_data"
 
-    prepare_val_data(env, "v1", os.path.join(output_dir, "validation_v1"), PROJECT_ROOT) 
-    prepare_val_data(env, "v2", os.path.join(output_dir, "validation_v2"), PROJECT_ROOT)
+    prepare_val_data(env_name, "v1", os.path.join(output_dir, "validation_v1"), PROJECT_ROOT) 
+    prepare_val_data(env_name, "v2", os.path.join(output_dir, "validation_v2"), PROJECT_ROOT)
