@@ -146,13 +146,14 @@ en_results
 zh_results
 
 # ft results
-debug_output/
-FT-1125-bge-large-en-v1.5-submission-v1
-FT-1125-bge-large-en-v1.5-submission-v2
-FT-1125-bge-large-en-v1.5-validation-v2
-FT-1125-bge-large-en-v1.5-validation-v*/
+# debug_output/
+# FT-1125-bge-large-en-v1.5-submission-v1
+# FT-1125-bge-large-en-v1.5-submission-v2
+# FT-1125-bge-large-en-v1.5-validation-v2
+# FT-1125-bge-large-en-v1.5-validation-v*/
+model_output/
 
-cache/
+# cache/
 
 # wandb
 wandb/

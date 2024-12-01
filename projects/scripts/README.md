@@ -4,7 +4,7 @@
 
 ### With Examples in Query
 ```bash
-python eval_raw_llm_embedder.py --use_examples_in_query=True
+python eval_llm_embedder.py --use_examples_in_query=True
 ```
 | Metric | Score |
 |--------|-------|
@@ -13,7 +13,7 @@ python eval_raw_llm_embedder.py --use_examples_in_query=True
 
 ### Without Examples in Query
 ```bash
-python eval_raw_llm_embedder.py --use_examples_in_query=False
+python eval_llm_embedder.py --use_examples_in_query=False
 ```
 | Metric | Score |
 |--------|-------|
@@ -26,7 +26,7 @@ python eval_raw_llm_embedder.py --use_examples_in_query=False
 - Recall@25 提升了 2.8%
 
 # Hard Negative Mining
-## 1. Gen data
+## 1. Gen input data
 ```bash
 python gen_data_for_hn_mine.py \
     --mode submission
@@ -34,7 +34,7 @@ python gen_data_for_hn_mine.py \
     --mode validation
 ```
 
-## 2. Finetune
+## 2. Mine hard negative use icl model
 ```bash
 python hn_mine.py \
 --embedder_name_or_path BAAI/bge-en-icl \
@@ -47,3 +47,18 @@ python hn_mine.py \
 --negative_number 15 \
 --devices cuda:0
 ```
+
+## 3. Finetune ICL with mined hard negative
+```bash
+./icl_finetune.sh
+```
+## 4. eval finetuned model
+```bash
+python eval_llm_embedder.py \
+    --model_path ../model_output/test_decoder_only_base_bge-en-icl_sd \
+    --use_examples_in_query=True
+```
+| Metric | Score |
+|--------|-------|
+| MAP@25 | 0.4117 |
+| Recall@25 | 0.8676 |

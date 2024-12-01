@@ -16,6 +16,7 @@ import json
 parser = argparse.ArgumentParser(description="Evaluate the raw LLM embedder")
 parser.add_argument("--use_examples_in_query", type=bool, default=False, help="Whether to use the embedder eval data")
 parser.add_argument("--validation_version", type=str, default="v2", help="The version of the validation data")
+parser.add_argument("--model_path", type=str, default="BAAI/bge-en-icl", help="The path of the model")
 args = parser.parse_args()
 # show args
 print("\nScript arguments:")
@@ -163,8 +164,8 @@ if __name__ == "__main__":
     #             bnb_4bit_compute_dtype=torch.float16,
     #             llm_int8_has_fp16_weight=True,
     #         )
-    tokenizer = AutoTokenizer.from_pretrained('BAAI/bge-en-icl')
-    model = AutoModel.from_pretrained('BAAI/bge-en-icl')
+    tokenizer = AutoTokenizer.from_pretrained(args.model_path)
+    model = AutoModel.from_pretrained(args.model_path)
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
