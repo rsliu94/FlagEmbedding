@@ -31,7 +31,7 @@ torchrun --nproc_per_node 1 \
     --model_name_or_path BAAI/bge-small-en-v1.5 \
     --train_data ./bge_finetune_data/finetune_data_validation_minedHN.jsonl \
     --corpus_path ./eval_data/corpus.jsonl \
-    --eval_data ./eval_data/queries_v2.jsonl \
+    --eval_data ./eval_data/queries_val2_v1.jsonl \
     --num_train_epochs $NUM_EPOCHS \
     $RESUME_CHECKPOINT_ARG \
     --save_total_limit 2 \

@@ -52,8 +52,8 @@ if __name__ == "__main__":
             json_line = {"text": sentence}  # 将每一行封装为字典
             f.write(json.dumps(json_line) + "\n")
     
-    for version in ["v1", "v2"]:
-        val_data = pd.read_csv(f"{RAW_DATA_DIR}/validation_{version}/val.csv")
+    for version in ["1", "2"]:
+        val_data = pd.read_csv(f"{RAW_DATA_DIR}/validation_v{version}/val.csv")
         val_preprocessed = preprocess_data(val_data, misconception_mapping, 
                                     query_text_version=args.query_text_version,
                                     with_instruction=args.with_instruction, 
@@ -64,7 +64,7 @@ if __name__ == "__main__":
         df_selected = val_preprocessed[selected_columns]
 
         # 将 JSON 数据写入文件
-        with open(f"{OUTPUT_DIR}/queries_{version}.jsonl", "w") as f:
+        with open(f"{OUTPUT_DIR}/queries_val{version}.jsonl", "w") as f:
             for _, row in df_selected.iterrows():
                 json_line = {"text": row['query_text'], "correct_id": row['MisconceptionId'], 'question': row['QuestionText'], 'subject_name': row['SubjectName'], 'construct_name': row['ConstructName'], 'correct_answer': row['CorrectAnswerText'], 'wrong_answer': row['WrongAnswerText']}
                 f.write(json.dumps(json_line) + "\n")
