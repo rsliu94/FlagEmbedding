@@ -1,0 +1,12 @@
+[
+    {
+        "instruct": "Given a math question about divide decimals by 10 and a misconcepted incorrect answer to it, retrieve the most accurate reason for the misconception leading to the incorrect answer.",
+        "query": "\\( 43.2 \\div 10= \\) Incorrect answer : \\( 33.2 \\)",
+        "response": "Subtracts instead of divides"
+    },
+    {
+        "instruct": "Given a math question about know the equation of the axes and a misconcepted incorrect answer to it, retrieve the most accurate reason for the misconception leading to the incorrect answer.",
+        "query": "What is the equation of the \\( y \\) axis? Incorrect answer : \\( y=0 \\)",
+        "response": "Confuses the equations of vertical and horizontal lines"
+    }
+]

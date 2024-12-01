@@ -73,16 +73,11 @@ if __name__ == "__main__":
     EVAL_DATA_DIR = f"{PROJECT_ROOT}/projects/data/embedder_eval_data"
     corpus_path = f"{EVAL_DATA_DIR}/corpus.jsonl"
     queries_path = f"{EVAL_DATA_DIR}/queries_{args.validation_version}.jsonl"
+    examples_path = f"{EVAL_DATA_DIR}/examples_v1.json"
 
     task = 'Given a math question and a misconcepted incorrect answer to it, retrieve the most accurate reason for the misconception leading to the incorrect answer.'
-    examples = [
-    {'instruct': 'Given a math question about divide decimals by 10 and a misconcepted incorrect answer to it, retrieve the most accurate reason for the misconception leading to the incorrect answer.',
-    'query': '\\( 43.2 \\div 10= \\) Incorrect answer : \\( 33.2 \\)',
-    'response': 'Subtracts instead of divides'},
-    {'instruct': 'Given a math question about know the equation of the axes and a misconcepted incorrect answer to it, retrieve the most accurate reason for the misconception leading to the incorrect answer.',
-    'query': 'What is the equation of the \\( y \\) axis? Incorrect answer : \\( y=0 \\)',
-    'response': 'Confuses the equations of vertical and horizontal lines'}
-    ]
+    with open(examples_path, 'r', encoding='utf-8') as f:
+        examples = json.load(f)
     
     # documents = ['Does not know that angles in a triangle sum to 180 degrees',
     #             'Uses dividing fractions method for multiplying fractions'
