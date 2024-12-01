@@ -167,6 +167,7 @@ def save_merged_model(model_args: DecoderOnlyEmbedderICLModelArguments, output_d
     try:
         model = PeftModel.from_pretrained(model, output_dir)
         model = model.merge_and_unload()
+        # use the merge_and_unload() function to merge the adapter weights with the base model. This allows you to use the newly merged model as a standalone model. The merge_and_unload() function doesn’t keep the adapter weights in memory.
     except:
         model = PeftModel.from_pretrained(model, find_largest_checkpoint(output_dir))
         model = model.merge_and_unload()

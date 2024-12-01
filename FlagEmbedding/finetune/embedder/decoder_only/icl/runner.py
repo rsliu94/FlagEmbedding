@@ -3,6 +3,7 @@ from typing import Tuple
 from pathlib import Path
 from transformers import AutoConfig, AutoTokenizer, PreTrainedTokenizer
 
+import os
 from FlagEmbedding.abc.finetune.embedder.AbsArguments import AbsEmbedderTrainingArguments
 from FlagEmbedding.abc.finetune.embedder import AbsEmbedderRunner, AbsEmbedderModel, EmbedderTrainerCallbackForDataRefresh
 
@@ -67,6 +68,7 @@ class DecoderOnlyEmbedderICLRunner(AbsEmbedderRunner):
             else:
                 logger.warning(f"Special tokens {self.model_args.additional_special_tokens} already exists in the tokenizer.")
         base_model = get_model(self.model_args, self.training_args.output_dir, resize, len(tokenizer))
+        # base_model: transformers.PreTrainedModel or PeftModel, The loaded model.
 
         num_labels = 1
         config = AutoConfig.from_pretrained(
@@ -87,7 +89,8 @@ class DecoderOnlyEmbedderICLRunner(AbsEmbedderRunner):
             kd_loss_type=self.training_args.kd_loss_type,
             sentence_pooling_method=self.training_args.sentence_pooling_method,
             normalize_embeddings=self.training_args.normalize_embeddings
-        )
+        ) # model.model is PeftModel
+        # PeftModel.save_pretrained("output_dir") only save the extra PEFT weights that were trained, meaning it is super efficient to store
 
         if self.training_args.gradient_checkpointing:
             model.enable_input_require_grads()
@@ -147,9 +150,16 @@ class DecoderOnlyEmbedderICLRunner(AbsEmbedderRunner):
         Path(self.training_args.output_dir).mkdir(parents=True, exist_ok=True)
         
         # Training
+        if self.training_args.resume_from_checkpoint and self.training_args.resume_from_checkpoint == 'True':
+            self.training_args.resume_from_checkpoint = True
         self.trainer.train(resume_from_checkpoint=self.training_args.resume_from_checkpoint)
-        self.trainer.save_model()
+        # save LoRA weights
+        lora_output_dir = os.path.join(self.training_args.output_dir, 'lora')
+        logger.info('Saving LoRA weights to %s', lora_output_dir)
+        self.trainer.save_lora_weights(lora_output_dir)
         
         # save merged model
         if self.model_args.save_merged_lora_model and self.training_args.process_index == 0:
+            logger.info('Saving merged model')
+            self.trainer.save_model()
             save_merged_model(self.model_args, self.training_args.output_dir)
