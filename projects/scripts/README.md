@@ -29,9 +29,11 @@ python eval_llm_embedder.py --use_examples_in_query=False
 ## 1. Gen input data
 ```bash
 python gen_data_for_hn_mine.py \
-    --mode submission
+    --mode submission \
+    --sub_dir_name hn_mine_data_zero_round
 python gen_data_for_hn_mine.py \
-    --mode validation
+    --mode validation \
+    --sub_dir_name hn_mine_data_zero_round
 ```
 
 ## 2. Mine hard negative use icl model
@@ -111,3 +113,59 @@ python eval_llm_embedder.py \
 |--------|-------|
 | MAP@25 | 0.4710 |
 | Recall@25 | 0.8815 |
+```bash
+# check eval result at epoch 4 with v1 validation set
+python eval_llm_embedder.py \
+    --lora_path ../model_output/icl_finetune_round1/lora_epoch_4 \
+    --use_examples_in_query=True \
+    --validation_version=1
+```
+This is polluted because the training set is from validation_v2 split. Need to conduct training on validation_v1 split...
+| Metric | Score |
+|--------|-------|
+| MAP@25 |  0.6766 |
+| Recall@25 | 0.9431 |
+
+**Epoch 5 LB score: 0.304**
+
+# Repeat FineTune ICL with validation_v1 split
+
+
+
+
+
+
+
+
+
+
+
+# Iterative Hard Negative Mining
+## 1. Hard Negative Mining, Round 1
+### 1. Gen input data
+```bash
+python gen_data_for_hn_mine.py \
+    --mode submission \
+    --sub_dir_name hn_mine_data_round_1
+python gen_data_for_hn_mine.py \
+    --mode validation \
+    --sub_dir_name hn_mine_data_round_1
+```
+### 2. Mine hard negative use FineTuned icl model
+`projects/model_output/icl_finetune_round1/checkpoint-390`
+```bash
+python hn_mine.py \
+--embedder_name_or_path ../model_output/icl_finetune_round1/checkpoint-390 \
+--embedder_model_class decoder-only-icl \
+--pooling_method last_token \
+--input_file ../data/hn_mine_data_round_1/finetune_data_validation.jsonl \
+--output_file ../data/hn_mine_data_round_1/finetune_data_validation_minedHN.jsonl \
+--candidate_pool ../data/hn_mine_data_round_1/candidate_pool_validation.jsonl \
+--range_for_sampling 2-200 \
+--negative_number 15 \
+--devices cuda:0
+```
+### 3. continue finetune ICL with mined hard negative in round 1
+```bash
+./icl_finetune.sh
+```

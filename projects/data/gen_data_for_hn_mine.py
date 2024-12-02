@@ -10,6 +10,8 @@ from FlagEmbedding.utils.data_utils import preprocess_text, preprocess_data
 parser = argparse.ArgumentParser(description='Create Input File for Hard Negative Mining')
 parser.add_argument('--mode', type=str, choices=['validation', 'submission'],
                    default='validation', help='Dataset mode')
+parser.add_argument('--validation_version', type=str, default='v2', help='Validation version')
+parser.add_argument('--sub_dir_name', type=str, default='hn_mine_data_round_1', help='Sub directory name')
 args = parser.parse_args()
 
 # Add this after parsing arguments
@@ -21,7 +23,11 @@ print()
 def main():
     # Get environment and device setup
     env_name, PROJECT_ROOT = get_env_info()
-    OUTPUT_ROOT = os.path.join(PROJECT_ROOT, 'projects', 'data', 'hn_mine_data_zero_round')
+    
+    if args.mode == "submission":
+        OUTPUT_ROOT = os.path.join(PROJECT_ROOT, 'projects', 'data', args.sub_dir_name, "submission")
+    else:
+        OUTPUT_ROOT = os.path.join(PROJECT_ROOT, 'projects', 'data', args.sub_dir_name, f"validation_{args.validation_version}")
     # create output root if not exists
     if not os.path.exists(OUTPUT_ROOT):
         os.makedirs(OUTPUT_ROOT)
@@ -31,7 +37,7 @@ def main():
     
     
     if args.mode == 'validation':
-        train_data = pd.read_csv(os.path.join(PROJECT_ROOT, 'projects', 'data', 'raw_data', 'validation_v2', 'train.csv'))
+        train_data = pd.read_csv(os.path.join(PROJECT_ROOT, 'projects', 'data', 'raw_data', f'validation_{args.validation_version}', 'train.csv'))
     elif args.mode == 'submission':
         train_data = pd.read_csv(os.path.join(PROJECT_ROOT, 'projects', 'data', 'raw_data', 'train.csv'))
     else:
@@ -62,17 +68,17 @@ def main():
     ]
     print(f"len(candidate_pool): {len(candidate_pool)}, len(finetune_data): {len(finetune_data)}")
     
-    with open(os.path.join(OUTPUT_ROOT, f'candidate_pool_{args.mode}.jsonl'), 'w') as f:
+    with open(os.path.join(OUTPUT_ROOT, f'candidate_pool.jsonl'), 'w') as f:
         for entry in candidate_pool:
             json.dump(entry, f)
             f.write('\n')
-    print(f"candidate_pool saved to {os.path.join(OUTPUT_ROOT, f'candidate_pool_{args.mode}.jsonl')}")
+    print(f"candidate_pool saved to {os.path.join(OUTPUT_ROOT, f'candidate_pool.jsonl')}")
         
-    with open(os.path.join(OUTPUT_ROOT, f'finetune_data_{args.mode}.jsonl'), 'w') as f:
+    with open(os.path.join(OUTPUT_ROOT, f'finetune_data.jsonl'), 'w') as f:
         for entry in finetune_data:
             json.dump(entry, f)
             f.write('\n')
-    print(f"finetune_data saved to {os.path.join(OUTPUT_ROOT, f'finetune_data_{args.mode}.jsonl')}")
+    print(f"finetune_data saved to {os.path.join(OUTPUT_ROOT, f'finetune_data.jsonl')}")
     
     
 if __name__ == "__main__":
