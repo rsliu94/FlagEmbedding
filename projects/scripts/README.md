@@ -62,3 +62,35 @@ python eval_llm_embedder.py \
 |--------|-------|
 | MAP@25 | 0.4117 |
 | Recall@25 | 0.8676 |
+
+## 5. LoRA Finetune ICL 多轮训练结果
+
+[完整实验记录(Wandb)](https://wandb.ai/rsliu94/huggingface/runs/mbhmntcf/workspace?nw=nwuserrsliu94)
+
+### 训练参数
+| 参数 | 值 |
+|------|-----|
+| 训练轮数 | 4 |
+| 批次大小 | 16 |
+| 学习率 | 1e-4 |
+| GPU数量 | 2 |
+| 每轮训练时间 | 10分钟 |
+| 每轮评估时间 | 3分钟 |
+
+| Epoch | MAP@25 | Recall@25 |
+|-------|--------|-----------|
+| 1 | 0.3954 | 0.8376 |
+| 2 | 0.4369 | 0.8655 |
+| 3 | 0.4468 | 0.8735 |
+| 4 | 0.4685 | 0.8735 |
+
+```bash
+# doublecheck eval result
+python eval_llm_embedder.py \
+    --lora_path ../model_output/icl_finetune_round1/lora_epoch_4 \
+    --use_examples_in_query=True
+```
+| Metric | Score |
+|--------|-------|
+| MAP@25 | 0.4717764314771157 |
+| Recall@25 | 0.8767416934619507 |

@@ -6,6 +6,7 @@ import numpy as np
 from transformers import AutoTokenizer, AutoModel, BitsAndBytesConfig
 import faiss
 import pandas as pd
+from peft import PeftModel
 from FlagEmbedding.utils.metrics import mapk, apk, mean_average_precision_at_k, recall_at_k
 from FlagEmbedding.utils.data_utils import preprocess_text, preprocess_data
 from FlagEmbedding.utils.env_utils import get_env_info
@@ -19,6 +20,7 @@ parser = argparse.ArgumentParser(description="Evaluate the raw LLM embedder")
 parser.add_argument("--use_examples_in_query", type=bool, default=False, help="Whether to use the embedder eval data")
 parser.add_argument("--validation_version", type=str, default="val2", help="The version of the validation data")
 parser.add_argument("--model_path", type=str, default="BAAI/bge-en-icl", help="The path of the model")
+parser.add_argument("--lora_path", type=str, default=NotImplementedError, help="The path of the LoRA weights")
 args = parser.parse_args()
 # show args
 print("\nScript arguments:")
@@ -82,8 +84,16 @@ if __name__ == "__main__":
     #             bnb_4bit_compute_dtype=torch.float16,
     #             llm_int8_has_fp16_weight=True,
     #         )
-    tokenizer = AutoTokenizer.from_pretrained(args.model_path)
-    model = AutoModel.from_pretrained(args.model_path)
+    
+    if not args.lora_path:
+        print("Not using LoRA weights")
+        tokenizer = AutoTokenizer.from_pretrained(args.model_path)
+        model = AutoModel.from_pretrained(args.model_path)
+    else:
+        print(f"Using LoRA weights from {args.lora_path}")
+        tokenizer = AutoTokenizer.from_pretrained(args.model_path)
+        base_model = AutoModel.from_pretrained('BAAI/bge-en-icl')
+        model = PeftModel.from_pretrained(base_model, args.lora_path, is_trainable=False)
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 

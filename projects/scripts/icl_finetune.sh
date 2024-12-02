@@ -7,11 +7,13 @@ train_data="\
 "
 
 # set large epochs and small batch size for testing
-num_train_epochs=1
+num_train_epochs=4
 per_device_train_batch_size=16
-
+save_merged_lora_model=False
+output_dir="../model_output/icl_finetune_round1"
+learning_rate=1e-4
 # set num_gpus to 2 for testing
-num_gpus=1
+num_gpus=2
 
 if [ -z "$HF_HUB_CACHE" ]; then
     export HF_HUB_CACHE="$HOME/.cache/huggingface/hub"
@@ -25,11 +27,14 @@ model_args="\
     --lora_alpha 64 \
     --target_modules q_proj k_proj v_proj o_proj gate_proj down_proj up_proj \
     --additional_special_tokens '<instruct>' '<query>' '<response>' \
-    --save_merged_lora_model True \
+    --save_merged_lora_model $save_merged_lora_model \
 "
 
 data_args="\
     --train_data $train_data \
+    --eval_corpus_path ../data/embedder_eval_data/corpus.jsonl \
+    --eval_queries_path ../data/embedder_eval_data/queries_val2_v1.jsonl \
+    --eval_examples_path ../data/embedder_eval_data/examples_v1.json \
     --cache_path ~/.cache \
     --train_group_size 8 \
     --query_max_len 512 \
@@ -48,19 +53,22 @@ data_args="\
 "
 
 training_args="\
-    --output_dir ../model_output/test_decoder_only_base_bge-en-icl_sd \
+    --save_lora_every_epoch True \
+    --output_dir $output_dir \
     --overwrite_output_dir \
-    --learning_rate 1e-4 \
+    --learning_rate $learning_rate \
     --fp16 \
     --num_train_epochs $num_train_epochs \
     --per_device_train_batch_size $per_device_train_batch_size \
+    --per_device_eval_batch_size 16 \
     --dataloader_drop_last False \
     --warmup_ratio 0.1 \
     --gradient_checkpointing \
     --deepspeed ./icl_ds_stage1.json \
-    --logging_steps 5 \
+    --logging_steps 10 \
     --save_steps 1000 \
     --negatives_cross_device \
+    --save_total_limit 1 \
     --temperature 0.02 \
     --sentence_pooling_method last_token \
     --normalize_embeddings True \
