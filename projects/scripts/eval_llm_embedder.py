@@ -9,70 +9,28 @@ import pandas as pd
 from FlagEmbedding.utils.metrics import mapk, apk, mean_average_precision_at_k, recall_at_k
 from FlagEmbedding.utils.data_utils import preprocess_text, preprocess_data
 from FlagEmbedding.utils.env_utils import get_env_info
+from FlagEmbedding.utils.format_utils import get_detailed_example, get_detailed_instruct
+from FlagEmbedding.utils.infer_utils import inference_doc, inference_query, batch_to_device
 import argparse
 import json
 
 # argparser
 parser = argparse.ArgumentParser(description="Evaluate the raw LLM embedder")
 parser.add_argument("--use_examples_in_query", type=bool, default=False, help="Whether to use the embedder eval data")
-parser.add_argument("--validation_version", type=str, default="v2", help="The version of the validation data")
+parser.add_argument("--validation_version", type=str, default="val2", help="The version of the validation data")
 parser.add_argument("--model_path", type=str, default="BAAI/bge-en-icl", help="The path of the model")
 args = parser.parse_args()
 # show args
 print("\nScript arguments:")
 for arg, value in vars(args).items():
     print(f"  {arg}: {value}")
-print() 
-
-def last_token_pool(last_hidden_states: Tensor,
-                 attention_mask: Tensor) -> Tensor:
-    left_padding = (attention_mask[:, -1].sum() == attention_mask.shape[0])
-    if left_padding:
-        return last_hidden_states[:, -1]
-    else:
-        sequence_lengths = attention_mask.sum(dim=1) - 1
-        batch_size = last_hidden_states.shape[0]
-        return last_hidden_states[torch.arange(batch_size, device=last_hidden_states.device), sequence_lengths]
-
-
-def get_detailed_instruct(task_description: str, query: str) -> str:
-    return f'<instruct>{task_description}\n<query>{query}'
-
-def get_detailed_example(task_description: str, query: str, response: str) -> str:
-    return f'<instruct>{task_description}\n<query>{query}\n<response>{response}'
-
-def get_new_queries(queries, query_max_len, examples_prefix, tokenizer):
-    inputs = tokenizer(
-        queries,
-        max_length=query_max_len - len(tokenizer('<s>', add_special_tokens=False)['input_ids']) - len(
-            tokenizer('\n<response></s>', add_special_tokens=False)['input_ids']),
-        return_token_type_ids=False,
-        truncation=True,
-        return_tensors=None,
-        add_special_tokens=False
-    )
-    prefix_ids = tokenizer(examples_prefix, add_special_tokens=False)['input_ids']
-    suffix_ids = tokenizer('\n<response>', add_special_tokens=False)['input_ids']
-    new_max_length = (len(prefix_ids) + len(suffix_ids) + query_max_len + 8) // 8 * 8 + 8
-    new_queries = tokenizer.batch_decode(inputs['input_ids'])
-    for i in range(len(new_queries)):
-        new_queries[i] = examples_prefix + new_queries[i] + '\n<response>'
-    return new_max_length, new_queries
-
-def batch_to_device(batch, target_device):
-    """
-    send a pytorch batch to a device (CPU/GPU)
-    """
-    for key in batch:
-        if isinstance(batch[key], Tensor):
-            batch[key] = batch[key].to(target_device)
-    return batch
+print()
 
 if __name__ == "__main__":
     env_name, PROJECT_ROOT = get_env_info()
     EVAL_DATA_DIR = f"{PROJECT_ROOT}/projects/data/embedder_eval_data"
     corpus_path = f"{EVAL_DATA_DIR}/corpus.jsonl"
-    queries_path = f"{EVAL_DATA_DIR}/queries_{args.validation_version}.jsonl"
+    queries_path = f"{EVAL_DATA_DIR}/queries_{args.validation_version}_v1.jsonl"
     examples_path = f"{EVAL_DATA_DIR}/examples_v1.json"
 
     task = 'Given a math question and a misconcepted incorrect answer to it, retrieve the most accurate reason for the misconception leading to the incorrect answer.'
@@ -82,42 +40,7 @@ if __name__ == "__main__":
     # documents = ['Does not know that angles in a triangle sum to 180 degrees',
     #             'Uses dividing fractions method for multiplying fractions'
     #             ]
-
-    @torch.no_grad()
-    def inference_doc(documents, tokenizer, model, doc_max_len, batch_size, device):
-        doc_embeddings = []
-        print("Getting document embeddings...")
-        for i in tqdm(range(0, len(documents), batch_size)):
-            batch = documents[i:i+batch_size]
-            batch_dict = tokenizer(batch, max_length=doc_max_len, padding=True, truncation=True, return_tensors='pt')
-            batch_dict = batch_to_device(batch_dict, device)
-            outputs = model(**batch_dict)
-            embedding = last_token_pool(outputs.last_hidden_state, batch_dict['attention_mask'])
-            embedding = F.normalize(embedding, p=2, dim=1)
-            embedding = embedding.detach().cpu().numpy()
-            doc_embeddings.append(embedding)
-        doc_embeddings = np.concatenate(doc_embeddings, axis=0)
-        print(f"Document embeddings shape: {doc_embeddings.shape}")
-        return doc_embeddings
-
-    @torch.no_grad()
-    def inference_query(queries, query_max_len, examples_prefix, tokenizer, model, batch_size, device):
-        print("Getting query embeddings...")
-        query_embeddings = []
-        for i in tqdm(range(0, len(queries), batch_size)):
-            batch = queries[i:i+batch_size]
-            new_max_length, new_queries = get_new_queries(batch, query_max_len, examples_prefix, tokenizer)
-            batch_dict = tokenizer(new_queries, max_length=new_max_length, padding=True, truncation=True, return_tensors='pt')
-            batch_dict = batch_to_device(batch_dict, device)
-            outputs = model(**batch_dict)
-            embedding = last_token_pool(outputs.last_hidden_state, batch_dict['attention_mask'])
-            embedding = F.normalize(embedding, p=2, dim=1)
-            embedding = embedding.detach().cpu().numpy()
-            query_embeddings.append(embedding)
-        query_embeddings = np.concatenate(query_embeddings, axis=0)
-        print(f"Query embeddings shape: {query_embeddings.shape}")
-        return query_embeddings
-
+    
     examples = [get_detailed_example(e['instruct'], e['query'], e['response']) for e in examples]
     
     if args.use_examples_in_query:

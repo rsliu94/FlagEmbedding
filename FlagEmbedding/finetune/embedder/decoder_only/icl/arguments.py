@@ -95,3 +95,15 @@ class DecoderOnlyEmbedderICLDataArguments(AbsEmbedderDataArguments):
         default='\nResponse:',
         metadata={"help": "The suffix string for ICL dataset."}
     )
+    eval_corpus_path: Optional[str] = field(
+        default=None, 
+        metadata={"help": "The path to the corpus file [jsonl]. If provided, the corpus will be used for evaluation."}
+    )
+    eval_queries_path: Optional[str] = field(
+        default=None, 
+        metadata={"help": "The path to the evaluation queries file [jsonl]. If provided, the evaluation queries will be used for evaluation."}
+    )
+    eval_examples_path: Optional[str] = field(
+        default=None,
+        metadata={"help": "The path to the evaluation examples file [json]. If provided, the evaluation examples will be used for evaluation."}
+    )

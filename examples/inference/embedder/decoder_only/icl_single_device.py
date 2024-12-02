@@ -17,7 +17,7 @@ def test_icl_single_device():
     ]
     model = FlagICLModel(
         'BAAI/bge-en-icl',
-        query_instruction_for_retrieval="Given a question, retrieve passages that answer the question.",
+        query_instruction_for_retrieval="Given a web search query, retrieve relevant passages that answer the query.",
         query_instruction_format="<instruct>{}\n<query>{}",
         examples_for_task=examples,
         examples_instruction_format="<instruct>{}\n<query>{}\n<response>{}",
@@ -38,12 +38,15 @@ def test_icl_single_device():
     passages_embeddings = model.encode_corpus(passages)
     
     cos_scores = queries_embeddings @ passages_embeddings.T
-    print(cos_scores[:2, :2])
+    print(cos_scores.tolist())
 
 
 if __name__ == '__main__':
     test_icl_single_device()
 
-    print("--------------------------------")
-    print("Expected Output:")
-    print("[[0.579  0.2776]\n [0.2249 0.5146]]")
+    # print("--------------------------------")
+    # print("Expected Output:")
+    # print("[[0.579  0.2776]\n [0.2249 0.5146]]")
+
+    # raw + examples_for_task=None: [[0.58740234375, 0.28515625], [0.2313232421875, 0.5361328125]] / hf: [[0.58740234375, 0.284912109375], [0.2313232421875, 0.5361328125]]
+    # # raw + examples_for_task!=None: [[0.58154296875, 0.27734375], [0.23046875, 0.52001953125]] / hf: [[0.58154296875, 0.27734375], [0.23046875, 0.52001953125]]

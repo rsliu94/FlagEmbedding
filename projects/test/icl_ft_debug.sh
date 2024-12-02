@@ -3,14 +3,16 @@
 source /etc/network_turbo
 
 train_data="\
-    ../data/hn_mine_data_zero_round/finetune_data_validation_minedHN.jsonl \
+    ../data/hn_mine_data_zero_round/finetune_data_validation_minedHN_test.jsonl \
 "
 
 # set large epochs and small batch size for testing
 num_train_epochs=1
 per_device_train_batch_size=2
+per_device_eval_batch_size=16
 save_merged_lora_model=False
-max_steps=10
+max_steps=0
+learning_rate=0.0
 output_dir="../model_output/icl_ft_debug"
 
 # set num_gpus to 2 for testing
@@ -33,6 +35,9 @@ model_args="\
 
 data_args="\
     --train_data $train_data \
+    --eval_corpus_path ../data/embedder_eval_data/corpus.jsonl \
+    --eval_queries_path ../data/embedder_eval_data/queries_val2_v1.jsonl \
+    --eval_examples_path ../data/embedder_eval_data/examples_v1.json \
     --cache_path ~/.cache \
     --train_group_size 8 \
     --query_max_len 512 \
@@ -52,13 +57,13 @@ data_args="\
 
 training_args="\
     --max_steps $max_steps \
-    --save_lora_only True \
     --output_dir $output_dir \
     --overwrite_output_dir \
-    --learning_rate 1e-4 \
+    --learning_rate $learning_rate \
     --fp16 \
     --num_train_epochs $num_train_epochs \
     --per_device_train_batch_size $per_device_train_batch_size \
+    --per_device_eval_batch_size $per_device_eval_batch_size \
     --dataloader_drop_last False \
     --warmup_ratio 0.1 \
     --gradient_checkpointing \

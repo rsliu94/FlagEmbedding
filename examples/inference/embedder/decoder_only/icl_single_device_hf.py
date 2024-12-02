@@ -3,6 +3,7 @@ import torch.nn.functional as F
 from peft import PeftModel
 from torch import Tensor
 from transformers import AutoTokenizer, AutoModel
+from FlagEmbedding.utils.infer_utils import batch_to_device
 
 
 def last_token_pool(last_hidden_states: Tensor,
@@ -51,6 +52,9 @@ examples = [
 ]
 examples = [get_detailed_example(e['instruct'], e['query'], e['response']) for e in examples]
 examples_prefix = '\n\n'.join(examples) + '\n\n' # if there not exists any examples, just set examples_prefix = ''
+# examples_prefix = ''
+
+
 queries = [
     get_detailed_instruct(task, 'how much protein should a female eat'),
     get_detailed_instruct(task, 'summit define')
@@ -61,9 +65,9 @@ documents = [
 ]
 query_max_len, doc_max_len = 512, 512
 
-# model_path = 'BAAI/bge-en-icl'
-model_path = '/root/autodl-tmp/github/FlagEmbedding/projects/model_output/icl_ft_debug/checkpoint-10'
-load_with_lora = True
+model_path = 'BAAI/bge-en-icl'
+# model_path = '/root/autodl-tmp/github/FlagEmbedding/projects/model_output/icl_ft_debug/checkpoint-10'
+load_with_lora = False
 lora_path = '/root/autodl-tmp/github/FlagEmbedding/projects/model_output/icl_ft_debug/lora'
 # dir structure:
 # ls /root/autodl-tmp/github/FlagEmbedding/pr
@@ -89,12 +93,17 @@ else:
     print("Loading standard model from {}".format(model_path))
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     model = AutoModel.from_pretrained(model_path)
+model.half()
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+model.to(device)
 model.eval()
 
 new_query_max_len, new_queries = get_new_queries(queries, query_max_len, examples_prefix, tokenizer)
 
 query_batch_dict = tokenizer(new_queries, max_length=new_query_max_len, padding=True, truncation=True, return_tensors='pt')
 doc_batch_dict = tokenizer(documents, max_length=doc_max_len, padding=True, truncation=True, return_tensors='pt')
+query_batch_dict = batch_to_device(query_batch_dict, device)
+doc_batch_dict = batch_to_device(doc_batch_dict, device)
 
 with torch.no_grad():
     query_outputs = model(**query_batch_dict)
@@ -111,3 +120,7 @@ print(scores.tolist())
 # raw: [[0.5815188884735107, 0.27741539478302], [0.23050722479820251, 0.5201163291931152]]
 # ckpt-10: [[0.5789058208465576, 0.26900291442871094], [0.21650180220603943, 0.5238620042800903]]
 # lora : [[0.5789058208465576, 0.26900291442871094], [0.21650180220603943, 0.5238620042800903]]
+
+# raw + examples_prefix='': [[0.5878381729125977, 0.2852180600166321], [0.23144301772117615, 0.5358972549438477]]
+# raw + examples_prefix='' + half: [[0.58740234375, 0.284912109375], [0.2313232421875, 0.5361328125]]
+# raw + examples_prefix!='' + half: [[0.58154296875, 0.27734375], [0.23046875, 0.52001953125]]

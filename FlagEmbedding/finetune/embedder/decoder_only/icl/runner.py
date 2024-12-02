@@ -5,7 +5,7 @@ from transformers import AutoConfig, AutoTokenizer, PreTrainedTokenizer
 
 import os
 from FlagEmbedding.abc.finetune.embedder.AbsArguments import AbsEmbedderTrainingArguments
-from FlagEmbedding.abc.finetune.embedder import AbsEmbedderRunner, AbsEmbedderModel, EmbedderTrainerCallbackForDataRefresh
+from FlagEmbedding.abc.finetune.embedder import AbsEmbedderRunner, AbsEmbedderModel, EmbedderTrainerCallbackForDataRefresh, EvaluateCallback
 
 from .arguments import DecoderOnlyEmbedderICLModelArguments, DecoderOnlyEmbedderICLDataArguments
 from .trainer import DecoderOnlyEmbedderICLTrainer
@@ -113,10 +113,16 @@ class DecoderOnlyEmbedderICLRunner(AbsEmbedderRunner):
             args=self.training_args,
             train_dataset=self.train_dataset,
             data_collator=self.data_collator,
-            tokenizer=self.tokenizer
+            tokenizer=self.tokenizer,
+            eval_corpus_path=self.data_args.eval_corpus_path,
+            eval_queries_path=self.data_args.eval_queries_path,
+            eval_examples_path=self.data_args.eval_examples_path
         )
         if self.data_args.same_dataset_within_batch:
             trainer.add_callback(EmbedderTrainerCallbackForDataRefresh(self.train_dataset))
+        if self.data_args.eval_corpus_path is not None and self.data_args.eval_queries_path is not None:
+            logger.info('Add EvaluateCallback')
+            trainer.add_callback(EvaluateCallback())
         return trainer
 
     def load_train_dataset(self) -> DecoderOnlyEmbedderICLSameDatasetTrainDataset:
@@ -153,13 +159,16 @@ class DecoderOnlyEmbedderICLRunner(AbsEmbedderRunner):
         if self.training_args.resume_from_checkpoint and self.training_args.resume_from_checkpoint == 'True':
             self.training_args.resume_from_checkpoint = True
         self.trainer.train(resume_from_checkpoint=self.training_args.resume_from_checkpoint)
-        # save LoRA weights
-        lora_output_dir = os.path.join(self.training_args.output_dir, 'lora')
-        logger.info('Saving LoRA weights to %s', lora_output_dir)
-        self.trainer.save_lora_weights(lora_output_dir)
         
-        # save merged model
-        if self.model_args.save_merged_lora_model and self.training_args.process_index == 0:
-            logger.info('Saving merged model')
-            self.trainer.save_model()
-            save_merged_model(self.model_args, self.training_args.output_dir)
+        # self.trainer.evaluate()
+        
+        # # save LoRA weights
+        # lora_output_dir = os.path.join(self.training_args.output_dir, 'lora')
+        # logger.info('Saving LoRA weights to %s', lora_output_dir)
+        # self.trainer.save_lora_weights(lora_output_dir)
+        
+        # # save merged model
+        # if self.model_args.save_merged_lora_model and self.training_args.process_index == 0:
+        #     logger.info('Saving merged model')
+        #     self.trainer.save_model()
+        #     save_merged_model(self.model_args, self.training_args.output_dir)
