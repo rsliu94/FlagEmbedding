@@ -157,3 +157,6 @@ model_output/
 
 # wandb
 wandb/
+
+# submission
+submission*.csv
