@@ -8,6 +8,7 @@ import numpy as np
 from FlagEmbedding.abc.finetune.embedder import AbsEmbedderTrainer
 from FlagEmbedding.utils.format_utils import get_detailed_example, get_detailed_instruct
 from FlagEmbedding.utils.infer_utils import batch_to_device, get_new_queries
+from FlagEmbedding.utils.data_utils import preprocess_text
 from FlagEmbedding.utils.metrics import mean_average_precision_at_k, recall_at_k
 import faiss
 
@@ -93,7 +94,11 @@ class DecoderOnlyEmbedderICLTrainer(AbsEmbedderTrainer):
     def evaluate(self, ignore_keys: Optional[List[str]] = None):
         # debug: eval_llm_embedder.py results: 20s on doc + 2min on query; map@25_score: 0.20892443160013727 recall@25_score: 0.5653804930332261
         # evaluate(): [bs=16]26s on doc + 2:48 on query; map@25_score: 0.20677747849712655 recall@25_score: 0.5643086816720257
-        # memory metrics - must set up as early as possible
+        # [if remove construct_name from task_description, map@25=0.188]
+        # memory metrics - must set up as early as possible 
+        if not self.is_world_process_zero():
+            return {}
+        
         self._memory_tracker.start()
         self.model.eval()
         if self.eval_corpus_path is None:
@@ -122,8 +127,8 @@ class DecoderOnlyEmbedderICLTrainer(AbsEmbedderTrainer):
         with open(self.eval_queries_path, 'r') as f:
             for line in f:
                 row = json.loads(line)
-                # task_description = f'Given a math question about {preprocess_text(row["construct_name"])} and a misconcepted incorrect answer to it, retrieve the most accurate reason for the misconception leading to the incorrect answer.'
-                task_description = 'Given a math question and a misconcepted incorrect answer to it, retrieve the most accurate reason for the misconception leading to the incorrect answer.'
+                task_description = f'Given a math question about {preprocess_text(row["construct_name"])} and a misconcepted incorrect answer to it, retrieve the most accurate reason for the misconception leading to the incorrect answer.'
+                # task_description = 'Given a math question and a misconcepted incorrect answer to it, retrieve the most accurate reason for the misconception leading to the incorrect answer.'
                 query = f'{row["question"]} \n Incorrect answer : {row["wrong_answer"]}'
                 queries.append(get_detailed_instruct(task_description=task_description, query=query))
         print(f"Number of queries: {len(queries)}")

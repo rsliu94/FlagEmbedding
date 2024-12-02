@@ -5,7 +5,8 @@ source /etc/network_turbo
 train_data="\
     ../data/hn_mine_data_zero_round/finetune_data_validation_minedHN_test.jsonl \
 "
-
+# set num_gpus to 2 for testing
+num_gpus=2
 # set large epochs and small batch size for testing
 num_train_epochs=1
 per_device_train_batch_size=2
@@ -14,9 +15,6 @@ save_merged_lora_model=False
 max_steps=0
 learning_rate=0.0
 output_dir="../model_output/icl_ft_debug"
-
-# set num_gpus to 2 for testing
-num_gpus=1
 
 if [ -z "$HF_HUB_CACHE" ]; then
     export HF_HUB_CACHE="$HOME/.cache/huggingface/hub"
