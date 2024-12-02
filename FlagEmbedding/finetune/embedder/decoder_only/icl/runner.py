@@ -8,7 +8,7 @@ from FlagEmbedding.abc.finetune.embedder.AbsArguments import AbsEmbedderTraining
 from FlagEmbedding.abc.finetune.embedder import AbsEmbedderRunner, AbsEmbedderModel, EmbedderTrainerCallbackForDataRefresh, EvaluateCallback
 
 from .arguments import DecoderOnlyEmbedderICLModelArguments, DecoderOnlyEmbedderICLDataArguments
-from .trainer import DecoderOnlyEmbedderICLTrainer
+from .trainer import DecoderOnlyEmbedderICLTrainer, SaveLoraCallback
 from .modeling import BiDecoderOnlyEmbedderICLModel
 from .dataset import DecoderOnlyEmbedderICLSameDatasetTrainDataset
 from .load_model import get_model, save_merged_model
@@ -123,6 +123,9 @@ class DecoderOnlyEmbedderICLRunner(AbsEmbedderRunner):
         if self.data_args.eval_corpus_path is not None and self.data_args.eval_queries_path is not None:
             logger.info('Add EvaluateCallback')
             trainer.add_callback(EvaluateCallback())
+        if self.training_args.save_lora_every_epoch:
+            logger.info('Add SaveLoraCallback')
+            trainer.add_callback(SaveLoraCallback())
         return trainer
 
     def load_train_dataset(self) -> DecoderOnlyEmbedderICLSameDatasetTrainDataset:
@@ -160,15 +163,8 @@ class DecoderOnlyEmbedderICLRunner(AbsEmbedderRunner):
             self.training_args.resume_from_checkpoint = True
         self.trainer.train(resume_from_checkpoint=self.training_args.resume_from_checkpoint)
         
-        # self.trainer.evaluate()
-        
-        # # save LoRA weights
-        # lora_output_dir = os.path.join(self.training_args.output_dir, 'lora')
-        # logger.info('Saving LoRA weights to %s', lora_output_dir)
-        # self.trainer.save_lora_weights(lora_output_dir)
-        
-        # # save merged model
-        # if self.model_args.save_merged_lora_model and self.training_args.process_index == 0:
-        #     logger.info('Saving merged model')
-        #     self.trainer.save_model()
-        #     save_merged_model(self.model_args, self.training_args.output_dir)
+        # save merged model
+        if self.model_args.save_merged_lora_model and self.training_args.process_index == 0:
+            logger.info('Saving merged model')
+            self.trainer.save_model()
+            save_merged_model(self.model_args, self.training_args.output_dir)

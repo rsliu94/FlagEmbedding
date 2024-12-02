@@ -65,10 +65,10 @@ documents = [
 ]
 query_max_len, doc_max_len = 512, 512
 
-model_path = 'BAAI/bge-en-icl'
-# model_path = '/root/autodl-tmp/github/FlagEmbedding/projects/model_output/icl_ft_debug/checkpoint-10'
+# model_path = 'BAAI/bge-en-icl'
+model_path = '/root/autodl-tmp/github/FlagEmbedding/projects/model_output/icl_ft_debug/checkpoint-8'
 load_with_lora = False
-lora_path = '/root/autodl-tmp/github/FlagEmbedding/projects/model_output/icl_ft_debug/lora'
+lora_path = '/root/autodl-tmp/github/FlagEmbedding/projects/model_output/icl_ft_debug/lora_epoch_1'
 # dir structure:
 # ls /root/autodl-tmp/github/FlagEmbedding/pr
 # ojects/model_output/icl_ft_debug/checkpoint-10
@@ -124,3 +124,6 @@ print(scores.tolist())
 # raw + examples_prefix='': [[0.5878381729125977, 0.2852180600166321], [0.23144301772117615, 0.5358972549438477]]
 # raw + examples_prefix='' + half: [[0.58740234375, 0.284912109375], [0.2313232421875, 0.5361328125]]
 # raw + examples_prefix!='' + half: [[0.58154296875, 0.27734375], [0.23046875, 0.52001953125]]
+
+# ckpt-8: [[0.5712890625, 0.245849609375], [0.206298828125, 0.51953125]]
+# lora: [[0.5712890625, 0.245849609375], [0.206298828125, 0.51953125]]

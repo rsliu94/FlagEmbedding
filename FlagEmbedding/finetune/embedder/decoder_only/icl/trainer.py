@@ -11,8 +11,47 @@ from FlagEmbedding.utils.infer_utils import batch_to_device, get_new_queries
 from FlagEmbedding.utils.data_utils import preprocess_text
 from FlagEmbedding.utils.metrics import mean_average_precision_at_k, recall_at_k
 import faiss
+from transformers import TrainerCallback
 
 logger = logging.getLogger(__name__)
+
+
+class SaveLoraCallback(TrainerCallback):
+    def on_epoch_end(self, args, state, control, model=None, tokenizer=None, **kwargs):
+        """每个epoch结束时被调用"""
+        if not state.is_world_process_zero:
+            return
+        
+        epoch = state.epoch
+        output_dir = args.output_dir
+        # 创建带有epoch编号的LoRA保存目录
+        lora_output_dir = os.path.join(output_dir, f'lora_epoch_{int(epoch)}')
+        os.makedirs(lora_output_dir, exist_ok=True)
+        logger.info(f'Saving LoRA weights for epoch {int(epoch)} to {lora_output_dir}')
+        
+        if not hasattr(model.model, 'peft_config'):
+            raise ValueError("模型不是PEFT模型，无法保存LoRA权重")
+        
+        try:
+            # 保存LoRA权重和配置
+            model.model.save_pretrained(
+                lora_output_dir,
+                save_embedding_layers="auto",
+            )
+            
+            # 保存tokenizer配置
+            if tokenizer is not None and state.is_world_process_zero:
+                tokenizer.save_pretrained(lora_output_dir)
+            
+            # 保存训练参数
+            if state.is_world_process_zero:
+                torch.save(args, os.path.join(lora_output_dir, "training_args.bin"))
+            
+            logger.info("Successfully saved LoRA weights")
+            
+        except Exception as e:
+            logger.error(f"Error saving LoRA weights: {str(e)}")
+            raise
 
 
 class DecoderOnlyEmbedderICLTrainer(AbsEmbedderTrainer):
@@ -65,7 +104,6 @@ class DecoderOnlyEmbedderICLTrainer(AbsEmbedderTrainer):
         """
         output_dir = output_dir if output_dir is not None else self.args.output_dir
         os.makedirs(output_dir, exist_ok=True)
-        self.model.model.save_pretrained(output_dir)
         if not hasattr(self.model.model, 'peft_config'):
             raise ValueError("模型不是PEFT模型，无法保存LoRA权重")
         

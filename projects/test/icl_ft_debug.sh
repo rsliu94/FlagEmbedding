@@ -13,7 +13,7 @@ per_device_train_batch_size=2
 per_device_eval_batch_size=16
 save_merged_lora_model=False
 max_steps=0
-learning_rate=0.0
+learning_rate=1e-4
 output_dir="../model_output/icl_ft_debug"
 
 if [ -z "$HF_HUB_CACHE" ]; then
@@ -54,6 +54,7 @@ data_args="\
 "
 
 training_args="\
+    --save_lora_every_epoch True \
     --max_steps $max_steps \
     --output_dir $output_dir \
     --overwrite_output_dir \
