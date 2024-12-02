@@ -70,7 +70,7 @@ python eval_llm_embedder.py \
 ### 训练参数
 | 参数 | 值 |
 |------|-----|
-| 训练轮数 | 4 |
+| 训练轮数 | 5 |
 | 批次大小 | 16 |
 | 学习率 | 1e-4 |
 | GPU数量 | 2 |
@@ -83,9 +83,10 @@ python eval_llm_embedder.py \
 | 2 | 0.4369 | 0.8655 |
 | 3 | 0.4468 | 0.8735 |
 | 4 | 0.4685 | 0.8735 |
+| 5 | 0.4716 | 0.8767 |
 
 ```bash
-# doublecheck eval result
+# doublecheck eval result at epoch 4
 python eval_llm_embedder.py \
     --lora_path ../model_output/icl_finetune_round1/lora_epoch_4 \
     --use_examples_in_query=True

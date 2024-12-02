@@ -7,7 +7,7 @@ train_data="\
 "
 
 # set large epochs and small batch size for testing
-num_train_epochs=4
+num_train_epochs=5
 per_device_train_batch_size=16
 save_merged_lora_model=False
 output_dir="../model_output/icl_finetune_round1"
@@ -21,6 +21,7 @@ fi
 
 model_args="\
     --model_name_or_path BAAI/bge-en-icl \
+    --resume_from_checkpoint True \
     --cache_dir $HF_HUB_CACHE \
     --use_lora True \
     --lora_rank 32 \
