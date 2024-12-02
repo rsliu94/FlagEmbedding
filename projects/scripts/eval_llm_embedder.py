@@ -19,7 +19,7 @@ import json
 # argparser
 parser = argparse.ArgumentParser(description="Evaluate the raw LLM embedder")
 parser.add_argument("--use_examples_in_query", type=bool, default=False, help="Whether to use the embedder eval data")
-parser.add_argument("--validation_version", type=str, default="val2", help="The version of the validation data")
+parser.add_argument("--validation_version", type=str, default="2", help="The version of the validation data")
 parser.add_argument("--model_path", type=str, default="BAAI/bge-en-icl", help="The path of the model")
 parser.add_argument("--lora_path", type=str, default=NotImplementedError, help="The path of the LoRA weights")
 args = parser.parse_args()
@@ -31,18 +31,14 @@ print()
 
 if __name__ == "__main__":
     env_name, PROJECT_ROOT = get_env_info()
-    EVAL_DATA_DIR = os.path.join(PROJECT_ROOT, "projects/data/embedder_eval_data")
-    corpus_path = os.path.join(EVAL_DATA_DIR, "corpus.jsonl")
-    queries_path = os.path.join(EVAL_DATA_DIR, f"queries_{args.validation_version}_v1.jsonl")
-    examples_path = os.path.join(EVAL_DATA_DIR, "examples_v1.json")
+    EMBEDDER_EVAL_DATA_DIR = os.path.join(PROJECT_ROOT, "projects/data/embedder_eval_data", f"validation_v{args.validation_version}")
+    corpus_path = os.path.join(EMBEDDER_EVAL_DATA_DIR, "corpus.jsonl")
+    queries_path = os.path.join(EMBEDDER_EVAL_DATA_DIR, f"queries.jsonl")
+    examples_path = os.path.join(EMBEDDER_EVAL_DATA_DIR, "examples.json")
 
     task = 'Given a math question and a misconcepted incorrect answer to it, retrieve the most accurate reason for the misconception leading to the incorrect answer.'
     with open(examples_path, 'r', encoding='utf-8') as f:
         examples = json.load(f)
-    
-    # documents = ['Does not know that angles in a triangle sum to 180 degrees',
-    #             'Uses dividing fractions method for multiplying fractions'
-    #             ]
     
     examples = [get_detailed_example(e['instruct'], e['query'], e['response']) for e in examples]
     
@@ -50,16 +46,13 @@ if __name__ == "__main__":
         examples_prefix = '\n\n'.join(examples) + '\n\n' # if there not exists any examples, just set examples_prefix = ''
     else:
         examples_prefix = ''
-        
-    # queries = [
-    #     get_detailed_instruct(task, 'The angles highlighted on this rectangle with different length sides can never be... ![A rectangle with the diagonals drawn in. The angle on the right hand side at the centre is highlighted in red and the angle at the bottom at the centre is highlighted in yellow.]() Incorrect answer : Not enough information'),
-    #     get_detailed_instruct(task, 'The angles highlighted on this rectangle with different length sides can never be... ![A rectangle with the diagonals drawn in. The angle on the right hand side at the centre is highlighted in red and the angle at the bottom at the centre is highlighted in yellow.]() Incorrect answer : obtuse')
-    # ]
     
     corpus = [json.loads(line)['text'] for line in open(corpus_path, 'r')] # list of strings
     print(f"Number of corpus: {len(corpus)}")
     correct_ids = [json.loads(line)['correct_id'] for line in open(queries_path, 'r')] # list of floats
     print(f"Number of correct ids: {len(correct_ids)}")
+    question_ids = [json.loads(line)['QuestionId_Answer'] for line in open(queries_path, 'r')] # list of floats
+    print(f"Number of question ids: {len(question_ids)}")
     
     queries = []
     with open(queries_path, 'r') as f:
@@ -92,7 +85,7 @@ if __name__ == "__main__":
         model = AutoModel.from_pretrained(args.model_path)
     else:
         print(f"Using LoRA weights from {args.lora_path}")
-        tokenizer = AutoTokenizer.from_pretrained(args.model_path)
+        tokenizer = AutoTokenizer.from_pretrained(args.lora_path)
         base_model = AutoModel.from_pretrained('BAAI/bge-en-icl')
         model = PeftModel.from_pretrained(base_model, args.lora_path, is_trainable=False)
 
@@ -129,3 +122,10 @@ if __name__ == "__main__":
 
     recall_score = recall_at_k(correct_ids, indices, 25)
     print(f"recall@25_score: {recall_score}")
+    
+    df = pd.DataFrame({
+        'QuestionId_Answer': question_ids,
+        'CorrectId': correct_ids,
+        'MisconceptionId': [' '.join(map(str, c)) for c in indices.tolist()]
+    })
+    df.to_csv("./submission.csv", index=False)

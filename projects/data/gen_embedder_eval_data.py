@@ -108,13 +108,13 @@ if __name__ == "__main__":
                                             with_misconception=True, 
                                             filter_na_misconception=args.filter_na_misconception)
                 
-                selected_columns = ["query_text", "QuestionText", "MisconceptionId", "SubjectName", "ConstructName", "CorrectAnswerText", "WrongAnswerText"]
+                selected_columns = ["query_text", "QuestionId_Answer", "QuestionText", "MisconceptionId", "SubjectName", "ConstructName", "CorrectAnswerText", "WrongAnswerText"]
                 df_selected = val_preprocessed[selected_columns]
 
                 # 将 JSON 数据写入文件
                 with open(f"{OUTPUT_DIR_VERSION}/queries.jsonl", "w") as f:
                     for _, row in df_selected.iterrows():
-                        json_line = {"text": row['query_text'], "correct_id": row['MisconceptionId'], 'question': row['QuestionText'], 'subject_name': row['SubjectName'], 'construct_name': row['ConstructName'], 'correct_answer': row['CorrectAnswerText'], 'wrong_answer': row['WrongAnswerText']}
+                        json_line = {"text": row['query_text'], "QuestionId_Answer": row["QuestionId_Answer"], "correct_id": row['MisconceptionId'], 'question': row['QuestionText'], 'subject_name': row['SubjectName'], 'construct_name': row['ConstructName'], 'correct_answer': row['CorrectAnswerText'], 'wrong_answer': row['WrongAnswerText']}
                         f.write(json.dumps(json_line) + "\n")
             
             # Write examples.jsonl

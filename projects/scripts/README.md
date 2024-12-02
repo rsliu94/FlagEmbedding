@@ -95,3 +95,13 @@ python eval_llm_embedder.py \
 |--------|-------|
 | MAP@25 | 0.4717764314771157 |
 | Recall@25 | 0.8767416934619507 |
+```bash
+# doublecheck eval result at epoch 5
+python eval_llm_embedder.py \
+    --lora_path ../model_output/icl_finetune_round1/lora_epoch_5 \
+    --use_examples_in_query=True
+```
+| Metric | Score |
+|--------|-------|
+| MAP@25 | 0.4710 |
+| Recall@25 | 0.8815 |
