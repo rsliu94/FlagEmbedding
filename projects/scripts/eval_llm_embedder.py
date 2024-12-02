@@ -7,7 +7,11 @@ from transformers import AutoTokenizer, AutoModel, BitsAndBytesConfig
 import faiss
 import os
 import pandas as pd
-from peft import PeftModel
+from peft import (
+    LoraConfig,
+    get_peft_model,
+    PeftModel,
+)
 from FlagEmbedding.utils.metrics import mapk, apk, mean_average_precision_at_k, recall_at_k
 from FlagEmbedding.utils.data_utils import preprocess_text, preprocess_data
 from FlagEmbedding.utils.env_utils import get_env_info
@@ -67,34 +71,30 @@ if __name__ == "__main__":
 
     print("Loading tokenizer and model...")
     # bnb_config = BitsAndBytesConfig(
-    #             load_in_4bit=True,
-    #             bnb_4bit_use_double_quant=True,
-    #             bnb_4bit_quant_type="nf4",
-    #             bnb_4bit_compute_dtype=torch.bfloat16
-    #         )
-    # bnb_config = BitsAndBytesConfig(
     #             load_in_4bit=False,
     #             load_in_8bit=False,
     #             bnb_4bit_compute_dtype=torch.float16,
     #             llm_int8_has_fp16_weight=True,
     #         )
     
-    if not args.lora_path:
-        print("Not using LoRA weights")
-        tokenizer = AutoTokenizer.from_pretrained(args.model_path)
-        model = AutoModel.from_pretrained(args.model_path)
-    else:
-        print(f"Using LoRA weights from {args.lora_path}")
-        tokenizer = AutoTokenizer.from_pretrained(args.lora_path)
-        base_model = AutoModel.from_pretrained('BAAI/bge-en-icl')
-        model = PeftModel.from_pretrained(base_model, args.lora_path, is_trainable=False)
-
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
-
-    model.half()
-    model.to(device)
-    model.eval()
-    batch_size = 16
+    # bnb_config = BitsAndBytesConfig(
+    #             load_in_4bit=True,
+    #             bnb_4bit_use_double_quant=True,
+    #             bnb_4bit_quant_type="nf4",
+    #             bnb_4bit_compute_dtype=torch.bfloat16
+    #         )
+    
+    tokenizer = AutoTokenizer.from_pretrained(args.lora_path)
+    device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+    print(f"Device: {device}")
+    
+    model = AutoModel.from_pretrained(args.model_path, quantization_config=None)
+    model = PeftModel.from_pretrained(model, args.lora_path, is_trainable=False)
+    model = model.half()
+    model = model.to(device)
+    
+    model = model.eval()
+    batch_size = 4
     print(f"Model device: {next(model.parameters()).device}")
 
     print("Check query/document token length...")

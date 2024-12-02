@@ -95,6 +95,12 @@ python eval_llm_embedder.py \
 |--------|-------|
 | MAP@25 | 0.4717764314771157 |
 | Recall@25 | 0.8767416934619507 |
+With BnB config:
+| Metric | Score |
+|--------|-------|
+| MAP@25 | 0.4674904645905756|
+| Recall@25 | 0.8762057877813505 |
+
 ```bash
 # doublecheck eval result at epoch 5
 python eval_llm_embedder.py \
