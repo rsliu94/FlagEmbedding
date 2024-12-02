@@ -44,8 +44,8 @@ def prepare_val_data(env_name, split_method, output_dir, PROJECT_ROOT=None):
     print(f"Saving to {output_dir}...")
     # create output_dir if not exists
     os.makedirs(output_dir, exist_ok=True)
-    val_data.to_csv(f"{output_dir}/val.csv", index=False)
-    print(f"Saved to {output_dir}/val.csv")
+    val_data.to_csv(f"{output_dir}/test.csv", index=False)
+    print(f"Saved to {output_dir}/test.csv")
     train_data.to_csv(f"{output_dir}/train.csv", index=False)
     print(f"Saved to {output_dir}/train.csv")
     return

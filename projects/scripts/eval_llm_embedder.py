@@ -5,6 +5,7 @@ from torch import Tensor
 import numpy as np
 from transformers import AutoTokenizer, AutoModel, BitsAndBytesConfig
 import faiss
+import os
 import pandas as pd
 from peft import PeftModel
 from FlagEmbedding.utils.metrics import mapk, apk, mean_average_precision_at_k, recall_at_k
@@ -30,10 +31,10 @@ print()
 
 if __name__ == "__main__":
     env_name, PROJECT_ROOT = get_env_info()
-    EVAL_DATA_DIR = f"{PROJECT_ROOT}/projects/data/embedder_eval_data"
-    corpus_path = f"{EVAL_DATA_DIR}/corpus.jsonl"
-    queries_path = f"{EVAL_DATA_DIR}/queries_{args.validation_version}_v1.jsonl"
-    examples_path = f"{EVAL_DATA_DIR}/examples_v1.json"
+    EVAL_DATA_DIR = os.path.join(PROJECT_ROOT, "projects/data/embedder_eval_data")
+    corpus_path = os.path.join(EVAL_DATA_DIR, "corpus.jsonl")
+    queries_path = os.path.join(EVAL_DATA_DIR, f"queries_{args.validation_version}_v1.jsonl")
+    examples_path = os.path.join(EVAL_DATA_DIR, "examples_v1.json")
 
     task = 'Given a math question and a misconcepted incorrect answer to it, retrieve the most accurate reason for the misconception leading to the incorrect answer.'
     with open(examples_path, 'r', encoding='utf-8') as f:
