@@ -29,7 +29,10 @@ def get_env_info():
     # Check Kaggle first
     hostname = run_cmd('hostname')  # machine hostname
     if os.environ.get('KAGGLE_KERNEL_RUN_TYPE') is not None:
-        return "Kaggle", None
+        kaggle_repo_root = "./repo_root"
+        # mkdir if not exists
+        os.makedirs(kaggle_repo_root, exist_ok=True)
+        return "Kaggle", kaggle_repo_root
     
     # Check if Mac or Linux
     system = platform.system()
