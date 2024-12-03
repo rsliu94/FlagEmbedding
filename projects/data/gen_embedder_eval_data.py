@@ -90,7 +90,7 @@ if __name__ == "__main__":
             json.dump(examples_raw, f, indent=4)
             
     else:
-        for version in ["1", "2", "3"]:
+        for version in ["1", "2", "3", "4"]:
             OUTPUT_DIR_VERSION = os.path.join(OUTPUT_DIR, f"validation_v{version}")
             # mkdir if not exists
             os.makedirs(OUTPUT_DIR_VERSION, exist_ok=True)

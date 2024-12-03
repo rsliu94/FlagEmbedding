@@ -37,9 +37,13 @@ def main():
     
     
     if args.mode == 'validation':
-        train_data = pd.read_csv(os.path.join(PROJECT_ROOT, 'projects', 'data', 'raw_data', f'validation_{args.validation_version}', 'train.csv'))
+        path = os.path.join(PROJECT_ROOT, 'projects', 'data', 'raw_data', f'validation_{args.validation_version}', 'train.csv')
+        print(f"Read from: {path}")
+        train_data = pd.read_csv(path)
     elif args.mode == 'submission':
-        train_data = pd.read_csv(os.path.join(PROJECT_ROOT, 'projects', 'data', 'raw_data', 'train.csv'))
+        path = os.path.join(PROJECT_ROOT, 'projects', 'data', 'raw_data', 'train.csv')
+        print(f"Read from: {path}")
+        train_data = pd.read_csv(path)
     else:
         raise ValueError(f"Invalid mode: {args.mode}")
     print(f"len(train_data): {len(train_data)}")

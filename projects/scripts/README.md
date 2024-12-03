@@ -227,8 +227,58 @@ python hn_mine.py \
 | 3 | 0.4726 | 0.8576 |
 | 4 | 0.4754 | 0.8460 |
 | 5 | 0.4877 | 0.8506 |
+**LoRA epoch 1 LB Score: 0.316**
+**LoRA epoch 3 LB Score: 0.318**
 
+# Repeat ICL Finetune with validation_v3 split + shuffle minedHN
+```bash
+python hn_mine.py \
+--embedder_name_or_path BAAI/bge-en-icl \
+--embedder_model_class decoder-only-icl \
+--pooling_method last_token \
+--input_file ../data/hn_mine_data_zero_round/validation_v3/finetune_data.jsonl \
+--output_file ../data/hn_mine_data_zero_round/validation_v3/finetune_data_minedHN.jsonl \
+--candidate_pool ../data/hn_mine_data_zero_round/validation_v3/candidate_pool.jsonl \
+--range_for_sampling 2-200 \
+--negative_number 15 \
+--shuffle_data True \
+--devices cuda:0
+```
+| Epoch | MAP@25 | Recall@25 |
+|-------|--------|-----------|
+| 1 | 0.3797 | 0.8090 |
+| 2 | 0.4559 | 0.8564 |
+| 3 | 0.4510 | 0.8414 |
+| 4 | 0.4773 | 0.8680 |
+| 5 | 0.4800 | 0.8680 |
+**LoRA epoch 1 LB Score: 0.303**
 
+With out examples in query
+| Epoch | MAP@25 | Recall@25 |
+|-------|--------|-----------|
+| 1 | 0.3717 | 0.7928 |
+| 2 | 0.4449 | 0.8530 |
+| 3 | 0.4710 | 0.8645 |
+| 4 | 0.4733 | 0.8692 |
+
+# Repeat ICL Finetune with validation_v4 split + shuffle minedHN
+```bash
+python hn_mine.py \
+--embedder_name_or_path BAAI/bge-en-icl \
+--embedder_model_class decoder-only-icl \
+--pooling_method last_token \
+--input_file ../data/hn_mine_data_zero_round/validation_v4/finetune_data.jsonl \
+--output_file ../data/hn_mine_data_zero_round/validation_v4/finetune_data_minedHN.jsonl \
+--candidate_pool ../data/hn_mine_data_zero_round/validation_v4/candidate_pool.jsonl \
+--range_for_sampling 2-200 \
+--negative_number 15 \
+--shuffle_data True \
+--devices cuda:0
+```
+| Epoch | MAP@25 | Recall@25 |
+|-------|--------|-----------|
+| 1 | 0.5119 | 0.9050 |
+| 2 | 0.6285 | 0.9270 |
 
 
 # Iterative Hard Negative Mining
@@ -236,27 +286,25 @@ python hn_mine.py \
 ### 1. Gen input data
 ```bash
 python gen_data_for_hn_mine.py \
-    --mode submission \
-    --sub_dir_name hn_mine_data_round_1
-python gen_data_for_hn_mine.py \
     --mode validation \
+    --validation_version v3 \
     --sub_dir_name hn_mine_data_round_1
 ```
 ### 2. Mine hard negative use FineTuned icl model
-`projects/model_output/icl_finetune_round1/checkpoint-390`
+`projects/model_output/icl_finetune_validation_v3_round1/checkpoint-545`
 ```bash
 python hn_mine.py \
---embedder_name_or_path ../model_output/icl_finetune_round1/checkpoint-390 \
+--embedder_name_or_path ../model_output/icl_finetune_validation_v3_round1/checkpoint-545 \
 --embedder_model_class decoder-only-icl \
 --pooling_method last_token \
---input_file ../data/hn_mine_data_round_1/finetune_data_validation.jsonl \
---output_file ../data/hn_mine_data_round_1/finetune_data_validation_minedHN.jsonl \
---candidate_pool ../data/hn_mine_data_round_1/candidate_pool_validation.jsonl \
+--input_file ../data/hn_mine_data_round_1/validation_v3/finetune_data.jsonl \
+--output_file ../data/hn_mine_data_round_1/validation_v3/finetune_data_minedHN.jsonl \
+--candidate_pool ../data/hn_mine_data_round_1/validation_v3/candidate_pool.jsonl \
 --range_for_sampling 2-200 \
 --negative_number 15 \
 --devices cuda:0
 ```
-### 3. continue finetune ICL with mined hard negative in round 1
+### 3. finetune ICL(scratch) with new mined hard negative in round 1
 ```bash
 ./icl_finetune.sh
 ```

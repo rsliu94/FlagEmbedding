@@ -9,7 +9,9 @@ import faiss
 from transformers import HfArgumentParser
 from FlagEmbedding import FlagAutoModel
 from FlagEmbedding.abc.inference import AbsEmbedder
+import random
 
+random.seed(42)
 
 @dataclass
 class DataArgs:
@@ -36,6 +38,9 @@ class DataArgs:
     )
     search_batch_size: int = field(
         default=64, metadata={"help": "The batch size for searching."}
+    )
+    shuffle_data: bool = field(
+        default=False, metadata={"help": "Whether to shuffle the data after mining hard negatives."}
     )
 
 
@@ -228,6 +233,16 @@ def load_model(model_args: ModelArgs):
     )
     return model
 
+def shuffle_data(output_file: str):
+    print(f'shuffling data in {output_file}--------------')
+    lines = []
+    with open(output_file, 'r') as f:
+        for line in f:
+            lines.append(json.loads(line))
+    random.shuffle(lines)
+    with open(output_file, 'w') as f:
+        for line in lines:
+            f.write(json.dumps(line) + '\n')
 
 def main(data_args: DataArgs, model_args: ModelArgs):
     model = load_model(model_args)
@@ -241,6 +256,10 @@ def main(data_args: DataArgs, model_args: ModelArgs):
         negative_number=data_args.negative_number,
         use_gpu=data_args.use_gpu_for_searching
     )
+    
+    # shuffle data
+    if data_args.shuffle_data:
+        shuffle_data(data_args.output_file)
 
 
 if __name__ == "__main__":

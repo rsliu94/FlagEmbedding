@@ -3,14 +3,16 @@
 source /etc/network_turbo
 
 train_data="\
-    ../data/hn_mine_data_zero_round/validation_v3/finetune_data_minedHN.jsonl \
+    ../data/hn_mine_data_zero_round/validation_v4/finetune_data_minedHN.jsonl \
 "
 
 # set large epochs and small batch size for testing
+# note: deepspeed stage1 uses gradient accumulation steps = 2
 num_train_epochs=5
 per_device_train_batch_size=16
 save_merged_lora_model=False
-output_dir="../model_output/icl_finetune_validation_v3_round1"
+retrieval_use_examples=False
+output_dir="../model_output/icl_finetune_validation_v4_round1"
 learning_rate=1e-4
 # set num_gpus to 2 for testing
 num_gpus=2
@@ -46,9 +48,9 @@ data_args="\
     --same_dataset_within_batch True \
     --small_threshold 0 \
     --drop_threshold 0 \
-    --example_query_max_len 384 \
+    --example_query_max_len 512 \
     --example_passage_max_len 128 \
-    --retrieval_use_examples True \
+    --retrieval_use_examples $retrieval_use_examples \
     --icl_suffix_str '\n<response>' \
 "
 
