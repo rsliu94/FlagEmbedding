@@ -90,7 +90,7 @@ if __name__ == "__main__":
             json.dump(examples_raw, f, indent=4)
             
     else:
-        for version in ["1", "2"]:
+        for version in ["1", "2", "3"]:
             OUTPUT_DIR_VERSION = os.path.join(OUTPUT_DIR, f"validation_v{version}")
             # mkdir if not exists
             os.makedirs(OUTPUT_DIR_VERSION, exist_ok=True)
@@ -121,3 +121,35 @@ if __name__ == "__main__":
             # 保存列表到JSON文件
             with open(f"{OUTPUT_DIR_VERSION}/examples.json", 'w', encoding='utf-8') as f:
                 json.dump(examples_raw, f, indent=4)
+        
+        # Generate submission data
+        OUTPUT_DIR_VERSION = os.path.join(OUTPUT_DIR, "submission")
+        # mkdir if not exists
+        os.makedirs(OUTPUT_DIR_VERSION, exist_ok=True)
+        # Generate corpus.jsonl
+        with open(f"{OUTPUT_DIR_VERSION}/corpus.jsonl", "w", encoding="utf-8") as f:
+            for sentence in corpus:
+                json_line = {"text": sentence}  # 将每一行封装为字典
+                f.write(json.dumps(json_line) + "\n")
+        
+        # Generate queries_val1.jsonl and queries_val2.jsonl
+            val_data = pd.read_csv(f"{RAW_DATA_DIR}/test.csv")
+            val_preprocessed = preprocess_data(val_data, misconception_mapping, 
+                                        query_text_version=args.query_text_version,
+                                        with_instruction=args.with_instruction, 
+                                        with_misconception=False, 
+                                        filter_na_misconception=args.filter_na_misconception)
+            
+            selected_columns = ["query_text", "QuestionId_Answer", "QuestionText", "SubjectName", "ConstructName", "CorrectAnswerText", "WrongAnswerText"]
+            df_selected = val_preprocessed[selected_columns]
+
+            # 将 JSON 数据写入文件
+            with open(f"{OUTPUT_DIR_VERSION}/queries.jsonl", "w") as f:
+                for _, row in df_selected.iterrows():
+                    json_line = {"text": row['query_text'], "QuestionId_Answer": row["QuestionId_Answer"], 'question': row['QuestionText'], 'subject_name': row['SubjectName'], 'construct_name': row['ConstructName'], 'correct_answer': row['CorrectAnswerText'], 'wrong_answer': row['WrongAnswerText']}
+                    f.write(json.dumps(json_line) + "\n")
+        
+        # Write examples.jsonl
+        # 保存列表到JSON文件
+        with open(f"{OUTPUT_DIR_VERSION}/examples.json", 'w', encoding='utf-8') as f:
+            json.dump(examples_raw, f, indent=4)

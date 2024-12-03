@@ -25,7 +25,8 @@ parser = argparse.ArgumentParser(description="Evaluate the raw LLM embedder")
 parser.add_argument("--use_examples_in_query", type=bool, default=False, help="Whether to use the embedder eval data")
 parser.add_argument("--validation_version", type=str, default="2", help="The version of the validation data")
 parser.add_argument("--model_path", type=str, default="BAAI/bge-en-icl", help="The path of the model")
-parser.add_argument("--lora_path", type=str, default=NotImplementedError, help="The path of the LoRA weights")
+parser.add_argument("--lora_path", type=str, default=None, help="The path of the LoRA weights")
+parser.add_argument("--is_submission", type=bool, default=False, help="Whether is submission")
 args = parser.parse_args()
 # show args
 print("\nScript arguments:")
@@ -35,10 +36,17 @@ print()
 
 if __name__ == "__main__":
     env_name, PROJECT_ROOT = get_env_info()
-    EMBEDDER_EVAL_DATA_DIR = os.path.join(PROJECT_ROOT, "projects/data/embedder_eval_data", f"validation_v{args.validation_version}")
-    corpus_path = os.path.join(EMBEDDER_EVAL_DATA_DIR, "corpus.jsonl")
-    queries_path = os.path.join(EMBEDDER_EVAL_DATA_DIR, f"queries.jsonl")
-    examples_path = os.path.join(EMBEDDER_EVAL_DATA_DIR, "examples.json")
+    if not args.is_submission:
+        EMBEDDER_EVAL_DATA_DIR = os.path.join(PROJECT_ROOT, "projects/data/embedder_eval_data", f"validation_v{args.validation_version}")
+        corpus_path = os.path.join(EMBEDDER_EVAL_DATA_DIR, "corpus.jsonl")
+        queries_path = os.path.join(EMBEDDER_EVAL_DATA_DIR, "queries.jsonl")
+        examples_path = os.path.join(EMBEDDER_EVAL_DATA_DIR, "examples.json")
+    else:
+        EMBEDDER_EVAL_DATA_DIR = os.path.join(PROJECT_ROOT, "projects/data/embedder_eval_data", f"submission")
+        corpus_path = os.path.join(EMBEDDER_EVAL_DATA_DIR, "corpus.jsonl")
+        queries_path = os.path.join(EMBEDDER_EVAL_DATA_DIR, "queries.jsonl")
+        examples_path = os.path.join(EMBEDDER_EVAL_DATA_DIR, "examples.json")
+    
 
     task = 'Given a math question and a misconcepted incorrect answer to it, retrieve the most accurate reason for the misconception leading to the incorrect answer.'
     with open(examples_path, 'r', encoding='utf-8') as f:
@@ -53,10 +61,11 @@ if __name__ == "__main__":
     
     corpus = [json.loads(line)['text'] for line in open(corpus_path, 'r')] # list of strings
     print(f"Number of corpus: {len(corpus)}")
-    correct_ids = [json.loads(line)['correct_id'] for line in open(queries_path, 'r')] # list of floats
-    print(f"Number of correct ids: {len(correct_ids)}")
     question_ids = [json.loads(line)['QuestionId_Answer'] for line in open(queries_path, 'r')] # list of floats
     print(f"Number of question ids: {len(question_ids)}")
+    if not args.is_submission:
+        correct_ids = [json.loads(line)['correct_id'] for line in open(queries_path, 'r')] # list of floats
+        print(f"Number of correct ids: {len(correct_ids)}")
     
     queries = []
     with open(queries_path, 'r') as f:
@@ -84,12 +93,20 @@ if __name__ == "__main__":
     #             bnb_4bit_compute_dtype=torch.bfloat16
     #         )
     
-    tokenizer = AutoTokenizer.from_pretrained(args.lora_path)
-    device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
-    print(f"Device: {device}")
+    if args.lora_path is not None:
+        print("Loading LoRA model...")
+        tokenizer = AutoTokenizer.from_pretrained(args.lora_path)
+        device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+        print(f"Device: {device}")
+        model = AutoModel.from_pretrained(args.model_path, quantization_config=None)
+        model = PeftModel.from_pretrained(model, args.lora_path, is_trainable=False)
+    else:
+        print("Loading base model...")
+        tokenizer = AutoTokenizer.from_pretrained(args.model_path)
+        device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+        print(f"Device: {device}")
+        model = AutoModel.from_pretrained(args.model_path, quantization_config=None)
     
-    model = AutoModel.from_pretrained(args.model_path, quantization_config=None)
-    model = PeftModel.from_pretrained(model, args.lora_path, is_trainable=False)
     model = model.half()
     model = model.to(device)
     
@@ -116,16 +133,41 @@ if __name__ == "__main__":
     index.add(doc_embeddings)
     distances, indices = index.search(query_embeddings, k=25)
     print(f"Distances shape: {distances.shape}, Indices shape: {indices.shape}")
-
-    mapk_score = mean_average_precision_at_k(correct_ids, indices, 25)
-    print(f"map@25_score: {mapk_score}")
-
-    recall_score = recall_at_k(correct_ids, indices, 25)
-    print(f"recall@25_score: {recall_score}")
     
-    df = pd.DataFrame({
-        'QuestionId_Answer': question_ids,
-        'CorrectId': correct_ids,
-        'MisconceptionId': [' '.join(map(str, c)) for c in indices.tolist()]
-    })
-    df.to_csv("./submission.csv", index=False)
+    if not args.is_submission:
+        mapk_score = mean_average_precision_at_k(correct_ids, indices, 25)
+        print(f"map@25_score: {mapk_score}")
+        
+        mapk_score_2 = mapk([[id] for id in correct_ids], indices, 25)
+        print(f"map@25_score_2: {mapk_score_2}")
+
+        recall_score = recall_at_k(correct_ids, indices, 25)
+        print(f"recall@25_score: {recall_score}")
+    
+    if not args.is_submission:
+        df = pd.DataFrame({
+            'QuestionId_Answer': question_ids,
+            'CorrectId': correct_ids,
+            'MisconceptionId': [' '.join(map(str, c)) for c in indices.tolist()]
+        })
+        df.to_csv("./submission.csv", index=False)
+    else:
+        df = pd.DataFrame({
+            'QuestionId_Answer': question_ids,
+            'MisconceptionId': [' '.join(map(str, c)) for c in indices.tolist()]
+        })
+        df.to_csv("./submission.csv", index=False)
+        
+    import pickle
+    np.save('query_embeddings.npy', query_embeddings)
+    np.save('doc_embeddings.npy', doc_embeddings)
+    with open('queries.pkl', 'wb') as f:
+        pickle.dump(queries, f)
+    with open('corpus.pkl', 'wb') as f:
+        pickle.dump(corpus, f)
+
+    with open('queries.pkl', 'rb') as f:
+        loaded_queries = pickle.load(f)
+    print(loaded_queries == queries)
+    query_embeddings_load = np.load('query_embeddings.npy')
+    print(np.array_equal(query_embeddings_load, query_embeddings))

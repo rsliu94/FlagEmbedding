@@ -3,14 +3,14 @@
 source /etc/network_turbo
 
 train_data="\
-    ../data/hn_mine_data_zero_round/finetune_data_validation_minedHN.jsonl \
+    ../data/hn_mine_data_zero_round/validation_v3/finetune_data_minedHN.jsonl \
 "
 
 # set large epochs and small batch size for testing
 num_train_epochs=5
 per_device_train_batch_size=16
 save_merged_lora_model=False
-output_dir="../model_output/icl_finetune_round1"
+output_dir="../model_output/icl_finetune_validation_v3_round1"
 learning_rate=1e-4
 # set num_gpus to 2 for testing
 num_gpus=2
@@ -21,7 +21,6 @@ fi
 
 model_args="\
     --model_name_or_path BAAI/bge-en-icl \
-    --resume_from_checkpoint True \
     --cache_dir $HF_HUB_CACHE \
     --use_lora True \
     --lora_rank 32 \
@@ -33,9 +32,9 @@ model_args="\
 
 data_args="\
     --train_data $train_data \
-    --eval_corpus_path ../data/embedder_eval_data/corpus.jsonl \
-    --eval_queries_path ../data/embedder_eval_data/queries_val2_v1.jsonl \
-    --eval_examples_path ../data/embedder_eval_data/examples_v1.json \
+    --eval_corpus_path ../data/embedder_eval_data/validation_v3/corpus.jsonl \
+    --eval_queries_path ../data/embedder_eval_data/validation_v3/queries.jsonl \
+    --eval_examples_path ../data/embedder_eval_data/validation_v3/examples.json \
     --cache_path ~/.cache \
     --train_group_size 8 \
     --query_max_len 512 \

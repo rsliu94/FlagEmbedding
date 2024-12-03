@@ -33,6 +33,11 @@ def prepare_val_data(env_name, split_method, output_dir, PROJECT_ROOT=None):
         # Sort QuestionIds to ensure consistent ordering before selection
         question_ids = sorted(raw_data["QuestionId"].unique())
         val_question_ids = np.random.choice(question_ids, int(len(raw_data) * 0.333), replace=False)
+    elif split_method == "v3":
+        # randomly choose 20% QuestionId from train_data as validation set, and the rest as training set
+        # Sort QuestionIds to ensure consistent ordering before selection
+        question_ids = sorted(raw_data["QuestionId"].unique())
+        val_question_ids = np.random.choice(question_ids, int(len(raw_data) * 0.2), replace=False)
     else:
         raise ValueError(f"Invalid split method: {split_method}")
     
@@ -59,3 +64,4 @@ if __name__ == "__main__":
 
     prepare_val_data(env_name, "v1", os.path.join(output_dir, "validation_v1"), PROJECT_ROOT) 
     prepare_val_data(env_name, "v2", os.path.join(output_dir, "validation_v2"), PROJECT_ROOT)
+    prepare_val_data(env_name, "v3", os.path.join(output_dir, "validation_v3"), PROJECT_ROOT)
