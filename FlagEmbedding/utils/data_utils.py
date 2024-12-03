@@ -10,9 +10,7 @@ def preprocess_text(text):
     return text
 
 def preprocess_data(train_data, 
-                    misconception_mapping, 
-                    query_text_version, 
-                    with_instruction=False, 
+                    misconception_mapping,
                     with_misconception=True, 
                     filter_na_misconception=True):
 
@@ -86,22 +84,12 @@ def preprocess_data(train_data,
             'ConstructName', 'SubjectId', 'SubjectName', 'CorrectAnswer', 'CorrectAnswerText',
             'WrongAnswerText', 'WrongAnswer']
     df = df[final_columns]
-    
-    if query_text_version == "v1":
-        df["query_text"] = df["ConstructName"] + " " + df["QuestionText"] + " " + df["WrongAnswerText"]
-        df["query_text"] = df["query_text"].apply(preprocess_text)
-    else:
-        raise ValueError(f"Invalid query_text_version: {query_text_version}")
-    
-    if with_instruction:
-        task_description = 'Given a math question and an incorrect answer, please retrieve the most accurate reason for the misconception leading to the incorrect answer.'
-        df['query_text'] = df.apply(lambda row: f"Instruction:{task_description}\nQuery:{row['query_text']}", axis=1)
-
+    for col in ['QuestionText', 'ConstructName', 'SubjectName', 'CorrectAnswerText', 'WrongAnswerText']:
+        df[col] = df[col].str.strip()
     # filter out rows with NA in MisconceptionId
     if with_misconception and filter_na_misconception:
         df = df[df['MisconceptionId'].notna()]
     
     df = df.sort_values(['QuestionId', 'QuestionId_Answer']).reset_index(drop=True)
-    df['order_index'] = df['QuestionId_Answer']
     
     return df
