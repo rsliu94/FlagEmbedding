@@ -7,13 +7,22 @@ from tqdm import tqdm
 import numpy as np
 from FlagEmbedding.abc.finetune.embedder import AbsEmbedderTrainer
 from FlagEmbedding.utils.format_utils import get_detailed_example, get_detailed_instruct
-from FlagEmbedding.utils.infer_utils import batch_to_device, get_new_queries
+from FlagEmbedding.utils.infer_utils import batch_to_device, get_new_queries, get_new_queries_examples_list
 from FlagEmbedding.utils.data_utils import preprocess_text
 from FlagEmbedding.utils.metrics import mean_average_precision_at_k, recall_at_k
 import faiss
 from transformers import TrainerCallback
 
 logger = logging.getLogger(__name__)
+
+class SaveCheckpointCallback(TrainerCallback):
+    def on_epoch_end(self, args, state, control, model=None, tokenizer=None, **kwargs):
+        if not state.is_world_process_zero:
+            return
+        logger.info(f"Epoch {state.epoch} end. Saving model checkpoint to {args.output_dir}")
+        # 'BiDecoderOnlyEmbedderICLModel' object has no attribute 'save_pretrained'
+        model.save_pretrained(args.output_dir)
+        tokenizer.save_pretrained(args.output_dir)
 
 
 class SaveLoraCallback(TrainerCallback):
@@ -136,42 +145,53 @@ class DecoderOnlyEmbedderICLTrainer(AbsEmbedderTrainer):
         # memory metrics - must set up as early as possible 
         if not self.is_world_process_zero():
             return {}
-        
         self._memory_tracker.start()
         self.model.eval()
         if self.eval_corpus_path is None:
             logger.warning("No evaluation dataset provided. Skipping evaluation.")
             return
         
-        logger.info("Evaluating the model...")
+        logger.info("Evaluating the model for MAP@25 and Recall@25 metrics...")
         logger.info(f"DEBUG: corpus path: {self.eval_corpus_path}")
         logger.info(f"DEBUG: queries path: {self.eval_queries_path}")
+        # if self.eval_examples_path is not None:
+        #     logger.info(f"DEBUG: examples path: {self.eval_examples_path}")
+        #     with open(self.eval_examples_path, 'r', encoding='utf-8') as f:
+        #         examples = json.load(f)
+        #     examples = [get_detailed_example(e['instruct'], e['query'], e['response']) for e in examples]
+        #     examples_prefix = '\n\n'.join(examples) + '\n\n' # if there not exists any examples, just set examples_prefix = ''
+        # else:
+        #     logger.info("No evaluation examples provided.")
+        #     examples_prefix = ''
+        # logger.info(f"Use examples_prefix: {examples_prefix}")
+        
         if self.eval_examples_path is not None:
-            logger.info(f"DEBUG: examples path: {self.eval_examples_path}")
-            with open(self.eval_examples_path, 'r', encoding='utf-8') as f:
-                examples = json.load(f)
-            examples = [get_detailed_example(e['instruct'], e['query'], e['response']) for e in examples]
-            examples_prefix = '\n\n'.join(examples) + '\n\n' # if there not exists any examples, just set examples_prefix = ''
-        else:
-            logger.info("No evaluation examples provided.")
-            examples_prefix = ''
-        logger.info(f"Use examples_prefix: {examples_prefix}")
+            logger.info(f"DEBUG: examples path: {self.eval_examples_path}, loading examples dict [subject_id -> [query, response]]")
+            with open(self.eval_examples_path, 'r') as f:
+                examples_dict = json.load(f)
+            # examples_dict = json.load(open(self.eval_examples_path, 'r'))
+            logger.info(f"DEBUG: examples dict length: {len(examples_dict)}")
         
         corpus = [json.loads(line)['text'] for line in open(self.eval_corpus_path, 'r')] # list of strings
         print(f"Number of corpus: {len(corpus)}")
         correct_ids = [json.loads(line)['correct_id'] for line in open(self.eval_queries_path, 'r')] # list of floats
         print(f"Number of correct ids: {len(correct_ids)}")
         queries = []
+        examples_prefix_list = []
         with open(self.eval_queries_path, 'r') as f:
             for line in f:
                 row = json.loads(line)
-                task_description = f'Given a math question about {preprocess_text(row["construct_name"])} and a misconcepted incorrect answer to it, retrieve the most accurate reason for the misconception leading to the incorrect answer.'
-                # task_description = 'Given a math question and a misconcepted incorrect answer to it, retrieve the most accurate reason for the misconception leading to the incorrect answer.'
-                query = f'{row["question"]} \n Incorrect answer : {row["wrong_answer"]}'
-                queries.append(get_detailed_instruct(task_description=task_description, query=query))
+                queries.append(get_detailed_instruct(task_description=row['prompt'], query=row['query']))
+                subject_id = str(row['subject_id'])
+                if subject_id in examples_dict:
+                    examples = [get_detailed_example(examples_dict[subject_id]['instruct'], examples_dict[subject_id]['query'], examples_dict[subject_id]['response'])]
+                    examples_prefix_list.append('\n\n'.join(examples) + '\n\n')
+                else:
+                    examples_prefix_list.append('')
+        logger.info(f"Number of examples prefix: {len(examples_prefix_list)}")
         print(f"Number of queries: {len(queries)}")
         
-        query_max_len, doc_max_len = 384, 128
+        query_max_len, doc_max_len = 512, 512
         batch_size = self.args.per_device_eval_batch_size
         device = next(self.model.parameters()).device
         logger.info(f"Eval batch size: {batch_size}")
@@ -202,7 +222,11 @@ class DecoderOnlyEmbedderICLTrainer(AbsEmbedderTrainer):
         query_embeddings = []
         for i in tqdm(range(0, len(queries), batch_size)):
             batch = queries[i:i+batch_size]
-            new_max_length, new_queries = get_new_queries(batch, query_max_len, examples_prefix, self.tokenizer)
+            batch_examples_prefix = examples_prefix_list[i:i+batch_size]
+            new_max_length, new_queries = get_new_queries_examples_list(batch, query_max_len, batch_examples_prefix, self.tokenizer)
+            # if i == 0 or i == 5:
+            #     logger.info(f"DEBUG: New max length: {new_max_length}")
+            #     logger.info(f"DEBUG: New queries: {new_queries}")
             batch_dict = self.tokenizer(new_queries, max_length=new_max_length, padding=True, truncation=True, return_tensors='pt')
             batch_dict = batch_to_device(batch_dict, device)
             embedding = self.model.encode(batch_dict)

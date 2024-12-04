@@ -3,16 +3,23 @@
 source /etc/network_turbo
 
 train_data="\
-    ../data/hn_mine_data_zero_round/validation_v4/finetune_data_minedHN.jsonl \
+    ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined.jsonl \
 "
+eval_data="\
+    ../data/embedder_train_eval_data/cross_validation/test_queries.jsonl \
+"
+eval_corpus_path="../data/embedder_train_eval_data/cross_validation/corpus.jsonl"
+eval_queries_path="../data/embedder_train_eval_data/cross_validation/test_queries.jsonl"
+eval_examples_path="../data/embedder_train_eval_data/cross_validation/examples.json"
 
+# task_description="Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer."
 # set large epochs and small batch size for testing
 # note: deepspeed stage1 uses gradient accumulation steps = 2
-num_train_epochs=5
-per_device_train_batch_size=16
+num_train_epochs=2
+per_device_train_batch_size=8
 save_merged_lora_model=False
-retrieval_use_examples=False
-output_dir="../model_output/icl_finetune_validation_v4_round1"
+retrieval_use_examples=True
+output_dir="../model_output/icl_finetune_round1"
 learning_rate=1e-4
 # set num_gpus to 2 for testing
 num_gpus=2
@@ -34,15 +41,16 @@ model_args="\
 
 data_args="\
     --train_data $train_data \
-    --eval_corpus_path ../data/embedder_eval_data/validation_v3/corpus.jsonl \
-    --eval_queries_path ../data/embedder_eval_data/validation_v3/queries.jsonl \
-    --eval_examples_path ../data/embedder_eval_data/validation_v3/examples.json \
+    --eval_data $eval_data \
+    --eval_corpus_path $eval_corpus_path \
+    --eval_queries_path $eval_queries_path \
+    --eval_examples_path $eval_examples_path \
     --cache_path ~/.cache \
     --train_group_size 8 \
-    --query_max_len 512 \
+    --query_max_len 1024 \
     --passage_max_len 128 \
     --pad_to_multiple_of 8 \
-    --query_instruction_for_retrieval 'Given a math question and a misconcepted incorrect answer to it, retrieve the most accurate misconception that leads to the incorrect answer.' \
+    --query_instruction_for_retrieval \"Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.\" \
     --query_instruction_format '<instruct>{}\n<query>{}' \
     --knowledge_distillation False \
     --same_dataset_within_batch True \
@@ -68,9 +76,9 @@ training_args="\
     --gradient_checkpointing \
     --deepspeed ./icl_ds_stage1.json \
     --logging_steps 10 \
-    --save_steps 1000 \
+    --save_steps 219 \
     --negatives_cross_device \
-    --save_total_limit 1 \
+    --save_total_limit 2 \
     --temperature 0.02 \
     --sentence_pooling_method last_token \
     --normalize_embeddings True \

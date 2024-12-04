@@ -280,16 +280,17 @@ python hn_mine.py \
 | 1 | 0.5119 | 0.9050 |
 | 2 | 0.6285 | 0.9270 |
 
+# New Validation Set + Data Pipeline
+`Per-batch-size=8`
+| Epoch | MAP@25 | Recall@25 | LB Score |
+|-------|--------|-----------|---------|
+| 0[pretrain] | 0.2299 | 0.590 | 0.216 |
+| 1 | 0.4452 | 0.8530 | 0.321 |
+
 
 # Iterative Hard Negative Mining
 ## 1. Hard Negative Mining, Round 1
 ### 1. Gen input data
-```bash
-python gen_data_for_hn_mine.py \
-    --mode validation \
-    --validation_version v3 \
-    --sub_dir_name hn_mine_data_round_1
-```
 ### 2. Mine hard negative use FineTuned icl model
 `projects/model_output/icl_finetune_validation_v3_round1/checkpoint-545`
 ```bash

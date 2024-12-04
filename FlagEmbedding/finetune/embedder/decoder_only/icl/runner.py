@@ -8,7 +8,7 @@ from FlagEmbedding.abc.finetune.embedder.AbsArguments import AbsEmbedderTraining
 from FlagEmbedding.abc.finetune.embedder import AbsEmbedderRunner, AbsEmbedderModel, EmbedderTrainerCallbackForDataRefresh, EvaluateCallback
 
 from .arguments import DecoderOnlyEmbedderICLModelArguments, DecoderOnlyEmbedderICLDataArguments
-from .trainer import DecoderOnlyEmbedderICLTrainer, SaveLoraCallback
+from .trainer import DecoderOnlyEmbedderICLTrainer, SaveLoraCallback, SaveCheckpointCallback
 from .modeling import BiDecoderOnlyEmbedderICLModel
 from .dataset import DecoderOnlyEmbedderICLSameDatasetTrainDataset
 from .load_model import get_model, save_merged_model
@@ -163,6 +163,7 @@ class DecoderOnlyEmbedderICLRunner(AbsEmbedderRunner):
             self.training_args.resume_from_checkpoint = True
         logger.info(f'Resume from checkpoint: {self.training_args.resume_from_checkpoint}, type: {type(self.training_args.resume_from_checkpoint)}')
         self.trainer.train(resume_from_checkpoint=self.training_args.resume_from_checkpoint)
+        # self.trainer.evaluate()
         
         # save merged model
         if self.model_args.save_merged_lora_model and self.training_args.process_index == 0:
