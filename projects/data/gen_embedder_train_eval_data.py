@@ -72,6 +72,7 @@ if __name__ == "__main__":
                                             with_misconception=True, 
                                             filter_na_misconception=True)
     
+    # write train_queries.jsonl
     with open(f"{OUTPUT_DIR}/train_queries.jsonl", "w", encoding="utf-8") as f:
         for _, row in train_preprocessed.iterrows():
             misconception_id = row['MisconceptionId']
@@ -98,7 +99,8 @@ if __name__ == "__main__":
                 "prompt": TASK_DESCRIPTION,
             }
             f.write(json.dumps(json_line) + "\n")
-            
+    
+    # write test_queries.jsonl
     if args.is_submission:
         with open(f"{OUTPUT_DIR}/test_queries.jsonl", "w", encoding="utf-8") as f:
             for _, row in test_preprocessed.iterrows():
@@ -149,17 +151,13 @@ if __name__ == "__main__":
                     "prompt": TASK_DESCRIPTION,
                 }
                 f.write(json.dumps(json_line) + "\n")
-                
-    # if args.is_submission:
-    # build a examples dictionary from raw_data/train.csv, then save it to examples.json
-    all_train_data = pd.read_csv(f"{PROJECT_ROOT}/projects/data/raw_data/train.csv")
-    all_train_preprocessed = preprocess_data(all_train_data, misconception_mapping, 
-                                        with_misconception=True,
-                                        filter_na_misconception=True)
-    
+          
+    # write examples.json
+    # FIX LEAKY DATA HERE
+    # build a examples dictionary from train.csv, then save it to examples.json
     from collections import defaultdict
     examples = defaultdict(dict)
-    for _, row in all_train_preprocessed.iterrows():
+    for _, row in train_preprocessed.iterrows():
         question_text = row['QuestionText'].strip()
         construct_name = row['ConstructName'].strip()
         correct_answer = row['CorrectAnswerText'].strip()
