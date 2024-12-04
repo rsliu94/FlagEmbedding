@@ -7,8 +7,7 @@ import shutil
 import pandas as pd
 from FlagEmbedding.utils.data_utils import preprocess_data
 from FlagEmbedding.utils.env_utils import get_env_info
-
-TASK_DESCRIPTION = "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer."
+from FlagEmbedding.utils.constants import TASK_DESCRIPTION
 
 # Add str2bool helper function
 def str2bool(v):

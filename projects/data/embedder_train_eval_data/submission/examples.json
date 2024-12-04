@@ -1,816 +1,816 @@
 {
     "33": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: \\[\n3 \\times 2+4-5\n\\]\nWhere do the brackets need to go to make the answer equal \\( 13 \\) ?\nHint: Use the order of operations to carry out calculations involving powers\nCorrect answer: \\( 3 \\times(2+4)-5 \\)\nWrong answer: Does not need brackets",
         "response": "Confuses the order of operations, believes addition comes before multiplication"
     },
     "34": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Round \\( 0.0572 \\) to \\( 1 \\) significant figure\nHint: Round numbers between 0 and 1 to one significant figure\nCorrect answer: \\( 0.06 \\)\nWrong answer: \\( 0.05 \\)",
         "response": "Rounds down instead of up"
     },
     "41": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Alicia wants to buy some bottles of water.\nEach bottle of water costs \\( \u00a3 1.65 \\)\nAlicia has \\( \u00a3 10 \\) to spend.\nWhat is the greatest number of bottles can she buy?\nHint: Multiply amounts of money up to \u00a310\nCorrect answer: \\( 6 \\)\nWrong answer: \\( 7 \\)",
         "response": "Believes you can go above an amount of money when finding how much of something you can buy"
     },
     "47": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: \\[\n300200\n\\]\nWrite this number using standard form\nHint: Write numbers greater than 1 in standard form\nCorrect answer: \\( 3.002 \\times 10^{5} \\)\nWrong answer: \\( 3.2 \\times 10^{5} \\)",
         "response": "When changing a number to standard form omits zero's of significance"
     },
     "50": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Expand and simplify:\n\\[\n4(2 x+1)-(5 x-9)\n\\]\nHint: Multiply a single term over a bracket where the term on the outside is a number and the inside contains a linear expression\nCorrect answer: \\( 3 x+13 \\)\nWrong answer: \\( 3 x-5 \\)",
         "response": "Does not realise that subtracting a negative is the same as adding it's additive inverse"
     },
     "51": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: John is expanding these two brackets.\n\nWhat should he get when he multiplies the two terms indicated by the arrows? ![The two brackets are (x+5)(x-3). The arrows are pointing at the +5 in the first bracket and the -3 in the second bracket.]()\nHint: Carry out multiplication problems involving one negative integer\nCorrect answer: \\( -15 \\)\nWrong answer: \\( +2 \\)",
         "response": "Adds instead of multiplying when expanding bracket"
     },
     "52": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Factorise this expression, if possible:\n\\(\np^{2}-99p\n\\)\nHint: Factorise a single bracket containing a non-linear expression by taking out a single algebraic common factor (e.g. a)\nCorrect answer: \\( p(p-99) \\)\nWrong answer: \\( (p+9)(p-9) \\)",
         "response": "When factorising a quadratic without a non variable term, tries to double bracket factorise"
     },
     "1077": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Simplify the following, if possible: \\( \\frac{m^{2}+2 m-3}{m-3} \\)\nHint: Simplify an algebraic fraction by factorising the numerator\nCorrect answer: Does not simplify\nWrong answer: \\( m+1 \\)",
         "response": "Does not know that to factorise a quadratic expression, to find two numbers that add to give the coefficient of the x term, and multiply to give the non variable term"
     },
     "1078": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Express the following as a single fraction, writing your answer as simply as possible: \\( \\frac{1}{s}-\\frac{t}{3} \\)\nHint: Subtract algebraic fractions where the denominators are single terms and are not multiples of each other\nCorrect answer: \\( \\frac{3-s t}{3 s} \\)\nWrong answer: \\( \\frac{1-t}{3 s} \\)",
         "response": "When subtracting fractions, subtracts the numerators and multiplies the denominators"
     },
     "53": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Step 1: Factorise the following expression\n\n\\(\n3 x^{2}+5 x+2\n\\)\nHint: Factorise a quadratic expression in the form ax\u00b2 + bx + c where a is prime\nCorrect answer: \\( (3 x+2)(x+1) \\)\nWrong answer: \\( (3 x+2)(3 x+1) \\)",
         "response": "When factorising a quadratic with a non-unit coefficient of x squared, believes that coefficient will be in front of both x terms in the factorised form"
     },
     "1079": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: STEP \\( 2 \\)\nWhich of the options is a correct second step to express the following as a single fraction?\n\n\\(\n\\begin{aligned}\n& \\frac{x-1}{6} \\div \\frac{x^{2}-1}{9} \\\\\n= & \\frac{x-1}{6} \\times \\frac{9}{x^{2}-1}\n\\end{aligned}\n\\)\nHint: Divide algebraic fractions involving non-linear expressions\nCorrect answer: \\( \\frac{x-1}{6} \\times \\frac{9}{(x+1)(x-1)} \\)\nWrong answer: \\( \\frac{9 x-1}{6 x^{2}-1} \\)",
         "response": "Answers order of operations questions with brackets as if the brackets are not there"
     },
     "1081": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: On what line is the first mistake when proving \\( (n+1)^{2}-(n-1)^{2} \\) is divisible by \\( 4 \\) ? \\( n^{2}+2 n+1-\\left(n^{2}-2 n+1\\right) \\quad \\) Line \\( 1 \\) \\( n^{2}+2 n+1-n^{2}-2 n+1 \\quad \\) Line \\( 2 \\) \\[\n2\n\\]\n\nLine \\( 3 \\)\nHint: Prove statements involving multiples\nCorrect answer: Line \\( 2 \\)\nWrong answer: Line \\( 1 \\)",
         "response": "Ignores negative sign when expanding bracket"
     },
     "58": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: This graph shows how far Fido the dog is from his home.\nWhat might the negative-sloping section represent? ![A graph with time (secs) on the horizontal axis and distance (m) on the vertical axis. The graph starts at the origin, travels in a straight line up and right, travels horizontally, then travels in a straight line down and right back to the x-axis. ]()\nHint: Interpret sloping linear sections of a displacement-time graph\nCorrect answer: Fido is walking home\nWrong answer: Fido has fallen asleep",
         "response": "Confuses rest and movement on a distance time graph"
     },
     "1082": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Which of these two numbers are rational?\n\n\\( \\sqrt{36} \\) and \\( \\sqrt{12} \\)\nHint: Identify rational and irrational numbers\nCorrect answer: \\( \\sqrt{36} \\)\nWrong answer: \\( \\sqrt{12} \\)",
         "response": "Does not understand that a surd is a rational number if the number under the root is a square number"
     },
     "60": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Rearrange the following equation to make \\( r \\) the subject\n\\(g=2 r+3\\)\nHint: Rearrange formulae to change the subject where the subject appears once and two steps are needed\nCorrect answer: \\( r=\\frac{g-3}{2} \\)\nWrong answer: \\( r=\\frac{g+3}{2} \\)",
         "response": "Confuses the inverse operations of addition and subtraction when rearranging equations"
     },
     "57": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: This is a part of the table of values for the equation \\( y=\\frac{3}{x} \\) \\begin{tabular}{|l|l|}\n\\hline\\( x \\) & \\( 0.1 \\) \\\\\n\\hline\\( y \\) & \\(\\color{gold}\\bigstar\\) \\\\\n\\hline\n\\end{tabular} What should replace the star?\nHint: Given a positive x value, find the corresponding y value for reciprocal graphs\nCorrect answer: \\( 30 \\)\nWrong answer: \\( 2.9 \\)",
         "response": "Thinks the fraction bar means subtract rather than divide"
     },
     "63": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Tom and Katie are discussing this pair of simultaneous equations: \\( \\begin{array}{l}3 x-2 y=8 \\\\ 3 x+y=14\\end{array} \\) Tom says if you add the two equations together you will eliminate a variable\n\nKatie says if you subtract the two equations together you will eliminate a variable\n\nWho is correct?\nHint: Recognise whether you need to add or subtract linear equations in order to eliminate a variable\nCorrect answer: Only\nKatie\nWrong answer: Only\nTom",
         "response": "Believes that when eliminating a variable, if the signs of the terms with matching coefficients are the same, we add the equations."
     },
     "64": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Which of the following is a correct first step to solve this equation:\n\\(\\frac{2 r-3}{5}=2+r\\)\nHint: Solve linear equations with the variable appearing on both sides, involving positive fractions\nCorrect answer: \\( 2 r-3=10+5 r \\)\nWrong answer: \\( \\frac{2 r}{5}=5+r \\)",
         "response": "Adds or subtracts from numerator first when solving an equation with a fraction"
     },
     "65": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Vera wants to solve this equation using the quadratic formula.\n\\(\nh^{2}+4=5 h\n\\)\n\nWhat should replace the triangle? ![The image shows the structure of the quadratic formula. It says plus or minus the square root, and the triangle is the first thing after the square root sign, with a minus sign after it.]()\nHint: Solve quadratic equations using the quadratic formula where the coefficient of x\u00b2 is 1\nCorrect answer: \\( 25 \\)\nWrong answer: \\( -10 \\)",
         "response": "Mixes up squaring and multiplying by 2 or doubling"
     },
     "67": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: The equation \\( f=3 r^{2}+3 \\) is used to find values in the table below. What is the value covered by the star? \\begin{tabular}{|c|c|c|c|c|}\n\\hline\\( r \\) & \\( 1 \\) & \\( 2 \\) & \\( 3 \\) & \\( 4 \\) \\\\\n\\hline\\( f \\) & \\( 6 \\) & \\( 15 \\) & \\( \\color{gold}\\bigstar \\) & \\\\\n\\hline\n\\end{tabular}\nHint: Substitute positive integer values into formulae involving powers or roots\nCorrect answer: \\( 30 \\)\nWrong answer: \\( 24 \\)",
         "response": "Thinks you can find missing values in a given table by treating the row as linear and adding on the difference between the first two values given."
     },
     "69": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: \\(\nx_{n+1}=5-\\frac{1}{x_{n}}\n\\)\n\nUsing a starting value of \\( x_{1}=2 \\), what is the solution to \\( x=5-\\frac{1}{x} \\) to \\( 2 \\) decimal places?\nHint: Select the correct answer to an iteration question to the required degree of accuracy\nCorrect answer: \\( 4.79 \\)\nWrong answer: \\( 4.78 \\)",
         "response": "Stops iteration too early when solving equations"
     },
     "70": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: ![Tom and Katie are discussing bar models.]() Tom says this bar model represents \\( 2 x \\) \\begin{tabular}{|l|l|}\n\\hline \\( 2 \\) & \\( x \\) \\\\\n\\hline\n\\end{tabular} Katie says this bar model represents \\( 2 x \\) \\begin{tabular}{|l|l|}\n\\hline\\( x \\) & \\( x \\) \\\\\n\\hline\n\\end{tabular} Who do you agree with?\nHint: Represent an equation using a bar model\nCorrect answer: Only Katie\nWrong answer: Only Tom",
         "response": "Does not understand bar modelling in algebra"
     },
     "73": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Which of the following correctly describes the marked angle? ![An image of square ABCE. D lies 1/3 from C on the line CE and is connected to A by a line. Attached to the square at line CE is a pentagon CEFGH. G is connected to C and E by lines. The angle highlighted is the entire, interior angle at E.]()\nHint: Label angles using correct 3-letter notation (e.g. angle ADB)\nCorrect answer: AEF\nWrong answer: EFA",
         "response": "Gives 3-letter angle notation in the wrong order"
     },
     "75": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: James has answered a question on the area of a trapezium and got an answer of \\( 54 \\).\n\nBehind the star he has written the units that he used.\n\n\\(\n54 \\, \\bigstar \n\\)\n\nWhich of the following units could be correct?\nHint: Identify a unit of area\nCorrect answer: \\( \\mathrm{mm}^{2} \\)\nWrong answer: \\( m \\)",
         "response": "Does not know units of area should be squared"
     },
     "76": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: An exam question asks students to estimate the size of the bearing on the right\nTom writes his answer as: \\( 110\\degree\\)\nKatie writes her answer as: \\( 190\\degree\\)\n\nWho would get all the marks for this question in the exam? ![An obtuse angle drawn in a clockwise direction from a vertical north line.]()\nHint: Estimate the size of obtuse angles using bearings\nCorrect answer: Only Tom\nWrong answer: Only Katie",
         "response": "Does not understand that an obtuse angle is between 90 and 180 degrees"
     },
     "84": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Tom and Katie are discussing regular polygons Tom says this is a regular polygon: ![A rhombus]() Katie says this is a regular polygon: ![A rectangle]() Who is correct?\nHint: Understand the terms equilateral and regular, and recognise the notation for regular polygons\nCorrect answer: Neither is correct\nWrong answer: Only\nTom",
         "response": "Thinks that only the sides need to be equal for a polygon to be regular"
     },
     "85": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: This is the net of a... ![A circle touching a sector]()\nHint: Identify the net of a non-prism\nCorrect answer: Cone\nWrong answer: Triangle",
         "response": "Struggles to visualise nets of 3D shapes"
     },
     "86": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: A shape is made up a square and regular pentagon.\nThe area of the square is \\( 196 \\mathrm{~cm}^{2} \\).\n\nWhat is the perimeter of the compound shape? ![A regular pentagon with a square joined along one edge]()\nHint: Given the area of a square, calculate a missing dimension\nCorrect answer: \\( 98 \\mathrm{~cm} \\)\nWrong answer: \\( 343 \\mathrm{~cm} \\)",
         "response": "Thinks that square root is found by dividing by 4"
     },
     "88": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: The angles highlighted on this rectangle with different length sides can never be... ![A rectangle with the diagonals drawn in. The angle on the right hand side at the centre is highlighted in red and the angle at the bottom at the centre is highlighted in yellow.]()\nHint: Recall and use the intersecting diagonals properties of a rectangle\nCorrect answer: \\( 90^{\\circ} \\)\nWrong answer: acute",
         "response": "Does not know the properties of a rectangle"
     },
     "89": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: A right-angled tringle has sides a, b, and \\( c \\) as shown.\n\nChoose the formula for finding side a. ![Right-angled triangle with height a, base b and hypotenuse c.]()\nHint: Recall the correct formula to calculate the length of a non-hypotenuse of a right-angled triangle in a 2D Pythagoras questions\nCorrect answer: \\( a^{2}=c^{2}-b^{2} \\)\nWrong answer: \\( a=c-b \\)",
         "response": "Thinks that the square root of an expression square roots each term in the expression, rather than square rooting the whole expression"
     },
     "90": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: These two shapes are similar (not drawn to scale).\nWhat should replace the star? ![Two scalene triangles. The smaller one has sides 5cm and 4cm. On the bigger triangle, the side corresponding to the 5cm is 15cm, and the side corresponding to the 4cm is marked with a star.]()\nHint: Solve length problems involving similar shapes where the missing length is the longer one\nCorrect answer: \\( 12 \\mathrm{~cm} \\)\nWrong answer: \\( 8 \\mathrm{~cm} \\)",
         "response": "Doubles side length for similar shape instead of using correct scale factor"
     },
     "92": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Tom and Katie are arguing about how to reflect the object in the line of reflection. Who reflects it correctly? ![A grid with a left-leaning parallelogram drawn in the upper half and a blue line across the middle, marked 'line of reflection'. ]() ![Tom does this: an image of a grid with a left-leaning parallelogram drawn in the upper half, a blue line across the middle and a left-leaning parallelogram drawn immediately below. ]() ![Katie does this: An image of a grid with a left-leaning parallelogram drawn in the upper half, a blue line across the middle and a left-leaning parallelogram drawn one line down from the blue line. ]()\nHint: Reflect an object or a point in a horizontal line with the line of reflection drawn, where the line of reflection lies on the edge or outside the object\nCorrect answer: Neither is correct\nWrong answer: Only\nTom",
         "response": "Fails to reflect across mirror line"
     },
     "93": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: John rotates rectangle \\( A B C D 90^{\\circ} \\) clockwise from the centre \\( (3,2) \\). What error has he made? ![A positive, coordinate grid with two rectangles drawn on it. The rectangle labelled ABCD has the coordinates: A(1,3) B(1,5) C(2,5) and D(2,3). The other rectangle has the coordinates: (4,3) (6,3) (6,2) and (4,2).]()\nHint: Rotate an object or point 900 clockwise or anticlockwise about a point, where the point lies on the edge or outside of the object\nCorrect answer: He has used the wrong centre\nWrong answer: He has translated by the vector \\( \\left(\\begin{array}{l}3 \\\\ 2\\end{array}\\right) \\)",
         "response": "Does not recognise that a shape translated would not change orientation"
     },
     "94": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: The triangle is enlarged by scale factor \\( 3 \\), with the centre of enlargement at \\( (1,0) \\).\nWhat are the new coordinates of the point marked \\( T \\) ? ![A coordinate grid with the x-axis going from -1 to 10 and the y-axis going from -1 to 7.\n3 points are plotted and joined with straight lines to form a triangle. The points are (1,1), (1,4) and (3,1). Point (3,1) is labelled as T.\nPoint (1,0) is also plotted.]()\nHint: Enlarge a shape, with a centre of enlargement given, by a positive scale factor bigger than 1, where the centre of enlargement lies on the edge or outside of the object\nCorrect answer: \\( (7,3) \\)\nWrong answer: \\( (6,4) \\)",
         "response": "Added rather than multiplied by a scale factor"
     },
     "95": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Three left and five down in vector notation is... \\( \\left(\\begin{array}{c}\\triangle \\\\ \\bigcirc\\end{array}\\right) \\) What should replace the \\( \\triangle \\) ?\nHint: Write a given translation in vector notation\nCorrect answer: \\( -3 \\)\nWrong answer: \\( 3 \\)",
         "response": "Thinks a negative x value in a column vector means to move right rather than left"
     },
     "1636": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Jumbo Restaurant has \\( 34 \\) choices of starters, \\( 92 \\) choices of main course, and \\( 27 \\) choices of dessert.\nSally wants a starter, main course and dessert.\n\nWhich of the following calculations would correctly work out the total possible combinations of available to Sally?\nHint: Identify the total number of combinations in a given scenario by using the product rule for counting where duplicates are considered different\nCorrect answer: \\( 34 \\times 92 \\times 27 \\)\nWrong answer: \\( 34+92+27 \\)",
         "response": "Adds rather than multiplies when using the product rule for counting"
     },
     "102": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: The table shows the summary statistics from some girls and boys who took a test.\nWho performed the most consistently? ![\\begin{tabular}{|c|c|c|}\n\\hline Gender & Mean & Range \\\\\n\\hline Girls & \\( 75 \\) & \\( 20 \\) \\\\\n\\hline Boys & \\( 60 \\) & \\( 40 \\) \\\\\n\\hline\n\\end{tabular}]()\nHint: Compare sets of data using the range\nCorrect answer: The girls because their range is lower\nWrong answer: The boys because their mean is lower",
         "response": "Thinks a lower average means the data is more consistent"
     },
     "103": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: The table below is a summary of the number of spots counted on \\( 25 \\) ladybirds. Calculate the mean number of spots per ladybird. ![\\begin{tabular}{|c|c|}\nNumber of spots\\\\ & Frequency \n\\hline \\( 5 \\) & \\( 4 \\) \\\\\n\\hline \\( 6 \\) & \\( 9 \\) \\\\\n\\hline \\( 7 \\) & \\( 9 \\) \\\\\n\\hline \\( 8 \\) & \\( 3 \\) \\\\\n\\hline\n\\end{tabular}]()\nHint: Calculate the mean from a frequency table\nCorrect answer: \\( 6.44 \\)\nWrong answer: \\( 0.96(2 d p) \\)",
         "response": "Believes the mean is total frequency divided by sum of categories given"
     },
     "106": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: The bar chart shows the number of cups of tea and coffee sold in a caf\u00e9 over \\( 4 \\) days.\n\nHow many cups of coffee were sold on Tuesday? ![A dual bar bar chart showing the number of cups of tea and coffee sold Monday to Thursday. The vertical scale showing the number of cups sold has 10 small boxes between 0 and 10.The bar for tea on Tuesday reaches 2 small boxes above 10. The bar for coffee on Tuesday reaches 5 small boxes above 40.]()\nHint: Interpret a bar chart\nCorrect answer: \\( 45 \\)\nWrong answer: \\( 50 \\)",
         "response": "When reading graph, chooses nearest marked value on axis instead of reading accurately"
     },
     "108": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: ![A pictogram where one smiley face =8 people. Game 1 has 4 faces. Game 2 has 3 faces. Game 3 has 2 faces. Game 4 has 2.75 faces.]() The pictogram shows the number of people who went to watch a netball match.\nHow many people went to game 4?\nHint: Interpret a pictogram involving fractions of symbols\nCorrect answer: \\( 22 \\)\nWrong answer: \\( 24 \\)",
         "response": "Counts partial symbols as if they were whole on pictograms"
     },
     "109": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: This pie chart shows the colour of hats that Tom owns. ![Pie chart showing the colour of Tom's hats. Blue is 90 degrees. Yellow is approximately 195 degrees. Red is approximately 40 degrees and green approximately 35 degrees.]() What fraction of Tom's hats are not blue?\nHint: Interpret a pie chart\nCorrect answer: \\( \\frac{3}{4} \\)\nWrong answer: \\( \\frac{1}{4} \\)",
         "response": "Reads the complement of what is required from a pie chart"
     },
     "110": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: A vegetarian restaurant wants to know people's eating habits\n\\( 50 \\) people in Town \\( A \\) are asked if they eat meat. \\begin{tabular}{|c|c|}\n\\hline \\multicolumn{2}{|c|}{ Town A } \\\\\n\\hline Do you eat meat? & Frequency \\\\\n\\hline Yes & \\( 39 \\) \\\\\n\\hline No & \\( 11 \\) \\\\\n\\hline\n\\end{tabular} \\( 200 \\) people in Town B are asked if they eat meat. \\begin{tabular}{|cc|}\n\\hline \\multicolumn{2}{|c|}{ Town B } \\\\\n\\hline Do you eat meat? & Frequency \\\\\n\\hline Yes & \\( 143 \\) \\\\\n\\hline No & \\( 57 \\) \\\\\n\\hline\n\\end{tabular} Which results are more reliable?\nHint: Compare relative frequencies in order to determine which prediction is likely to be more reliable\nCorrect answer: Town B\nWrong answer: Town A",
         "response": "Does not know that sample size affects reliability"
     },
     "111": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: A box contains \\( 10 \\) coloured counters.\n\n\\( 3 \\) of the counters are pink\n\n\\( 3 \\) of the counters are blue\n\nThe rest of the counters are green\n\nWhat is the probability of choosing a green counter?\nHint: Assign probabilities to single events using fractions\nCorrect answer: \\( \\frac{4}{10} \\)\nWrong answer: \\( 4 \\)",
         "response": "Forgets the denominator in probability"
     },
     "112": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: There are \\( 4 \\) red balls and \\( 3 \\) yellow balls in a cup. ![The image shows the cup with the 4 red balls and 3 yellow balls.]() Kate picks a yellow ball out and does not replace it.\n\nShe then has a second pick.\nWhat is the probability the second pick is a red ball?\nHint: Calculate the probability of two dependent events occurring without drawing a tree diagram\nCorrect answer: \\( \\frac{4}{6} \\)\nWrong answer: \\( \\frac{4}{7} \\)",
         "response": "Does not reduce the denominator when an item is not replaced in a probability question"
     },
     "1649": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: STEP \\( 2 \\)\n\nJessica is trying to work out the volume of this cone. ![A cone with the slant height labelled 9cm, the perpendicular height labelled h and half the cone's base (forming a right angled triangle with the slant and perpendicular heights) is labelled 6cm.]() First she needs the perpendicular height.\n\nWhich of the following equations is true?\nHint: Calculate the volume of a cone where the dimensions are all given in the same units\nCorrect answer: \\( h^{2}=9^{2}-6^{2} \\)\nWrong answer: \\( h^{2}=9^{2}+6^{2} \\)",
         "response": "Does not rearrange the Pythagoras' Theorem formula accurately"
     },
     "117": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: ![A line graph with title \"Height of rocket\". \nThe x-axis is titled \"Time in seconds\" and the scale is labelled from 0 to 90 seconds in steps of 10 seconds.\nThe y-axis is titled \"Height in metres\" and the scale is labelled from 0 to 60 in steps of 10 metres. The following points are plotted and joined together: (0, 0), (10, 10), (20, 30),(30, 40), (40, 50), (60, 60).\n]() How many metres did the rocket travel between \\( 20 \\) and \\( 50 \\) seconds?\nHint: Interpret continuous data using a line graph\nCorrect answer: \\( 25 \\)\nWrong answer: \\( 85 \\)",
         "response": "Adds instead of subtracts when asked to find the difference"
     },
     "649": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Tom and Katie are discussing this function machine ![A function machine with an input of m+2, no function labelled and an output of 3m+2]() Tom says the function could be \\( +2 m \\)\nKatie says the function could be \\( \\times 3 \\)\nWho do you agree with?\nHint: Determine the function of a single function machine used to create an algebraic expression\nCorrect answer: Only\nTom\nWrong answer: Both Tom and Katie",
         "response": "Only multiplies the first term in the expansion of a bracket"
     },
     "655": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: What is value of \\( p \\) in this compound shape made with rectangles? ![Compound shape made of two rectangles with the sides labelled p (in red) cm, 15 cm, 12 cm, 7 cm and 7 cm. One side is unlabelled]()\nHint: Calculate missing lengths of shapes by geometrical inference, where the lengths given are in the same units\nCorrect answer: \\( 5 \\mathrm{~cm} \\)\nWrong answer: \\( 6 \\mathrm{~cm} \\)",
         "response": "Makes an assumption about line segments being equal within a shape"
     },
     "656": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Given that \\( A C=3 A B \\), what are the coordinates of \\( C \\) ? ![A straight line labelled y=2x-1 is drawn on a set of axes. Points A, B and C are all on the line. Point A is (2,3) and B is (5,9).]()\nHint: Solve coordinate geometry questions involving ratio\nCorrect answer: \\( (11,21) \\)\nWrong answer: \\( (14,27) \\)",
         "response": "Assumes a ratio is part to part instead of part to whole"
     },
     "1170": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Which of the following is most likely to be the graph of a linear function?\nHint: Recognise a linear graph from its shape\nCorrect answer: ![A graph showing a straight line from bottom left to top right.]()\nWrong answer: ![A graph showing a curve that starts in the bottom left, moves steeply up and right, drops half way back down, then continues steeply up and right.]()",
         "response": "Believes linear graphs can be curved"
     },
     "1171": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Tom and Katie are discussing quadratic graphs Tom says this could be the graph of a quadratic function ![A graph showing a positive parabola in the shape of a u]() Katie says this could be the graph of a quadratic function ![A graph showing a negative parabola in the shape of an upside down u]() Who is correct?\nHint: Recognise a quadratic graph from its shape\nCorrect answer: Both Tom and Katie\nWrong answer: Only Tom",
         "response": "Only recognises the positive form of a quadratic graph"
     },
     "1173": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: If the \\( 3^{\\text {rd }} \\) term of a sequence is \\( 8 \\) \nand the term-to-term rule is \\( -2 \\), \nwhat is the \\( 7^{\\text {th }} \\) term in this sequence?\nHint: Given a description of a descending linear sequence in words, write some terms of that sequence\nCorrect answer: \\( 0 \\)\nWrong answer: \\( -2 \\)",
         "response": "When asked for a specific term in a sequence gives the term after"
     },
     "157": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Sally the electrician charges a call-out fee of \\( \u00a3 40 \\) and then \\( \u00a3 15 \\) per hour that the job takes.\n\nIf a job takes \\( n \\) hours, which formula would help work out the cost \\( (C) \\) of hiring Sally?\nHint: Write a formula to describe a situation\nCorrect answer: \\( C=40+15 n \\)\nWrong answer: \\( C=15 n \\)",
         "response": "Does not add on the constant in a worded substitution problem"
     },
     "159": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: What is the equation of this circle? ![A set of axes with a circle drawn. The circle goes through the points (4,0), (0, -4), (-4,0) and (0,4). ]()\nHint: Given a sketch of a circle with centre at the origin, write its equation in the form x\u00b2 + y\u00b2 = r\u00b2\nCorrect answer: \\( x^{2}+y^{2}=16 \\)\nWrong answer: \\( x^{2}+y^{2}=\\sqrt{4} \\)",
         "response": "Confuses the square root of the radius with the radius squared in the equation of a circle"
     },
     "160": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: This is a part of the table of values for the equation \\( \\boldsymbol{y}=\\mathbf{9}^{x} \\) \\begin{tabular}{|c|c|}\n\\hline\\( x \\) & \\( 0 \\) \\\\\n\\hline\\( y \\) & \\(\\color{gold}\\bigstar\\) \\\\\n\\hline\n\\end{tabular} What should replace the star?\nHint: Calculate coordinates of points on the graph of y = ax, where x is a positive integer\nCorrect answer: \\( 1 \\)\nWrong answer: \\( 9 \\)",
         "response": "Forgotten that anything to the power of 0 equals 1"
     },
     "164": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: What transformation maps the graph of\n\\(y=f(x)\n\\)\nto the graph of\n\\(\ny=f(x-3)\n\\)\nHint: Identify horizontal translations in the form f(x) = for non-trigonometric functions\nCorrect answer: Translation by vector\n\\(\n\\left[\\begin{array}{l}\n3 \\\\\n0\n\\end{array}\\right]\n\\)\nWrong answer: Translation by vector\n\\(\n\\left[\\begin{array}{l}\n0 \\\\\n3\n\\end{array}\\right]\n\\)",
         "response": "Believes f(x - a) translates the function up a units"
     },
     "165": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Which of the following diagrams represents \\( x>-1 \\) ?\nHint: Represent a linear inequality with a single tail on a numberline\nCorrect answer: ![Image of a number line. At -1 there is an open, unfilled circle drawn, with a arrow pointing to the right, towards the higher positive numbers in the number line.]()\nWrong answer: ![Image of a number line. At -1 there is an open, unfilled circle drawn, with a arrow pointing to the left, towards the negative numbers in the number line.]()",
         "response": "Mixes up greater than and less than symbols"
     },
     "166": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Solve\n\\[\n2 n+3 \\leq 3 n-7\n\\]\nHint: Solve linear inequalities in one variable where the unknown appears on boths sides of the equation\nCorrect answer: \\( 10 \\leq n \\)\nWrong answer: \\( 2 \\leq n \\)",
         "response": "When solving an equation, uses the same operation rather than the inverse."
     },
     "167": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Which inequality is represented by the shaded region? ![Graph showing four quadrants with a straight line going from the top left to the bottom right. The line goes through (-4, 4) (-3, 3) (-2, 2) and so on]()\nHint: Describe the solution to a graphical inequality involving a single diagonal line\nCorrect answer: \\( y>-x \\)\nWrong answer: \\( y>x \\)",
         "response": "Confuses the lines y=x and y=-x"
     },
     "168": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Using the graph of\n\\(\ny=x^{2}-x-6\n\\)\n\nWhat is the correct way to write the solution to\n\\(\ny=x^{2}-x-6 \\geq 0 ?\n\\) ![The is a parabolic graph that crosses the x axis at the points (-2,0) and (3,0) and crosses the y axis at (0, -6).]()\nHint: Solve quadratic inequalities from the graph of the quadratic\nCorrect answer: \\( \\{x \\leq-2\\} \\cup\\{x \\geq 3\\} \\)\nWrong answer: \\( \\{-2 \\leq x \\leq 3\\} \\)",
         "response": "Believes the solution of a quadratic inequality is always the interval between the roots"
     },
     "171": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: The \\( 1^{\\text {st }} \\) term in a linear sequence is \\( 7 \\).\n\nThe \\( 4^{\\text {th }} \\) term of the sequence is \\( 25 \\).\n\nWhat is the \\( 8^{\\text {th }} \\) term of the sequence?\nHint: Write a missing term of an ascending integer linear sequence\nCorrect answer: \\( 49 \\)\nWrong answer: \\( 50 \\)",
         "response": "Believes there is a multiplicative relationship between values of terms in a linear sequence e.g. 10th term is double 5th term"
     },
     "172": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Tom and Katie are discussing quadratic sequences.\n\nTom says this is a quadratic sequence: \\( 24,15,8,3,0 \\ldots \\)\n\nKatie says this is a quadratic sequence: \\( 124,63,26,7,3,0, \\ldots \\)\n\nWho is correct?\nHint: Recognise when a descending sequence is quadratic\nCorrect answer: Only Tom\nWrong answer: Only Katie",
         "response": "Does not understand the term quadratic"
     },
     "173": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: If you add together consecutive triangle numbers you get...\nHint: Continue a sequence involving triangle numbers\nCorrect answer: a square number\nWrong answer: another triangle number",
         "response": "Believes triangle numbers are formed differently to the correct way"
     },
     "175": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: \\( A B C D \\) is a rectangle.\nWhat type of triangle is triangle \\( \\mathrm{BCD} \\) ? ![Rectangle ABCD with the diagonal shown using a red dotted line]()\nHint: Identify a right-angled triangle when presented non-conventionally\nCorrect answer: Right-angled\nWrong answer: Scalene",
         "response": "Confuses scalene and right angle triangles"
     },
     "177": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: How many edges does this shape have? ![\\( \\Delta \\)]()\nHint: Identify and count the faces, vertices and edges of a 3D shape\nCorrect answer: \\( 1 \\)\nWrong answer: \\( 0 \\)",
         "response": "Believes only straight lines count as edges on 3D shapes"
     },
     "179": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: What is the area of the shaded section of this composite shape made from rectangles? ![A composite shape made from two rectangles that form an \"L\" shape.  The base of the shape is horizontal and is 13cm long. The vertical height of the whole shape is 14cm. The horizontal width of the top part of the shape is 6cm. The vertical height of the top rectangle is 8cm. The right handed rectangle is shaded blue]()\nHint: Calculate missing lengths of shapes by geometrical inference, where the lengths given are in the same units\nCorrect answer: \\( 42 \\mathrm{~cm}^{2} \\)\nWrong answer: \\( 48 \\mathrm{~cm}^{2} \\)",
         "response": "Uses an incorrect side length when splitting a composite shape into parts"
     },
     "180": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: What is the size of the marked angle? ![A 360 degree protractor with 2 red lines and a pink sector marking out a reflex angle being measured by the protractor. The inner scale goes from 0 to 360 in an anti-clockwise direction. The angle is between one red line that is at 0 (inner scale) and 180 (outer scale) on the protractor and goes anti-clockwise to the other red line that is half way between 330 and 340 (inner scale) and halfway between 210 and 200 (outer scale).\n]()\nHint: Use a protractor to measure angles between 270\u00b0 and 360\u00b0\nCorrect answer: \\( 335^{\\circ} \\)\nWrong answer: \\( 345^{\\circ} \\)",
         "response": "Correct scale but wrong value on protractor reading."
     },
     "181": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Which of the following correctly describes the relationship between the two marked angles? ![A diagram showing 3 lines crossing at a point to form 6 angles. Two angles are marked in orange, there are two unmarked angles between them on either side.]()\nHint: Recognise the vertically opposite angles relationship\nCorrect answer: Vertically opposite angles\nWrong answer: Alternate angles",
         "response": "Confuses alternate and opposite angles"
     },
     "182": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Tom and Katie are arguing about alternate angles.\nTom says angles \\( p \\) and \\( q \\) are alternate.\n\nKatie says angles \\( p \\) and \\( q \\) are equal.\nWho is correct? ![Shows two non parallel lines that are intersected by another line. Angles P and Q are both on the outside of the lines and on opposite sides of the transversal.]()\nHint: Identify alternate angles\nCorrect answer: Only\nTom\nWrong answer: Only\nKatie",
         "response": "Thinks alternate angles are always equal"
     },
     "183": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: What is the size of angle \\( p \\) in this quadrilateral? ![Not drawn to scale]()\nHint: Find missing angles in a non-special quadrilateral\nCorrect answer: Not enough information to work it out\nWrong answer: \\( 120^{\\circ} \\)",
         "response": "Assumes that opposite angles are equal in a quadrilateral"
     },
     "184": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: The straight line across this circle is called a ....? ![A circle with a line across from edge to edge, passing through the centre]()\nHint: Identify a diameter\nCorrect answer: Diameter\nWrong answer: Diagram",
         "response": "Does not know the term 'diameter'"
     },
     "1212": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Tom is has correctly drawn the graph of the following function:\n\\(\ny=\\left\\{\\begin{array}{c}\n3 \\text { for } 0 \\leq x<Q \\\\\nP \\text { for } 1.5 \\leq x<4 \\\\\n2.5 \\text { for } 4 \\leq x<7\n\\end{array}\\right.\n\\)\n\nWhat are the values of \\( P \\) and \\( Q \\) ? ![The graph is three separate horizontal lines. It goes from (0,3) to (1.5, 3), then (1.5, 2) to (4, 2) and the last section is from (4, 2.5) to (7, 2.5)]()\nHint: Read values from piecewise functions\nCorrect answer: \\( \\begin{array}{c}P=2 \\\\ Q=1.5\\end{array} \\)\nWrong answer: \\( \\begin{array}{c}P=1.5 \\\\ Q=2\\end{array} \\)",
         "response": "When reading value from graph, reads from the wrong axes."
     },
     "189": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: The volume of this cuboid is \\( 30 \\mathrm{~cm}^{3} \\)\n\nWhat length should replace the star? ![A cuboid, depth 2cm and height 3cm. The width is labelled with a star.]()\nHint: Given the volume of a cuboid, work out missing information\nCorrect answer: \\( 5 \\mathrm{~cm} \\)\nWrong answer: \\( 25 \\mathrm{~cm} \\)",
         "response": "Adds when calculating volume instead of multiplying"
     },
     "188": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Which of the following calculations would give you the total surface area of this cuboid in \\( \\mathrm{cm}^{2} \\) ? ![A cuboid. The height is 4cm, the depth is 3cm and the width is 6cm.]()\nHint: Calculate the surface area of a cuboid where the dimensions are given in the same units\nCorrect answer: \\( [(6 \\times 4)+(6 \\times 3)+(4 \\times 3)] \\times 2 \\)\nWrong answer: \\( (6 \\times 4)+(6 \\times 3)+(4 \\times 3) \\)",
         "response": "When calculating surface area, only includes visible faces"
     },
     "1213": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Tom and Katie are discussing regular polygons. Tom says this is a regular polygon ![A triangle with 3 equal sides and 3 equal angles]() Katie says this is a regular polygon ![A parallelogram with 2 pairs of parallel sides marked]() Who is correct?\nHint: Understand the terms equilateral and regular, and recognise the notation for regular polygons\nCorrect answer: Only Tom\nWrong answer: Only Katie",
         "response": "Does not know the meaning of the word regular"
     },
     "191": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Tom and Katie are arguing about constructing triangles.\n\nTom says you can construct a triangle with lengths \\( 11 \\mathrm{~cm}, 10 \\mathrm{~cm} \\) and \\( 2 \\mathrm{~cm} \\).\n\nKatie says you can construct a triangle with lengths \\( 8 \\mathrm{~cm}, 5 \\mathrm{~cm} \\) and \\( 3 \\mathrm{~cm} \\).\n\nWho is correct?\nHint: Construct a triangle using Side-Side-Side\nCorrect answer: Only Tom\nWrong answer: Only Katie",
         "response": "Does not realise that the sum of the two shorter sides must be greater than the third side for it to be a possible triangle"
     },
     "190": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: What is the name of the mathematical instrument used to construct circles?\nHint: Identify mathematical instruments and their functions\nCorrect answer: Compass\nWrong answer: Callipers",
         "response": "Does not know the word and/or does not know the function of a compass"
     },
     "195": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: \\[450 \\mathrm{~cm}=\\] \\[\\square \\mathrm{~m}\\]\nHint: Convert between cm and m\nCorrect answer: \\( 4.5 \\)\nWrong answer: \\( 45 \\)",
         "response": "Thinks there are 10cm in a metre"
     },
     "196": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Square \\( \\mathrm{P} \\) has an area of \\( 4 \\mathrm{~cm}^{2} \\)\nSquare \\( Q \\) has an area of \\( 4 \\mathrm{~mm}^{2} \\)\nWhat is the total area of squares \\( P \\) and \\( Q \\) in \\( \\mathrm{mm}^{2} \\) ?\nHint: Perform calculations with areas when given in different units\nCorrect answer: \\( 404 \\mathrm{~mm}^{2} \\)\nWrong answer: \\( 8 \\mathrm{~mm}^{2} \\)",
         "response": "Does not convert measurements to have the same units before calculating area or volume"
     },
     "197": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: A regular pentagon has a total perimeter of \\( 17 \\mathrm{~cm} \\).\nWhat is the length of each of its sides?\nHint: Given the perimeter, work out a missing length requiring knowledge of the geometrical properties of the shape\nCorrect answer: \\( 3.4 \\mathrm{~cm} \\)\nWrong answer: \\( 85 \\mathrm{~cm} \\)",
         "response": "When given the perimeter of a regular polygon, multiplies instead of divides to find each side length"
     },
     "198": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: \\( 3 \\) kilograms \\( =\\bigstar \\) grams What should replace the star?\nHint: Convert between kg and g\nCorrect answer: \\( 3000 \\)\nWrong answer: \\( 0.3 \\)",
         "response": "Divides when converting to a smaller unit"
     },
     "199": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: What temperature does the thermometer show? ![A thermometer showing the temperature in degrees Celsius. There are five steps on the scale between 10 and 0, and five steps between 0 and -10. The temperature is shown at 4 steps below 0.]()\nHint: Read a negative integer temperature from a thermometer\nCorrect answer: \\( -8^{\\circ} \\mathrm{C} \\)\nWrong answer: \\( -9^{\\circ} \\mathrm{C} \\)",
         "response": "When reading integers on a number line, assumes each dash is 1"
     },
     "200": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: George is counting backwards in steps of \\( 5 \\).\nHe starts at the number \\( 19,103 \\) what is the next number he will say?\nHint: Count backwards in steps of of something other than one\nCorrect answer: \\( 19,098 \\)\nWrong answer: \\( 19,102 \\)",
         "response": "Counts on by 1, when asked to count forward/backwards in a step other than 1"
     },
     "202": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: What number is \\( 10,000 \\) less than \\( 901,426 \\) ?\nHint: Find another power of 10 less than a given number\nCorrect answer: \\( 891,426 \\)\nWrong answer: \\( 801,426 \\)",
         "response": "When subtracting a power of 10, subtracts from the wrong column"
     },
     "203": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Tom and Katie are discussing related calculations\nTom says if you know that \\( 3748+426=4174 \\), then \\( 3748+427 \\) must equal \\( \\mathbf{4 1 7 5} \\)\n\nKatie says if you know that \\( 3748-426=3322 \\), then \\( 3748 \\) - \\( 427 \\) must equal \\( \\mathbf{3 3 2 3} \\)\nWho is correct?\nHint: Given the solution to one problem, deduce the answer to a related problem using the same operation\nCorrect answer: Only Tom\nWrong answer: Only Katie",
         "response": "Does not realise that adding a larger number gives a larger answer"
     },
     "204": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: What should replace the star?\n\\[\n\\bigstar \\times 4=108\n\\]\nHint: Solve missing number mental multiplication questions\nCorrect answer: \\( 27 \\)\nWrong answer: \\( 432 \\)",
         "response": "When solving a problem that requires an inverse operation (e.g. missing number problems), does the original operation"
     },
     "205": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: What number should replace the star? \\begin{tabular}{|c|c|c|c|c|}\n\\hline & \\( 4 \\) & \\( 2 \\) & \\(5\\) & \\(4\\)\\\\\n\\hline+ & \\( 2 \\) & \\(\\bigstar\\)  & \\(7\\) & \\(1\\) \\\\\n\\hline \\(\\space\\) & \\(6\\) & \\(3\\) & \\(2\\) & \\(5\\)\n\\end{tabular}\nHint: Add integers up to 4 digits using a written method where carrying is needed\nCorrect answer: \\( 0 \\)\nWrong answer: \\( 6 \\)",
         "response": "When solving a problem that requires an inverse operation (e.g. missing number problems), does the original operation"
     },
     "206": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: What number should replace the star? \\begin{tabular}{cccc}\n\\(\\space\\) & \\( 9 \\) & \\( 3 \\) & \\( 5 \\) & \\( 2 \\) \\\\\n\\(-\\) & \\(4\\) & \\(5\\) & \\(7\\) & \\(\\bigstar\\)\\\\\n\\(\\space\\) & \\(4\\) & \\(7\\) & \\(7\\) & \\(3\\)\\\\\n\\end{tabular}\nHint: Subtract integers up to 4 digits using a written method where carrying is needed\nCorrect answer: \\( 9 \\)\nWrong answer: \\( 1 \\)",
         "response": "When solving a problem that requires an inverse operation (e.g. missing number problems), does the original operation"
     },
     "207": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: What is a correct way to set up this problem to solve it using long multiplication?\n\\[\n426 \\times 82\n\\]\nHint: Multiply 3 digit integers by 2 digit integers using long multiplication\nCorrect answer: ![426 multiplied by 82 set out to perform long multiplication. 82 is written under 426. The 8 of 82 is under the 2 of 426 and the 2 of 82 is under the 6 of 426]()\nWrong answer: ![426 multiplied by 82 set out to perform long multiplication. 82 is written under 426. The 8 of 82 is under the 4 of 426 and the 2 of 82 is under the 2 of 426.]()",
         "response": "Hasn't lined up the place value columns when writing out the calculation"
     },
     "208": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: What is \\( 5050 \\) rounded to the nearest \\( 10 \\) ?\nHint: Round integers to the nearest 10\nCorrect answer: \\( 5050 \\)\nWrong answer: \\( 5100 \\)",
         "response": "Rounds to the wrong degree of accuracy (rounds too much)"
     },
     "209": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Hannah's journey to camp is \\( 3 \\) hours and \\( 16 \\) minutes.\nTori's journey to camp is \\( 214 \\) minutes.\nWhat is the difference in their journeys in minutes?\nHint: Convert from hours to minutes\nCorrect answer: \\( 18 \\) minutes\nWrong answer: \\( 102 \\) minutes",
         "response": "Answers as if there are 100 minutes in an hour when changing from hours to minutes"
     },
     "210": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Which of these shows part of the proof that the sum of two odd numbers is even?\nHint: Prove statements involving odd and even numbers\nCorrect answer: \\( \\begin{array}{l}(2 n-1)+(2 m+1) \\\\ =2 n+2 m \\\\ =2(n+m)\\end{array} \\)\nWrong answer: \\( \\begin{array}{l}2 n+(2 m+1) \\\\ =2(n+m)+1\\end{array} \\)",
         "response": "Does not understand that 2n represents an even number"
     },
     "211": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: ![Number line with -12 and -7 marked. Starting at -12, follow an arrow pointing to the right labelled +10. Then there is an arrow labelled b pointing to the left, which ends at -7 on the number line.]() What is the value of \\( b \\) ?\nHint: Carry out missing number subtraction problems involving negative integers\nCorrect answer: \\( -5 \\)\nWrong answer: \\( -7 \\)",
         "response": "Assumes that an arrow on a number line starts at zero"
     },
     "212": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Tom and Katie are trying to write different calculations for the diagram on the left.\nTom writes: \\( -3 \\times(-8)=-24 \\)\nKatie writes: \\( \\frac{(-24)}{-3}=-8 \\)\nWho is correct? ![A diagram showing an arrow to the left, marked with a value of -24. Underneath this arrow there is a smaller arrow, still pointing to the left, that is a third of the length of the larger arrow]()\nHint: Carry out division  problems involving one negative integer\nCorrect answer: Neither is correct\nWrong answer: Only\nTom",
         "response": "Believes multiplying two negatives gives a negative answer"
     },
     "213": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: What is \\( 326 \\) rounded to the nearest \\( 1000 \\) ?\nHint: Round integers to the nearest 1000\nCorrect answer: \\( 0 \\)\nWrong answer: \\( 1000 \\)",
         "response": "Rounds up instead of down"
     },
     "214": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: \\[\n\\text { 2426. } 951\n\\]\nWhat is this number rounded to \\( 1 \\) decimal place?\nHint: Round numbers to one decimal place\nCorrect answer: \\( 2427.0 \\)\nWrong answer: \\( 2426.0 \\)",
         "response": "When rounding up from a 9, does not add one on to the digit to the left"
     },
     "215": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Round this number to \\( 1 \\) significant figure:\n\\( 400099 \\)\nHint: Round numbers greater than 1 to one significant figure\nCorrect answer: \\( 400000 \\)\nWrong answer: \\( 500000 \\)",
         "response": "Rounds up instead of down"
     },
     "216": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Without working out the exact answer, use estimation to decide which of the following answer is the most likely to be correct \\( 505 \\div 198 \\)\nHint: Round numbers to an appropriate degree to estimate the answer to a calculation\nCorrect answer: \\( 2.5505 \\ldots \\)\nWrong answer: \\( 2.243 \\ldots \\)",
         "response": "Rounds to the wrong degree of accuracy (rounds too much)"
     },
     "217": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Which of the following would give you the correct value of \\( \\frac{1}{7} \\) on your calculator? ![A scientific calculator]()\nHint: Perform calculator calculations with powers\nCorrect answer: ![The number 7, then a calculator button labelled \\(x^{-1} \\)]()\nWrong answer: ![The number 1, then a calculator button labelled \\(-\\), then the number 7]()",
         "response": "Believes the subtraction button writes a fraction"
     },
     "219": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: If you can connect dots to draw a regular octagon in a ring of equally spaced dots, which other regular shape can you definitely draw?\nHint: Understand the relationship between different factors of a number\nCorrect answer: Square\nWrong answer: Equilateral triangle",
         "response": "Does not use the associative property of multiplication to find other factors of a number"
     },
     "220": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: If you list the multiples of \\( 15 \\) in ascending order, what is the \\( 5^{\\text {th }} \\) number in the list?\nHint: Identify multiples of a number\nCorrect answer: \\( 75 \\)\nWrong answer: \\( 90 \\)",
         "response": "Believes the first multiple of a is 2a"
     },
     "222": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Which signs belong in the boxes to make the statement correct?\n\n\\( 0.705 \\)\\[ {\\color{blue}\\square} \\]\\( 0.750 \\)\\[ {\\color{orange}\\square} \\]\\( 0.570 \\)\nHint: Use inequality notation to order decimals with the same number of digits\nCorrect answer: ![A blue box containing a \"less than\" symbol  and an orange box containing a \"greater than\" symbol]()\nWrong answer: ![A blue box containing a \"greater than\" symbol  and an orange box containing a \"less than\" symbol]()",
         "response": "Mixes up greater than and less than symbols"
     },
     "223": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: \\( 4.72-3.1 \\) What should replace the star?\nHint: Subtract decimals where the numbers involved have a different number of decimal places\nCorrect answer: \\( 1.62 \\)\nWrong answer: \\( 4.41 \\)",
         "response": "Hasn't lined up the place value columns when writing out the calculation"
     },
     "224": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: \\( 43.2 \\div 10= \\)\nHint: Divide decimals by 10\nCorrect answer: \\( 4.32 \\)\nWrong answer: \\( 0.432 \\)",
         "response": "Divided by 100 rather than 10"
     },
     "225": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: What should replace the star?\n\\(\n\\frac{1}{3} \\text { of } \\color{yellow}\\bigstar\\)\\(=27\n\\)\nHint: Calculate the whole amount, given a fraction of the amount\nCorrect answer: \\( 81 \\)\nWrong answer: \\( 61 \\)",
         "response": "When two digits multiply to 10 or more during a multiplication problem, does not add carried value to the preceding digit"
     },
     "226": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Complete the statement \\( \\frac{4}{6}=\\frac{}{12} \\)\nHint: Identify equivalent fractions when presented as numbers\nCorrect answer: \\( \\frac{4}{6}=\\frac{8}{12} \\)\nWrong answer: \\( \\frac{4}{6}=\\frac{2}{12} \\)",
         "response": "Can identify the multiplier used to form an equivalent fraction but does not apply to the numerator"
     },
     "227": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Write this fraction as simply as possible:\n\\(\n\\frac{9}{12}\n\\)\nHint: Simplify fractions that simplify to a unit fraction\nCorrect answer: \\( \\frac{3}{4} \\)\nWrong answer: \\( \\frac{3}{6} \\)",
         "response": "Believes when simplifying a fraction you can divide the numerator and denominator by different values"
     },
     "228": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: What fraction should replace the star? ![A number line marked with 1/4, 2/4, 3/4, 4/4, 5/4. The star is halfway between 2/4 and 3/4.]()\nHint: Read a fraction on a scale where the required number is marked by a dash between two numbers\nCorrect answer: \\( \\frac{5}{8} \\)\nWrong answer: None of these",
         "response": "Does not realise you can use equivalent fractions to break fractions up into smaller divisions"
     },
     "229": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Write the following fraction in its simplest form: \\( 3 \\frac{7}{21} \\)\nHint: Simplify fractions that simplify to a unit fraction\nCorrect answer: \\( 3 \\frac{1}{3} \\)\nWrong answer: \\( 1 \\frac{1}{3} \\)",
         "response": "Simplifies integers when simplifying a mixed number"
     },
     "230": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: \\(\n\\frac{4}{5}-\\frac{1}{3}=\\frac{\\bigstar}{15}\n\\)\nWhat should replace the star?\nHint: Subtract proper fractions with different denominators which do not share a common factor\nCorrect answer: \\( 7 \\)\nWrong answer: \\( 5 \\)",
         "response": "Does not find a common denominator when adding/subtracting fractions"
     },
     "231": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: \\( \\frac{3}{5} \\times ?=\\frac{1}{2} \\)\nHint: Find missing numbers in a fraction multiplication\nCorrect answer: \\( \\frac{5}{6} \\)\nWrong answer: \\( \\frac{3}{10} \\)",
         "response": "When solving a problem that requires an inverse operation (e.g. missing number problems), does the original operation"
     },
     "232": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Calculate: \\( \\frac{4}{8} \\div 2 \\)\nHint: Divide proper fractions in the form: Fraction \u00f7 Integer\nCorrect answer: \\( \\frac{2}{8} \\)\nWrong answer: \\( \\frac{2}{4} \\)",
         "response": "When dividing a fraction by an integer, divides both the numerator and denominator by the integer"
     },
     "233": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: \\( 130 \\% \\) of \\( 40= \\)\nHint: Calculate percentage of an amount mentally where the percent is greater than 100\nCorrect answer: \\( 52 \\)\nWrong answer: \\( 12 \\)",
         "response": "Found the percentage but forgot to add to 100%"
     },
     "234": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Increase \\( 160 \\) by \\( 30 \\% \\)\nHint: Increase a number by a given percentage mentally where the percent is a multiple of 10\nCorrect answer: \\( 208 \\)\nWrong answer: \\( 190 \\)",
         "response": "Added the values together instead of finding the percentage"
     },
     "237": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Complete the missing value. ![A circle with two other circles below it, connected to the top circle by lines. The top circle has 60% in, one of the bottom circles has 2/5, and the other is blank.]()\nHint: Solve problems involving converting between fractions, decimals and percentages\nCorrect answer: \\( \\frac{2}{10} \\)\nWrong answer: \\( 100 \\% \\)",
         "response": "Identifies the wrong part of a fraction model as the whole"
     },
     "238": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Convert this percentage to a fraction\n\\( 62 \\% \\)\nHint: Convert two digit integer percentages to fractions\nCorrect answer: \\( \\frac{31}{50} \\)\nWrong answer: \\( \\frac{62}{10} \\)",
         "response": "Does not understand a percentage is out of 100"
     },
     "239": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Convert this decimal to a percentage\n\\[\n0.6\n\\]\nHint: Convert decimals less than 1 with 1 decimal place to percentages\nCorrect answer: \\( 60 \\% \\)\nWrong answer: \\( 6 \\% \\)",
         "response": "Multiplies by 10 instead of 100 when converting decimal to percentage"
     },
     "241": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: In the diagram, AN : NB \\( =3: 5 \\) \nWhat is the distance AN? ![A line that begins with point A, ends with point B, and has point N in between. The entire length of the line measures 48 m.]()\nHint: Divide a quantity into two parts for a given a ratio, where each part is an integer\nCorrect answer: \\( 18 \\mathrm{~m} \\)\nWrong answer: \\( 16 \\mathrm{~m} \\)",
         "response": "Divides total amount by each side of the ratio instead of dividing by the sum of the parts"
     },
     "243": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: This is a conversion graph between kilograms and pounds.\n\nWhich of the following is the best estimate for the number of kilograms equivalent to \\( 20 \\) pounds? ![A graph on gridded paper with pounds (lb) on the y axis from 0 to 80 and kilograms (kg) on the x axis from 0 to 80. Both axis are labelled in increments of 20, with each increment split by gridlines into another 4 squares. A straight line goes from the origin and sloped upwards going through (25, 55) (not labelled - just a coordinate that it goes through) ]()\nHint: Read values off a real life graph\nCorrect answer: \\( 9 \\) kilograms\nWrong answer: \\( 44 \\) kilograms",
         "response": "When reading value from graph, reads from the wrong axes."
     },
     "244": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Which of the following graphs is most likely to represent the change in journey time against average speed?\nHint: Given a situation sketch an appropriate non linear real life graph\nCorrect answer: ![A curved graph that starts up and right of the origin. As you move right it travels steeply down, then levels off. but never reaches the x-axis.]()\nWrong answer: ![A straight line graph starting at the origin and travelling right with a positive gradient.]()",
         "response": "Thinks the faster you travel the longer the time it will take"
     },
     "245": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: \\( (16)^{2}=? \\)\nHint: Calculate the square of a number\nCorrect answer: \\( 256 \\)\nWrong answer: \\( 8 \\)",
         "response": "Mixes up squaring with dividing by 2"
     },
     "246": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: What is the square root of nine?\nHint: Calculate the square root of a number\nCorrect answer: \\( 3 \\)\nWrong answer: \\( 4.5 \\)",
         "response": "Halves when asked to find the square root"
     },
     "247": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: \\( (27)^{\\frac{4}{3}}=? \\)\nHint: Raise an integer to a positive non-unit fraction power\nCorrect answer: \\( 81 \\)\nWrong answer: \\( 36 \\)",
         "response": "Multiplies by the index"
     },
     "248": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Simplify \\( \\sqrt{48} \\) as much as possible\nHint: Write a surd in the form \u221aa in a simplified form\nCorrect answer: \\( 4 \\sqrt{3} \\)\nWrong answer: \\( 16 \\sqrt{3} \\)",
         "response": "When simplifying surds, does not square root the largest square number that goes into the number under the surd before putting it in front of the surd"
     },
     "249": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: \\(9 \\times \\sqrt{3}\\)\n\nSimplify, if possible.\nHint: Multiply surds by an integer\nCorrect answer: \\( 9 \\sqrt{3} \\)\nWrong answer: \\( \\sqrt{12} \\)",
         "response": "When multiplying a surd by an integer, adds the integer to the number under the surd"
     },
     "251": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Simplify the following by collecting like terms.\n\\[\nd+d+d+d\n\\]\nHint: Simplify algebraic expressions to maintain equivalence by collecting like terms involving just one linear variable\nCorrect answer: \\( 4 d \\)\nWrong answer: \\( 4 \\times d \\)",
         "response": "Does not realize we can omit the multiplication symbol in algebraic expressions"
     },
     "252": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Simplify, if possible:\n\\(\na^{2} \\times a\n\\)\nHint: Write algebraic expressions with correct algebraic convention involving powers\nCorrect answer: \\( a^{3} \\)\nWrong answer: \\( 2 a^{2} \\)",
         "response": "Does not understand how to multiply algebraic terms"
     },
     "254": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Factorise this expression, if possible:\n\\(\np^{2}-16\n\\)\nHint: Factorise a quadratic expression in the form x\u00b2 - c\nCorrect answer: \\( (p+4)(p-4) \\)\nWrong answer: \\( (p-4)(p-4) \\)",
         "response": "Factorises difference of two squares with the same sign in both brackets"
     },
     "256": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: When Sarah completes the square, what should replace the star? \\( 2 g^{2}-6 g-5 \\equiv 2(g  \\bigstar)^{2} \\triangle \\)\nHint: Complete the square for expressions that end up in the form a(x + b)\u00b2 + c\nCorrect answer: \\( \\bigstar=-1.5 \\)\nWrong answer: \\( \\bigstar=-6 \\)",
         "response": "When completing the square, believes the constant in the bracket is the coefficient of x"
     },
     "257": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: \\begin{tabular}{l|l|l|l}\n\\( x \\) & \\( \\) & \\( 0 \\) & \\( 3 \\) \\\\\n\\hline\\( y \\) & \\( -7 \\) & \\( -5 \\) &  \\( \\color{gold}\\bigstar\\ \\) \\\\\n\\end{tabular}\n This is a table of values for \\( y=2 x+c \\)\nWhat should replace the star?\nHint: Given a positive x value, find a y value in a table of values for lines in the form y = mx + c\nCorrect answer: \\( 1 \\)\nWrong answer: \\( 6 \\)",
         "response": "Does not realise that a pair of coordinates can be used to find missing parts of an equation"
     },
     "258": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: What is the equation of the \\( y \\) axis?\nHint: Know the equation of the axes\nCorrect answer: \\( x=0 \\)\nWrong answer: \\( y=1 \\)",
         "response": "Thinks y =1 is the y axis"
     },
     "259": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Which of the following sketches could represent \\( y=4-2 x \\) ?\nHint: Sketch, or identify a sketch, of a line given in the form y = mx + c, where m is negative\nCorrect answer: ![A straight line graph that crosses the x axis to the right of the origin and crosses the y axis above the origin.]()\nWrong answer: ![A straight line graph that crosses the x axis to the left of the origin and crosses the y axis below the origin.]()",
         "response": "Believes that in y=mx+c, m is the y-intercept"
     },
     "260": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: What is the gradient of this line?\n\\(5 x+3 y=15\\)\nHint: Find the gradient of a line written in the form ax + by = c\nCorrect answer: \\( -\\frac{5}{3} \\)\nWrong answer: \\( 5 \\)",
         "response": "Believes that the coefficient of x represents the gradient even when a line is not in the form y = mx+c"
     },
     "261": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: What is the gradient of this line? ![A set of axes with a graph drawn on. The graph passes through the following points: (-3,-3) (-2,-2) (-1,-1) (0,0) (1,1) (2,2) and (3,3).]()\nHint: Given a line segment, calculate the gradient where the gradient is a positive integer\nCorrect answer: \\( 1 \\)\nWrong answer: \\( 0 \\)",
         "response": "Believes the gradient of a line is given by an intercept"
     },
     "262": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: A line has a gradient of \\( 5 \\)\n\nA line parallel to this line would have a gradient of...\nHint: Given a gradient, state the gradient of a line parallel to it\nCorrect answer: \\( 5 \\)\nWrong answer: \\( -5 \\)",
         "response": "Believes parallel lines have gradients of opposite signs"
     },
     "263": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Which of the following lines is perpendicular to\n\\[\ny=3 x-2 ?\n\\]\nHint: Identify perpendicular lines written in the form y = mx + c\nCorrect answer: \\( y=5-\\frac{1}{3} x \\)\nWrong answer: \\( y=\\frac{1}{3} x+1 \\)",
         "response": "Believes the gradients of perpendicular lines are reciprocals of the same sign"
     },
     "264": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: This is a graph of\n\\(y=0.4 x-3\\) ![A set of axes with the graph y=0.4x-3 drawn on.]() Use the graph to solve\n\\(0.4 x-3=-1\\)\nHint: Given a sketch of a linear graph solve f(x) = n\nCorrect answer: \\( x=5 \\)\nWrong answer: \\( x=-3.3 \\)",
         "response": "Mixes up the value of two terms when substituting"
     },
     "265": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Tom and Katie are discussing the table of values for \\( y=x^{2}-1 \\) \\begin{tabular}{|l|l|}\n\\hline\\( x \\) & \\( \\bigstar \\) \\\\\n\\hline\\( y \\) & \\( 15 \\) \\\\\n\\hline\n\\end{tabular} Tom says the star could be \\( 4 \\)\n\nKatie says the star could be \\( -4 \\)\n\nWho is correct?\nHint: Given a negative x value, find the corresponding y value for curves in the form y = x\u00b2 + c\nCorrect answer: Both Tom and Katie\nWrong answer: Only\nTom",
         "response": "Believes the square of a negative will also be negative"
     },
     "266": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: What is the equation of this curve? ![A quadratic curve with minimum point (1,0).]()\nHint: Given the sketch of a curve in the form (x + a)\u00b2, work out its factorised form\nCorrect answer: \\( y=(x-1)^{2} \\)\nWrong answer: \\( y=(x+1)^{2} \\)",
         "response": "Forgets to swap the sign of roots when placing into brackets"
     },
     "267": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Sally wants to write the equation of the curve in the form \\( y=(\\boldsymbol{x}+\\boldsymbol{p})^{2}+\\boldsymbol{q} \\).\nWhat is the value of \\( \\boldsymbol{p} \\) ? ![A set of axes with the quadratic graph y=x^2-2x-3 drawn on.]()\nHint: Given a sketch of a quadratic graph in the form (x + p)\u00b2 + q, work out its completed the square form\nCorrect answer: \\( -1 \\)\nWrong answer: \\( 1 \\)",
         "response": "Believes that in completed square form, the x co-ordinate of the turning point has the same sign as the constant in the brackets."
     },
     "269": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: ![A speed-time graph. At 6 seconds, the car is travelling at a speed of 8 metres per second. After 8 seconds, the car is travelling at a speed of 15 metres per second. ]() Here is a speed-time graph for a car.\n\nWhich of the following gives the best estimate for the distance travelled between \\( 6 \\) and \\( 8 \\) seconds?\nHint: Calculate the distance travelled using a speed-time graph\nCorrect answer: \\( 24 m \\)\nWrong answer: \\( 30 m \\)",
         "response": "Believes that when finding area under graph you can use the upper y value rather than average of upper and lower"
     },
     "273": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: ![Two cuboids. Cuboid P has width 5cm, and cuboid Q has width 15cm.]() Shape P and Shape Q are similar.\n\nWhat is the volume scale factor to get from Shape \\( P \\) to Shape \\( Q \\) ?\nHint: Find the volume scale factor of similar shapes given the length scale factor\nCorrect answer: \\( \\times 27 \\)\nWrong answer: \\( \\times 3 \\)",
         "response": "Does not understand that the volume of an enlarged shape is the volume of the original multiplied by the cube of the scale factor of the lengths."
     },
     "274": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Tom and Katie are discussing congruent shapes.\nTom says you can reflect a shape and it will still be congruent to the original.\n\nKatie says you can rotate a shape and it will still be congruent to the original.\nWho is correct?\nHint: Understand the meaning of congruency\nCorrect answer: Both Tom and Katie\nWrong answer: Only\nTom",
         "response": "Does not understand that shapes are congruent if they have the same size and shape"
     },
     "275": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Which image completes a symmetric figure using the red line of symmetry? ![A figure drawn in the upper half of a box with a red dotted line immediately below. ]()\nHint: Complete a symmetric figure with respect to a specific line of symmetry\nCorrect answer: ![The correct completion of the figure given in the question. ]()\nWrong answer: ![An incorrect completion of the figure given in the question. ]()",
         "response": "Translates rather than reflects across a line of symmetry"
     },
     "276": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Which quadrilateral has the highest order of rotational symmetry?\nHint: Identify the order of rotational symmetry of a shape\nCorrect answer: ![Parallelogram]()\nWrong answer: ![Trapezium]()",
         "response": "Does not know how to find order of rotational symmetry"
     },
     "279": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Which ratio would you use to find the value of \\( p \\) ? ![A right-angled triangle where the angle is 52 degrees, the side next to this is p and the side opposite is 6cm.]()\nHint: Identify questions involving a 2D right-angled triangle that require the use of the Tangent (tan) ratio\nCorrect answer: Tan\nWrong answer: \\( \\operatorname{Sin} \\)",
         "response": "Uses sin when tan is required"
     },
     "282": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: What is the exact value of \\( \\tan (30) \\) ?\nHint: Know the exact value of tan(30), tan(45) and tan(60)\nCorrect answer: \\( \\frac{\\sqrt{3}}{3} \\)\nWrong answer: \\( \\sqrt{3} \\)",
         "response": "Misremembers the exact values of trigonometric functions at standard angles"
     },
     "332": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: \\( \u00a3 1 \\) is \\( 1.5 \\) US dollars.\nWhich of these graphs shows the value of up to \\( \u00a3 10 \\) in US dollars?\nHint: Given a situation sketch an appropriate real life graph\nCorrect answer: ![A straight line graph from the origin. Y axis labelled US dollars extending to 15, x axis labelled pounds extending to 10]()\nWrong answer: ![A straight horizontal line graph from 15 on the y axis. Y axis labelled US dollars extending to 15, x axis labelled pounds extending to 10]()",
         "response": "Believes a direct proportion graph is a horizontal line"
     },
     "334": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: For every \\( 5 \\) marbles Karen has, Marty has three times as many.\n\nWrite the number of marbles Karen and Marty have as a ratio, with Karen's part first.\nHint: Represent written scenarios as ratios\nCorrect answer: \\( 1: 3 \\)\nWrong answer: None of these",
         "response": "Does not realise ratio in worded problem can be simplified"
     },
     "335": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: John is expanding these three brackets:\n\\(\n(x+5)(x-3)(x+6)\n\\)\n\nHe finds it helpful to split the first bracket and view the problem as follows:\n\\(\nx(x-3)(x+6)+5(x-3)(x+6)\n\\)\n\nHe expands the brackets further. Before he simplifies, what are the terms than contain an \\( \\boldsymbol{x}^{2} \\) ?\nHint: Expand products of three binomials in the form (x + a)(x + b)(x + c)\nCorrect answer: \\( \\begin{array}{l}+6 x^{2} \\\\ -3 x^{2} \\\\ +5 x^{2}\\end{array} \\)\nWrong answer: \\( \\begin{array}{l}+6 x^{2} \\\\ +3 x^{2} \\\\ +5 x^{2}\\end{array} \\)",
         "response": "Ignores negative sign when expanding bracket"
     },
     "337": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Leanne has written a questionnaire on the topic of holidays. One of her questions is,\n\n\"Describe how you feel when you are about to go on holiday.\"\n\nWhat type of data is she collecting by asking this question?\nHint: Identify data which is qualitative or quantitative\nCorrect answer: Primary\nQualitative data\nWrong answer: Primary\nQuantitative\ndata",
         "response": "Mixes up quantitative and qualitative data types"
     },
     "339": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Tom and Katie are discussing the \\( 5 \\) plants with these heights:\n\\( 24 \\mathrm{~cm}, 17 \\mathrm{~cm}, 42 \\mathrm{~cm}, 26 \\mathrm{~cm}, 13 \\mathrm{~cm} \\)\nTom says if all the plants were cut in half, the range wouldn't change.\nKatie says if all the plants grew by \\( 3 \\mathrm{~cm} \\) each, the range wouldn't change.\nWho do you agree with?\nHint: Calculate the range from a list of data\nCorrect answer: Only\nKatie\nWrong answer: Only\nTom",
         "response": "Believes if you changed all values by the same proportion the range would not change"
     },
     "340": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: This table shows the number of pets a group of students owns.\nIf calculating the mean number of pets owned, what would replace the star? \\begin{tabular}{|c|c|c|}\n\\hline Number of pets & Frequency & \\\\\n\\hline \\( 0 \\) & \\( 9 \\) & \\\\\n\\hline \\( 1 \\) & \\( 5 \\) & \\\\\n\\hline \\( 2 \\) & \\( 4 \\) & \\( \\color{gold}\\bigstar \\)\n\\hline \\( 3 \\) & \\( 2 \\) & \\\\\n\\hline \\( 4 \\) & \\( 3 \\) & \\\\\n\\hline\n\\end{tabular}\nHint: Calculate the mean from a frequency table\nCorrect answer: \\( 2 \\times 4=8 \\)\nWrong answer: \\( 2+4=6 \\)",
         "response": "Believes the fx column for calculating mean is value + frequency"
     },
     "344": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: In which region would \\( \\mathbf{1 5} \\) belong? ![A Venn diagram with two sets, one labelled Square number and one labelled Odd number. Square Number without the intersection is labelled A, Odd Number without the intersection is labelled C, the intersection of the two sets is labelled B, and outside the circles is labelled D.]()\nHint: Fill in regions of a double Venn diagram with numbers from given information\nCorrect answer: C\nWrong answer: A",
         "response": "Does not know what a square number is"
     },
     "349": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: ![Two spinners shown. The first spinner has the numbers 1-4 and the second spinner has the number 1-5.]() You spin the above fair spinners\nWhat is the probability of getting a \\( 1 \\) on both spinners?\nHint: Calculate the probability of two independent events occurring without drawing a tree diagram\nCorrect answer: \\( \\frac{1}{20} \\)\nWrong answer: \\( \\frac{1}{9} \\)",
         "response": "When multiplying fractions, multiplies the numerator and adds the denominator"
     },
     "406": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: What shape do you get if you join up the midpoints of the sides of this shape? ![An irregular quadrilateral drawn on a grid]()\nHint: Identify a rectangle when presented non-conventionally\nCorrect answer: Parallelogram\nWrong answer: Rhombus",
         "response": "Does not remember that a rhombus has equal sides"
     },
     "408": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Tom and Katie are arguing about midpoints.\n\\( M \\) is the midpoint between points \\( P \\) and \\( Q \\).\n\nTom says if you know the location of \\( M \\) only, then there is more than one possible location for \\( \\mathrm{P} \\) and \\( \\mathrm{Q} \\).\n\nKatie says if you only know the locations of \\( M \\) and \\( Q \\), then there is more than one possible location for \\( \\mathrm{P} \\).\nWho is correct?\nHint: Given a midpoint and a coordinate work out the position of the other coordinate, where all the values are integers but at least one is negative\nCorrect answer: Only Tom\nWrong answer: Both Tom and Katie",
         "response": "Believes there is more than one line which passes through a given pair of points"
     },
     "409": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Max is working out the gradient between these two points. He has worked out the lengths of the triangle.\nWhat is the gradient? ![A coordinate grid with a right angled triangle drawn on it. The hypotenuse of the triangle is between the coordinates (1,2) and (7,5). The base of the triangle is labelled with 6 and the perpendicular height of the triangle is labelled with 3.]()\nHint: Calculate a positive fractional gradient between two coordinates where all values are positive\nCorrect answer: \\( \\frac{1}{2} \\)\nWrong answer: \\( 3 \\)",
         "response": "Believes gradient is the difference between the change in x and the change in y"
     },
     "410": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Mark is working out the distance between these two points. What type of triangle would help him? ![Axes with not scales drawn on. Two points are marked, (4,10) and (9,2)]()\nHint: Calculate the distance between two coordinates in 2D, where all the values are positive integers\nCorrect answer: Right-angled\nWrong answer: Isosceles",
         "response": "Does not link Pythagoras Theorem to finding distance between two points"
     },
     "1975": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Summer buys a dress for \\( \u00a3 73 \\) and two pairs of shoes for \\( \u00a3 41 \\) each. \nShe pays using a \\( \u00a3 40 \\) gift voucher and some cash.\n\nHow much cash does she pay?\nHint: Solve problems that combine addition and subtraction\nCorrect answer: \u00a3115\nWrong answer: \u00a3195",
         "response": "Adds rather than subtracts when answering worded problems"
     },
     "439": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: What is the size of angle \\( k \\) ? ![A triangle with one angle of 40 degrees. One angle of 32 degrees and the third angle is labelled k. ]()\nHint: Find missing angles in a scalene triangle\nCorrect answer: \\( 108\\degree\\)\nWrong answer: \\( 90\\degree\\)",
         "response": "Believes all triangles have a right angle"
     },
     "1976": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Dave has recorded the number of pets his classmates have in the frequency table on the right. \\begin{tabular}{|c|c|}\n\\hline Number of pets & Frequency \\\\\n\\hline \\( 0 \\) & \\( 4 \\) \\\\\n\\hline \\( 1 \\) & \\( 6 \\) \\\\\n\\hline \\( 2 \\) & \\( 3 \\) \\\\\n\\hline \\( 3 \\) & \\( 2 \\) \\\\\n\\hline \\( 4 \\) & \\( 5 \\) \\\\\n\\hline\n\\end{tabular} How many people did Dave record the results of?\nHint: Interpret numbers in a frequency table\nCorrect answer: \\( 20 \\)\nWrong answer: \\( 5 \\)",
         "response": "Mistakes the number of rows for the total frequency in a frequency table"
     },
     "1984": {
-        "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+        "instruct": "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.",
         "query": "Question: Use the graph to approximate the solution to \\( x^{2}<5 \\) ![A set of axes with the quadratic graph y=x^2 drawn on.]()\nHint: Solve quadratic inequalities from the graph of the quadratic\nCorrect answer: \\( -2.2<x<2.2 \\)\nWrong answer: \\( x<-2.2, x>2.2 \\)",
         "response": "Selects y>a solutions instead of y<a solutions for a quadratic inequality"
     }

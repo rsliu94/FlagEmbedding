@@ -9,8 +9,8 @@ import faiss
 from transformers import HfArgumentParser
 from FlagEmbedding import FlagAutoModel
 from FlagEmbedding.abc.inference import AbsEmbedder
+from FlagEmbedding.utils.constants import TASK_DESCRIPTION
 import random
-
 random.seed(42)
 
 @dataclass
@@ -221,7 +221,7 @@ def load_model(model_args: ModelArgs):
     if model_args.add_examples_for_task:
         examples_for_task = [
             {
-            "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+            "instruct": TASK_DESCRIPTION,
             "query": "Question: Round \\( 0.0572 \\) to \\( 1 \\) significant figure\nHint: Round numbers between 0 and 1 to one significant figure\nCorrect answer: \\( 0.06 \\)\nWrong answer: \\( 0.05 \\)",
             "response": "Rounds down instead of up"
             }
@@ -235,7 +235,7 @@ def load_model(model_args: ModelArgs):
         normalize_embeddings=model_args.normalize_embeddings,
         pooling_method=model_args.pooling_method,
         use_fp16=model_args.use_fp16,
-        query_instruction_for_retrieval=model_args.query_instruction_for_retrieval,
+        query_instruction_for_retrieval=TASK_DESCRIPTION,
         query_instruction_format=model_args.query_instruction_format_for_retrieval,
         devices=model_args.devices,
         examples_for_task=examples_for_task,
