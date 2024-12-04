@@ -384,6 +384,8 @@ class ICLLLMEmbedder(AbsEmbedder):
                 max_length=new_max_length,
                 **kwargs
             )
+            max_tokens = max(len(ids) for ids in inputs_batch['input_ids'])
+            print(f"Maximum tokens in batch: {max_tokens}")
             inputs_batch = [{
                 k: inputs_batch[k][i] for k in inputs_batch.keys()
             } for i in range(len(sentences_batch))]

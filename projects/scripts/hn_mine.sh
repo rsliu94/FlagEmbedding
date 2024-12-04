@@ -1,0 +1,14 @@
+python hn_mine.py \
+--embedder_name_or_path BAAI/bge-en-icl \
+--embedder_model_class decoder-only-icl \
+--pooling_method last_token \
+--input_file ../data/embedder_train_eval_data/cross_validation/hn_mine_input.jsonl \
+--output_file ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined_no_examples.jsonl \
+--candidate_pool ../data/embedder_train_eval_data/cross_validation/corpus.jsonl \
+--range_for_sampling 2-200 \
+--negative_number 15 \
+--devices cuda:0 \
+--shuffle_data True \
+--query_instruction_for_retrieval "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer." \
+--query_instruction_format '<instruct>{}\n<query>{}' \
+--add_examples_for_task False

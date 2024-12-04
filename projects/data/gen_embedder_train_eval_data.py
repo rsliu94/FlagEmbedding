@@ -98,13 +98,13 @@ if __name__ == "__main__":
             # build query
             query = f"""Question: {question_text}\nHint: {construct_name}\nCorrect answer: {correct_answer}\nWrong answer: {wrong_answer}"""
             json_line = {
-                "text": query,
+                "query": query,
                 "pos": [misconception_name],
                 "neg": [],
                 "correct_id": misconception_id,
                 "question_id_answer": question_id_answer,
                 "subject_id": subject_id,
-                "instruct": TASK_DESCRIPTION,
+                "prompt": TASK_DESCRIPTION,
             }
             f.write(json.dumps(json_line) + "\n")
             
@@ -123,10 +123,10 @@ if __name__ == "__main__":
                 # build query
                 query = f"""Question: {question_text}\nHint: {construct_name}\nCorrect answer: {correct_answer}\nWrong answer: {wrong_answer}"""
                 json_line = {
-                    "text": query,
+                    "query": query,
                     "question_id_answer": question_id_answer,
                     "subject_id": subject_id,
-                    "instruct": TASK_DESCRIPTION,
+                    "prompt": TASK_DESCRIPTION,
                 }
                 f.write(json.dumps(json_line) + "\n")
     else:
@@ -147,13 +147,13 @@ if __name__ == "__main__":
                 # build query
                 query = f"""Question: {question_text}\nHint: {construct_name}\nCorrect answer: {correct_answer}\nWrong answer: {wrong_answer}"""
                 json_line = {
-                    "text": query,
+                    "query": query,
                     "pos": [misconception_name],
                     "neg": [],
                     "correct_id": misconception_id,
                     "question_id_answer": question_id_answer,
                     "subject_id": subject_id,
-                    "instruct": TASK_DESCRIPTION,
+                    "prompt": TASK_DESCRIPTION,
                 }
                 f.write(json.dumps(json_line) + "\n")
                 
@@ -189,8 +189,9 @@ if __name__ == "__main__":
     with open(f"{OUTPUT_DIR}/hn_mine_input.jsonl", "w", encoding="utf-8") as f:
         for line in train_queries:
             json_line = {
-                "text": line['text'],
+                "query": line['query'],
                 "pos": line['pos'],
                 "neg": line['neg'],
+                "prompt": line['prompt'],
             }
             f.write(json.dumps(json_line) + "\n")

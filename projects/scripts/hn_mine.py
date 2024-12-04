@@ -95,6 +95,9 @@ class ModelArgs:
     embedder_passage_max_length: int = field(
         default=512, metadata={"help": "Max length for passage."}
     )
+    add_examples_for_task: bool = field(
+        default=False, metadata={"help": "Whether to add examples for task."}
+    )
 
 
 def create_index(embeddings: np.ndarray, use_gpu: bool = False):
@@ -214,6 +217,18 @@ def find_knn_neg(
 
 
 def load_model(model_args: ModelArgs):
+    examples_instruction_format = "<instruct>{}\n<query>{}\n<response>{}"
+    if model_args.add_examples_for_task:
+        examples_for_task = [
+            {
+            "instruct": "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer.",
+            "query": "Question: Round \\( 0.0572 \\) to \\( 1 \\) significant figure\nHint: Round numbers between 0 and 1 to one significant figure\nCorrect answer: \\( 0.06 \\)\nWrong answer: \\( 0.05 \\)",
+            "response": "Rounds down instead of up"
+            }
+        ]
+    else:
+        examples_for_task = None
+    
     model = FlagAutoModel.from_finetuned(
         model_name_or_path=model_args.embedder_name_or_path,
         model_class=model_args.embedder_model_class,
@@ -223,8 +238,8 @@ def load_model(model_args: ModelArgs):
         query_instruction_for_retrieval=model_args.query_instruction_for_retrieval,
         query_instruction_format=model_args.query_instruction_format_for_retrieval,
         devices=model_args.devices,
-        examples_for_task=model_args.examples_for_task,
-        examples_instruction_format=model_args.examples_instruction_format,
+        examples_for_task=examples_for_task,
+        examples_instruction_format=examples_instruction_format,
         trust_remote_code=model_args.trust_remote_code,
         cache_dir=model_args.cache_dir,
         batch_size=model_args.batch_size,
