@@ -171,3 +171,17 @@ if __name__ == "__main__":
                 break
         with open(f"{OUTPUT_DIR}/examples.json", "w", encoding="utf-8") as f:
             json.dump(examples, f, indent=4)
+    
+    # Generate hn mine input data
+    with open(f"{OUTPUT_DIR}/train_queries.jsonl", "r", encoding="utf-8") as f:
+        train_queries = [json.loads(line) for line in f]
+        
+        
+    with open(f"{OUTPUT_DIR}/hn_mine_input.jsonl", "w", encoding="utf-8") as f:
+        for line in train_queries:
+            json_line = {
+                "text": line['text'],
+                "pos": line['pos'],
+                "neg": line['neg'],
+            }
+            f.write(json.dumps(json_line) + "\n")
