@@ -99,6 +99,18 @@ def inference_query(queries, query_max_len, examples_prefix, tokenizer, model, b
 
 @torch.no_grad()
 def inference_query_examples_list(queries, query_max_len, examples_prefix_list, tokenizer, model, batch_size, device):
+    print("DEBUG: checking new_queries token statistics")
+    token_count = []
+    for i in tqdm(range(0, len(queries), batch_size)):
+        batch = queries[i:i+batch_size]
+        batch_examples_prefix = examples_prefix_list[i:i+batch_size]
+        new_max_length, new_queries = get_new_queries_examples_list(batch, query_max_len, batch_examples_prefix, tokenizer)
+        for query in new_queries:
+            token_count.append(len(tokenizer(query, add_special_tokens=False)['input_ids']))
+    print(f"Token count statistics: mean={np.mean(token_count):.1f}, max={np.max(token_count)}, min={np.min(token_count)}, "
+          f"25th={np.percentile(token_count, 25):.1f}, 50th={np.percentile(token_count, 50):.1f}, 75th={np.percentile(token_count, 75):.1f}, "
+          f"90th={np.percentile(token_count, 90):.1f}, 95th={np.percentile(token_count, 95):.1f}, 99th={np.percentile(token_count, 99):.1f}")
+        
     print("Getting query embeddings...")
     query_embeddings = []
     for i in tqdm(range(0, len(queries), batch_size)):

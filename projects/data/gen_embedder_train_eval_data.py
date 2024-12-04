@@ -35,15 +35,6 @@ print()
 if __name__ == "__main__":
     env_name, PROJECT_ROOT = get_env_info()
     
-    # examples_raw = [
-    #     {'instruct': 'Given a math question about divide decimals by 10 and a misconcepted incorrect answer to it, retrieve the most accurate reason for the misconception leading to the incorrect answer.',
-    #     'query': '\\( 43.2 \\div 10= \\) Incorrect answer : \\( 33.2 \\)',
-    #     'response': 'Subtracts instead of divides'},
-    #     {'instruct': 'Given a math question about know the equation of the axes and a misconcepted incorrect answer to it, retrieve the most accurate reason for the misconception leading to the incorrect answer.',
-    #     'query': 'What is the equation of the \\( y \\) axis? Incorrect answer : \\( y=0 \\)',
-    #     'response': 'Confuses the equations of vertical and horizontal lines'}
-    # ]
-    
     print(f"Running on {env_name}, project root: {PROJECT_ROOT}")
     if args.is_submission:
         RAW_DATA_DIR = f"{PROJECT_ROOT}/projects/data/raw_data"
@@ -103,6 +94,7 @@ if __name__ == "__main__":
                 "correct_id": misconception_id,
                 "question_id_answer": question_id_answer,
                 "subject_id": subject_id,
+                "construct_id": construct_id,
                 "prompt": TASK_DESCRIPTION,
             }
             f.write(json.dumps(json_line) + "\n")
@@ -125,6 +117,7 @@ if __name__ == "__main__":
                     "query": query,
                     "question_id_answer": question_id_answer,
                     "subject_id": subject_id,
+                    "construct_id": construct_id,
                     "prompt": TASK_DESCRIPTION,
                 }
                 f.write(json.dumps(json_line) + "\n")
@@ -152,34 +145,47 @@ if __name__ == "__main__":
                     "correct_id": misconception_id,
                     "question_id_answer": question_id_answer,
                     "subject_id": subject_id,
+                    "construct_id": construct_id,
                     "prompt": TASK_DESCRIPTION,
                 }
                 f.write(json.dumps(json_line) + "\n")
                 
-    if args.is_submission:
-        # build a examples dictionary from train.csv, then save it to examples.json
-        all_subject_ids = set(train_preprocessed['SubjectId'].values.tolist())
-        examples = {}
-        for subject_id in all_subject_ids:
-            subject_data = train_preprocessed[train_preprocessed['SubjectId'] == subject_id]
-            for _, row in subject_data.iterrows():
-                question_text = row['QuestionText'].strip()
-                construct_name = row['ConstructName'].strip()
-                correct_answer = row['CorrectAnswerText'].strip()
-                wrong_answer = row['WrongAnswerText'].strip()
-                query = f"""Question: {question_text}\nHint: {construct_name}\nCorrect answer: {correct_answer}\nWrong answer: {wrong_answer}"""
-                response = row['MisconceptionName'].strip()
-                examples[subject_id] = {
+    # if args.is_submission:
+    # build a examples dictionary from raw_data/train.csv, then save it to examples.json
+    all_train_data = pd.read_csv(f"{PROJECT_ROOT}/projects/data/raw_data/train.csv")
+    all_train_preprocessed = preprocess_data(all_train_data, misconception_mapping, 
+                                        with_misconception=True,
+                                        filter_na_misconception=True)
+    
+    from collections import defaultdict
+    examples = defaultdict(dict)
+    for _, row in all_train_preprocessed.iterrows():
+        question_text = row['QuestionText'].strip()
+        construct_name = row['ConstructName'].strip()
+        correct_answer = row['CorrectAnswerText'].strip()
+        wrong_answer = row['WrongAnswerText'].strip()
+        query = f"""Question: {question_text}\nHint: {construct_name}\nCorrect answer: {correct_answer}\nWrong answer: {wrong_answer}"""
+        response = row['MisconceptionName'].strip()
+        subject_id = row['SubjectId']
+        construct_id = row['ConstructId']
+        if construct_id not in examples[subject_id]:
+            examples[subject_id][construct_id] = [
+                {
                     "instruct": TASK_DESCRIPTION,
                     "query": query,
                     "response": response
                 }
-                break
-        with open(f"{OUTPUT_DIR}/examples.json", "w", encoding="utf-8") as f:
-            json.dump(examples, f, indent=4)
-        # copy to cross_validation
-        shutil.copy(f"{OUTPUT_DIR}/examples.json", f"{PROJECT_ROOT}/projects/data/embedder_train_eval_data/cross_validation")
-    
+            ]
+        else:
+            examples[subject_id][construct_id].append({
+                "instruct": TASK_DESCRIPTION,
+                "query": query,
+                "response": response
+            })
+    with open(f"{OUTPUT_DIR}/examples.json", "w", encoding="utf-8") as f:
+        json.dump(examples, f, indent=4)
+        
+
     # Generate hn mine input data
     with open(f"{OUTPUT_DIR}/train_queries.jsonl", "r", encoding="utf-8") as f:
         train_queries = [json.loads(line) for line in f]

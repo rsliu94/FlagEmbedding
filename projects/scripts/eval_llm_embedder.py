@@ -18,7 +18,15 @@ from FlagEmbedding.utils.env_utils import get_env_info
 from FlagEmbedding.utils.format_utils import get_detailed_example, get_detailed_instruct
 from FlagEmbedding.utils.infer_utils import inference_doc, inference_query_examples_list, inference_query, batch_to_device
 import argparse
+import random
 import json
+
+# set random seed
+random.seed(42)
+np.random.seed(42)
+torch.manual_seed(42)
+if torch.cuda.is_available():
+    torch.cuda.manual_seed_all(42)
 
 # argparser
 parser = argparse.ArgumentParser(description="Evaluate the raw LLM embedder")
@@ -26,6 +34,9 @@ parser.add_argument("--use_examples_in_query", type=bool, default=False, help="W
 parser.add_argument("--model_path", type=str, default="BAAI/bge-en-icl", help="The path of the model")
 parser.add_argument("--lora_path", type=str, default=None, help="The path of the LoRA weights")
 parser.add_argument("--is_submission", type=bool, default=False, help="Whether is submission")
+parser.add_argument("--num_examples", type=int, default=1, help="Number of examples per query")
+parser.add_argument("--query_max_len", type=int, default=1024, help="The maximum length of the query")
+parser.add_argument("--doc_max_len", type=int, default=128, help="The maximum length of the document")
 args = parser.parse_args()
 # show args
 print("\nScript arguments:")
@@ -47,7 +58,7 @@ if __name__ == "__main__":
         examples_path = os.path.join(EMBEDDER_EVAL_DATA_DIR, "examples.json")
     
 
-    print(f"DEBUG: examples path: {examples_path}, loading examples dict [subject_id -> [query, response]]")
+    print(f"DEBUG: examples path: {examples_path}, loading examples dict [subject_id -> construct_id -> [instruct, query, response]]")
     with open(examples_path, 'r') as f:
         examples_dict = json.load(f)
     
@@ -60,21 +71,51 @@ if __name__ == "__main__":
         print(f"Number of correct ids: {len(correct_ids)}")
     
     queries = []
+    num_examples = args.num_examples
+    print(f"Number of examples per query: {num_examples}")
     examples_prefix_list = []
     with open(queries_path, 'r') as f:
         for line in f:
             row = json.loads(line)
             queries.append(get_detailed_instruct(task_description=row['prompt'], query=row['query']))
             subject_id = str(row['subject_id'])
-            if subject_id in examples_dict and args.use_examples_in_query:
-                examples = [get_detailed_example(examples_dict[subject_id]['instruct'], examples_dict[subject_id]['query'], examples_dict[subject_id]['response'])]
-                examples_prefix_list.append('\n\n'.join(examples) + '\n\n')
+            construct_id = str(row['construct_id'])
+            if args.use_examples_in_query:
+                if subject_id in examples_dict:
+                    if construct_id in examples_dict[subject_id]:
+                        examples = []
+                        N = len(examples_dict[subject_id][construct_id])
+                        random_ids = random.sample(list(range(N)), min(N, num_examples))
+                        for random_id in random_ids:
+                            examples.append(get_detailed_example(examples_dict[subject_id][construct_id][random_id]['instruct'], 
+                                                              examples_dict[subject_id][construct_id][random_id]['query'], 
+                                                              examples_dict[subject_id][construct_id][random_id]['response']))
+                        examples_prefix_list.append('\n\n'.join(examples) + '\n\n')
+                    else:
+                        random_construct_id = random.choice(list(examples_dict[subject_id].keys()))
+                        examples = []
+                        N = len(examples_dict[subject_id][random_construct_id])
+                        random_ids = random.sample(list(range(N)), min(N, num_examples))
+                        for random_id in random_ids:
+                            examples.append(get_detailed_example(examples_dict[subject_id][random_construct_id][random_id]['instruct'], 
+                                                          examples_dict[subject_id][random_construct_id][random_id]['query'], 
+                                                          examples_dict[subject_id][random_construct_id][random_id]['response']))
+                        examples_prefix_list.append('\n\n'.join(examples) + '\n\n')
+                else:
+                    # random sample one
+                    random_subject_id = random.choice(list(examples_dict.keys()))
+                    random_construct_id = random.choice(list(examples_dict[random_subject_id].keys()))
+                    N = len(examples_dict[random_subject_id][random_construct_id])
+                    random_ids = random.sample(list(range(N)), min(N, num_examples))
+                    for random_id in random_ids:
+                        examples.append(get_detailed_example(examples_dict[random_subject_id][random_construct_id][random_id]['instruct'], 
+                                                          examples_dict[random_subject_id][random_construct_id][random_id]['query'], 
+                                                          examples_dict[random_subject_id][random_construct_id][random_id]['response']))
+                    examples_prefix_list.append('\n\n'.join(examples) + '\n\n')
             else:
                 examples_prefix_list.append('')
     print(f"Number of examples prefix: {len(examples_prefix_list)}")
     print(f"Number of queries: {len(queries)}")
-
-    query_max_len, doc_max_len = 1024, 128
 
     print("Loading tokenizer and model...")
     # bnb_config = BitsAndBytesConfig(
@@ -124,8 +165,8 @@ if __name__ == "__main__":
     print(f"Current document max length: {cur_doc_max_len}")
 
 
-    doc_embeddings = inference_doc(corpus, tokenizer, model, doc_max_len, batch_size, device)
-    query_embeddings = inference_query_examples_list(queries, query_max_len, examples_prefix_list, tokenizer, model, batch_size, device)
+    doc_embeddings = inference_doc(corpus, tokenizer, model, args.doc_max_len, batch_size, device)
+    query_embeddings = inference_query_examples_list(queries, args.query_max_len, examples_prefix_list, tokenizer, model, batch_size, device)
     print("Building index...")
     index = faiss.IndexFlatL2(doc_embeddings.shape[1])
     index.add(doc_embeddings)
