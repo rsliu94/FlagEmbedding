@@ -3,10 +3,12 @@ import os
 import subprocess
 import argparse
 import json
-
+import shutil
 import pandas as pd
 from FlagEmbedding.utils.data_utils import preprocess_data
 from FlagEmbedding.utils.env_utils import get_env_info
+
+TASK_DESCRIPTION = "Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer."
 
 # Add str2bool helper function
 def str2bool(v):
@@ -94,7 +96,7 @@ if __name__ == "__main__":
             question_id = row['QuestionId']
             question_id_answer = row['QuestionId_Answer']
             # build query
-            query = f"""Question: {question_text}\nHint: {construct_name}\nWrong answer: {wrong_answer}"""
+            query = f"""Question: {question_text}\nHint: {construct_name}\nCorrect answer: {correct_answer}\nWrong answer: {wrong_answer}"""
             json_line = {
                 "text": query,
                 "pos": [misconception_name],
@@ -102,6 +104,7 @@ if __name__ == "__main__":
                 "correct_id": misconception_id,
                 "question_id_answer": question_id_answer,
                 "subject_id": subject_id,
+                "instruct": TASK_DESCRIPTION,
             }
             f.write(json.dumps(json_line) + "\n")
             
@@ -118,11 +121,12 @@ if __name__ == "__main__":
                 question_id = row['QuestionId']
                 question_id_answer = row['QuestionId_Answer']
                 # build query
-                query = f"""Question: {question_text}\nHint: {construct_name}\nWrong answer: {wrong_answer}"""
+                query = f"""Question: {question_text}\nHint: {construct_name}\nCorrect answer: {correct_answer}\nWrong answer: {wrong_answer}"""
                 json_line = {
                     "text": query,
                     "question_id_answer": question_id_answer,
                     "subject_id": subject_id,
+                    "instruct": TASK_DESCRIPTION,
                 }
                 f.write(json.dumps(json_line) + "\n")
     else:
@@ -141,7 +145,7 @@ if __name__ == "__main__":
                 question_id = row['QuestionId']
                 question_id_answer = row['QuestionId_Answer']
                 # build query
-                query = f"""Question: {question_text}\nHint: {construct_name}\nWrong answer: {wrong_answer}"""
+                query = f"""Question: {question_text}\nHint: {construct_name}\nCorrect answer: {correct_answer}\nWrong answer: {wrong_answer}"""
                 json_line = {
                     "text": query,
                     "pos": [misconception_name],
@@ -149,6 +153,7 @@ if __name__ == "__main__":
                     "correct_id": misconception_id,
                     "question_id_answer": question_id_answer,
                     "subject_id": subject_id,
+                    "instruct": TASK_DESCRIPTION,
                 }
                 f.write(json.dumps(json_line) + "\n")
                 
@@ -161,16 +166,20 @@ if __name__ == "__main__":
             for _, row in subject_data.iterrows():
                 question_text = row['QuestionText'].strip()
                 construct_name = row['ConstructName'].strip()
+                correct_answer = row['CorrectAnswerText'].strip()
                 wrong_answer = row['WrongAnswerText'].strip()
-                query = f"""Question: {question_text}\nHint: {construct_name}\nWrong answer: {wrong_answer}"""
+                query = f"""Question: {question_text}\nHint: {construct_name}\nCorrect answer: {correct_answer}\nWrong answer: {wrong_answer}"""
                 response = row['MisconceptionName'].strip()
                 examples[subject_id] = {
+                    "instruct": TASK_DESCRIPTION,
                     "query": query,
                     "response": response
                 }
                 break
         with open(f"{OUTPUT_DIR}/examples.json", "w", encoding="utf-8") as f:
             json.dump(examples, f, indent=4)
+        # copy to cross_validation
+        shutil.copy(f"{OUTPUT_DIR}/examples.json", f"{PROJECT_ROOT}/projects/data/embedder_train_eval_data/cross_validation")
     
     # Generate hn mine input data
     with open(f"{OUTPUT_DIR}/train_queries.jsonl", "r", encoding="utf-8") as f:
