@@ -1,9 +1,9 @@
 python hn_mine.py \
---embedder_name_or_path BAAI/bge-en-icl \
+--embedder_name_or_path ../model_output/icl_finetune_round1/merged_model_lora_epoch_1 \
 --embedder_model_class decoder-only-icl \
 --pooling_method last_token \
 --input_file ../data/embedder_train_eval_data/cross_validation/hn_mine_input.jsonl \
---output_file ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined.jsonl \
+--output_file ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined_round1.jsonl \
 --candidate_pool ../data/embedder_train_eval_data/cross_validation/corpus.jsonl \
 --range_for_sampling 2-200 \
 --negative_number 15 \

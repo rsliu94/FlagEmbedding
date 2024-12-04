@@ -280,32 +280,41 @@ python hn_mine.py \
 | 1 | 0.5119 | 0.9050 |
 | 2 | 0.6285 | 0.9270 |
 
-# New Validation Set + Data Pipeline
+# Iterative Hard Negative Mining
+
+## Round 0, New Validation Set + Data Pipeline
 `Per-batch-size=8`
 | Epoch | MAP@25 | Recall@25 | LB Score |
 |-------|--------|-----------|---------|
 | 0[pretrain] | 0.2299 | 0.590 | 0.216 |
 | 1 | 0.4452 | 0.8530 | 0.321 |
 
-
-# Iterative Hard Negative Mining
-## 1. Hard Negative Mining, Round 1
-### 1. Gen input data
-### 2. Mine hard negative use FineTuned icl model
+## Round 1
+### Merge lora with base model
+```bash
+python save_merged_model.py \
+    --base_model_path BAAI/bge-en-icl \
+    --lora_path ../model_output/icl_finetune_round1/lora_epoch_1 \
+    --output_dir ../model_output/icl_finetune_round1/merged_model_lora_epoch_1
+```
+### Mine hard negative use FineTuned icl model
 `projects/model_output/icl_finetune_validation_v3_round1/checkpoint-545`
 ```bash
 python hn_mine.py \
---embedder_name_or_path ../model_output/icl_finetune_validation_v3_round1/checkpoint-545 \
+--embedder_name_or_path ../model_output/icl_finetune_round1/merged_model_lora_epoch_1 \
 --embedder_model_class decoder-only-icl \
 --pooling_method last_token \
---input_file ../data/hn_mine_data_round_1/validation_v3/finetune_data.jsonl \
---output_file ../data/hn_mine_data_round_1/validation_v3/finetune_data_minedHN.jsonl \
---candidate_pool ../data/hn_mine_data_round_1/validation_v3/candidate_pool.jsonl \
+--input_file ../data/embedder_train_eval_data/cross_validation/hn_mine_input.jsonl \
+--output_file ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined_round1.jsonl \
+--candidate_pool ../data/embedder_train_eval_data/cross_validation/corpus.jsonl \
 --range_for_sampling 2-200 \
 --negative_number 15 \
---devices cuda:0
-```
-### 3. finetune ICL(scratch) with new mined hard negative in round 1
-```bash
-./icl_finetune.sh
+--devices cuda:0 \
+--shuffle_data True \
+--query_instruction_for_retrieval "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer." \
+--query_instruction_format '<instruct>{}\n<query>{}' \
+--add_examples_for_task True \
+--batch_size 1024 \
+--embedder_query_max_length 1024 \
+--embedder_passage_max_length 512
 ```
