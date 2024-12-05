@@ -34,7 +34,6 @@ parser.add_argument("--use_examples_in_query", type=bool, default=False, help="W
 parser.add_argument("--model_path", type=str, default="BAAI/bge-en-icl", help="The path of the model")
 parser.add_argument("--lora_path", type=str, default=None, help="The path of the LoRA weights")
 parser.add_argument("--is_submission", type=bool, default=False, help="Whether is submission")
-parser.add_argument("--num_examples", type=int, default=1, help="Number of examples per query")
 parser.add_argument("--query_max_len", type=int, default=1024, help="The maximum length of the query")
 parser.add_argument("--doc_max_len", type=int, default=128, help="The maximum length of the document")
 args = parser.parse_args()
@@ -71,8 +70,6 @@ if __name__ == "__main__":
         print(f"Number of correct ids: {len(correct_ids)}")
     
     queries = []
-    num_examples = args.num_examples
-    print(f"Number of examples per query: {num_examples}")
     examples_prefix_list = []
     with open(queries_path, 'r') as f:
         for line in f:
@@ -83,34 +80,26 @@ if __name__ == "__main__":
             if args.use_examples_in_query:
                 if subject_id in examples_dict:
                     if construct_id in examples_dict[subject_id]:
-                        examples = []
-                        N = len(examples_dict[subject_id][construct_id])
-                        random_ids = random.sample(list(range(N)), min(N, num_examples))
-                        for random_id in random_ids:
-                            examples.append(get_detailed_example(examples_dict[subject_id][construct_id][random_id]['instruct'], 
-                                                              examples_dict[subject_id][construct_id][random_id]['query'], 
-                                                              examples_dict[subject_id][construct_id][random_id]['response']))
+                        random_id = random.choice(list(range(len(examples_dict[subject_id][construct_id]))))
+                        examples = [get_detailed_example(examples_dict[subject_id][construct_id][random_id]['instruct'], 
+                                                        examples_dict[subject_id][construct_id][random_id]['query'], 
+                                                        examples_dict[subject_id][construct_id][random_id]['response'])]
                         examples_prefix_list.append('\n\n'.join(examples) + '\n\n')
                     else:
                         random_construct_id = random.choice(list(examples_dict[subject_id].keys()))
-                        examples = []
-                        N = len(examples_dict[subject_id][random_construct_id])
-                        random_ids = random.sample(list(range(N)), min(N, num_examples))
-                        for random_id in random_ids:
-                            examples.append(get_detailed_example(examples_dict[subject_id][random_construct_id][random_id]['instruct'], 
-                                                          examples_dict[subject_id][random_construct_id][random_id]['query'], 
-                                                          examples_dict[subject_id][random_construct_id][random_id]['response']))
+                        random_id = random.choice(list(range(len(examples_dict[subject_id][random_construct_id]))))
+                        examples = [get_detailed_example(examples_dict[subject_id][random_construct_id][random_id]['instruct'], 
+                                                        examples_dict[subject_id][random_construct_id][random_id]['query'], 
+                                                        examples_dict[subject_id][random_construct_id][random_id]['response'])]
                         examples_prefix_list.append('\n\n'.join(examples) + '\n\n')
                 else:
                     # random sample one
                     random_subject_id = random.choice(list(examples_dict.keys()))
                     random_construct_id = random.choice(list(examples_dict[random_subject_id].keys()))
-                    N = len(examples_dict[random_subject_id][random_construct_id])
-                    random_ids = random.sample(list(range(N)), min(N, num_examples))
-                    for random_id in random_ids:
-                        examples.append(get_detailed_example(examples_dict[random_subject_id][random_construct_id][random_id]['instruct'], 
-                                                          examples_dict[random_subject_id][random_construct_id][random_id]['query'], 
-                                                          examples_dict[random_subject_id][random_construct_id][random_id]['response']))
+                    random_id = random.choice(list(range(len(examples_dict[random_subject_id][random_construct_id]))))
+                    examples = [get_detailed_example(examples_dict[random_subject_id][random_construct_id][random_id]['instruct'], 
+                                                    examples_dict[random_subject_id][random_construct_id][random_id]['query'], 
+                                                    examples_dict[random_subject_id][random_construct_id][random_id]['response'])]
                     examples_prefix_list.append('\n\n'.join(examples) + '\n\n')
             else:
                 examples_prefix_list.append('')
