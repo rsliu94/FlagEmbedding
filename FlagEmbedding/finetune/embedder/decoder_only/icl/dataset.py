@@ -167,7 +167,9 @@ class DecoderOnlyEmbedderICLSameDatasetTrainDataset(AbsEmbedderSameDatasetTrainD
 
         # handle queries
         for i in range(len(queries)):
-            choices = random.choice([0, 1, 2, 3, 4, 5])
+            # choices = random.choice([0, 1, 2, 3, 4, 5])
+            # less samples
+            choices = random.choice([0, 1, 2])
             if choices > 0 and len(icl_pairs) > 0:
                 prefix_ids = random.sample(list(range(len(icl_pairs))), min(choices + 1, len(icl_pairs)))
                 if i in prefix_ids:
