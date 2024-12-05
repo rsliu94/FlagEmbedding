@@ -196,7 +196,7 @@ class DecoderOnlyEmbedderICLRunner(AbsEmbedderRunner):
             self.training_args.resume_from_checkpoint = True
         logger.info(f'Resume from checkpoint: {self.training_args.resume_from_checkpoint}, type: {type(self.training_args.resume_from_checkpoint)}')
         self.trainer.train(resume_from_checkpoint=self.training_args.resume_from_checkpoint)
-        self.trainer.evaluate(self.eval_dataset)
+        # self.trainer.evaluate(self.eval_dataset)
         
         # save merged model
         if self.model_args.save_merged_lora_model and self.training_args.process_index == 0:
