@@ -8,7 +8,7 @@ from FlagEmbedding.abc.finetune.embedder.AbsArguments import AbsEmbedderTraining
 from FlagEmbedding.abc.finetune.embedder import AbsEmbedderRunner, AbsEmbedderModel, EmbedderTrainerCallbackForDataRefresh, EvaluateCallback
 
 from .arguments import DecoderOnlyEmbedderICLModelArguments, DecoderOnlyEmbedderICLDataArguments
-from .trainer import DecoderOnlyEmbedderICLTrainer, SaveLoraCallback, SaveCheckpointCallback
+from .trainer import DecoderOnlyEmbedderICLTrainer, SaveLoraCallback
 from .modeling import BiDecoderOnlyEmbedderICLModel
 from .dataset import DecoderOnlyEmbedderICLSameDatasetTrainDataset, DecoderOnlyEmbedderICLSameDatasetEvalDataset
 from .load_model import get_model, save_merged_model

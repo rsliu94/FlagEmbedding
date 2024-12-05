@@ -18,15 +18,6 @@ random.seed(42)
 
 logger = logging.getLogger(__name__)
 
-class SaveCheckpointCallback(TrainerCallback):
-    def on_epoch_end(self, args, state, control, model=None, tokenizer=None, **kwargs):
-        if not state.is_world_process_zero:
-            return
-        logger.info(f"Epoch {state.epoch} end. Saving model checkpoint to {args.output_dir}")
-        # 'BiDecoderOnlyEmbedderICLModel' object has no attribute 'save_pretrained'
-        model.save_pretrained(args.output_dir)
-        tokenizer.save_pretrained(args.output_dir)
-
 
 class SaveLoraCallback(TrainerCallback):
     def on_epoch_end(self, args, state, control, model=None, tokenizer=None, **kwargs):
