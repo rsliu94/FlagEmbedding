@@ -219,6 +219,7 @@ def find_knn_neg(
 def load_model(model_args: ModelArgs):
     examples_instruction_format = "<instruct>{}\n<query>{}\n<response>{}"
     if model_args.add_examples_for_task:
+        print("Add examples for retrieval")
         examples_for_task = [
             {
             "instruct": TASK_DESCRIPTION,
@@ -227,6 +228,7 @@ def load_model(model_args: ModelArgs):
             }
         ]
     else:
+        print("No examples added for retrieval")
         examples_for_task = None
     
     model = FlagAutoModel.from_finetuned(

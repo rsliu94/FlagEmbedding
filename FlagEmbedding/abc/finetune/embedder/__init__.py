@@ -6,6 +6,7 @@ from .AbsArguments import (
 from .AbsDataset import (
     AbsEmbedderCollator, AbsEmbedderSameDatasetCollator,
     AbsEmbedderSameDatasetTrainDataset,
+    AbsEmbedderSameDatasetEvalDataset,
     AbsEmbedderTrainDataset,
     EmbedderTrainerCallbackForDataRefresh,
 )
@@ -25,6 +26,7 @@ __all__ = [
     "AbsEmbedderCollator",
     "AbsEmbedderSameDatasetTrainDataset",
     "AbsEmbedderSameDatasetCollator",
+    "AbsEmbedderSameDatasetEvalDataset",
     "EmbedderOutput",
     "EmbedderTrainerCallbackForDataRefresh",
     "EvaluateCallback",

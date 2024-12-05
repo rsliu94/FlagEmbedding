@@ -47,6 +47,12 @@ class AbsEmbedderDataArguments:
             "nargs": "+"
         }
     )
+    eval_data: str = field(
+        default=None, metadata={
+            "help": "One or more paths to evaluation data. `query: str`, `pos: List[str]`, `neg: List[str]` are required in the evaluation data.",
+            "nargs": "+"
+        }
+    )
     cache_path: Optional[str] = field(
         default=None, metadata={"help": "Where do you want to store the cached data"}
     )
@@ -116,15 +122,14 @@ class AbsEmbedderDataArguments:
         default=None, 
         metadata={"help": "The path to the corpus file. If provided, the corpus will be used for evaluation."}
     )
-    eval_data: Optional[str] = field(
-        default=None, 
-        metadata={"help": "The path to the evaluation data file. If provided, the evaluation data will be used for evaluation."}
-    )
 
     def __post_init__(self):
         for train_dir in self.train_data:
             if not os.path.exists(train_dir):
                 raise FileNotFoundError(f"cannot find file: {train_dir}, please set a true path")
+        for eval_dir in self.eval_data:
+            if not os.path.exists(eval_dir):
+                raise FileNotFoundError(f"cannot find file: {eval_dir}, please set a true path")
 
 
 @dataclass

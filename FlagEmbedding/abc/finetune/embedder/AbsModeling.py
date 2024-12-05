@@ -237,6 +237,7 @@ class AbsEmbedderModel(ABC, nn.Module):
         passages: Union[Dict[str, Tensor], List[Dict[str, Tensor]]] = None,
         teacher_scores: Union[None, List[float]] = None,
         no_in_batch_neg_flag: bool = False,
+        compute_while_eval: bool = False,
     ):
         """The computation performed at every call.
 
@@ -252,7 +253,8 @@ class AbsEmbedderModel(ABC, nn.Module):
         q_reps = self.encode(queries) # (batch_size, dim)
         p_reps = self.encode(passages) # (batch_size * group_size, dim)
 
-        if self.training:
+        if self.training or compute_while_eval:
+        # if self.training:
             if teacher_scores is not None:
                 teacher_scores = torch.tensor(teacher_scores, device=q_reps.device)
                 teacher_scores = teacher_scores.view(q_reps.size(0), -1).detach()   # (batch_size, group_size)

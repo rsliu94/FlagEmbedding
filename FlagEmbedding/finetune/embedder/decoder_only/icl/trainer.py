@@ -4,14 +4,17 @@ import logging
 from typing import Optional, List
 import json
 from tqdm import tqdm
+from torch.utils.data import Dataset, DataLoader
 import numpy as np
 from FlagEmbedding.abc.finetune.embedder import AbsEmbedderTrainer
 from FlagEmbedding.utils.format_utils import get_detailed_example, get_detailed_instruct
-from FlagEmbedding.utils.infer_utils import batch_to_device, get_new_queries, get_new_queries_examples_list
+from FlagEmbedding.utils.infer_utils import batch_to_device, get_new_queries, get_new_queries_examples_list, inference_doc, inference_query_examples_list
 from FlagEmbedding.utils.data_utils import preprocess_text
 from FlagEmbedding.utils.metrics import mean_average_precision_at_k, recall_at_k
 import faiss
 from transformers import TrainerCallback
+import random
+random.seed(42)
 
 logger = logging.getLogger(__name__)
 
@@ -138,15 +141,28 @@ class DecoderOnlyEmbedderICLTrainer(AbsEmbedderTrainer):
             raise
         
     @torch.no_grad()
-    def evaluate(self, ignore_keys: Optional[List[str]] = None):
+    def evaluate(self, eval_dataset: Optional[Dataset] = None, ignore_keys: Optional[List[str]] = None):
         # debug: eval_llm_embedder.py results: 20s on doc + 2min on query; map@25_score: 0.20892443160013727 recall@25_score: 0.5653804930332261
         # evaluate(): [bs=16]26s on doc + 2:48 on query; map@25_score: 0.20677747849712655 recall@25_score: 0.5643086816720257
         # [if remove construct_name from task_description, map@25=0.188]
-        # memory metrics - must set up as early as possible 
-        if not self.is_world_process_zero():
-            return {}
+        # memory metrics - must set up as early as possible
         self._memory_tracker.start()
         self.model.eval()
+        eval_loss = None
+        
+        if eval_dataset is None and self.eval_dataset is not None:
+            eval_dataset = self.eval_dataset
+        
+        if eval_dataset is not None:
+            logger.info("Got eval dataset, calculating eval_loss on it ...")
+            eval_loss = self._calculate_eval_loss(eval_dataset)
+            logger.info(f"Eval loss: {eval_loss}")
+            logger.info(f"Eval epoch done, refresh epoch")
+            self.eval_dataset.refresh_epoch()
+        
+        if not self.is_world_process_zero():
+            return {}
+        
         if self.eval_corpus_path is None:
             logger.warning("No evaluation dataset provided. Skipping evaluation.")
             return
@@ -154,22 +170,11 @@ class DecoderOnlyEmbedderICLTrainer(AbsEmbedderTrainer):
         logger.info("Evaluating the model for MAP@25 and Recall@25 metrics...")
         logger.info(f"DEBUG: corpus path: {self.eval_corpus_path}")
         logger.info(f"DEBUG: queries path: {self.eval_queries_path}")
-        # if self.eval_examples_path is not None:
-        #     logger.info(f"DEBUG: examples path: {self.eval_examples_path}")
-        #     with open(self.eval_examples_path, 'r', encoding='utf-8') as f:
-        #         examples = json.load(f)
-        #     examples = [get_detailed_example(e['instruct'], e['query'], e['response']) for e in examples]
-        #     examples_prefix = '\n\n'.join(examples) + '\n\n' # if there not exists any examples, just set examples_prefix = ''
-        # else:
-        #     logger.info("No evaluation examples provided.")
-        #     examples_prefix = ''
-        # logger.info(f"Use examples_prefix: {examples_prefix}")
         
         if self.eval_examples_path is not None:
-            logger.info(f"DEBUG: examples path: {self.eval_examples_path}, loading examples dict [subject_id -> [query, response]]")
+            logger.info(f"DEBUG: examples path: {self.eval_examples_path}, loading examples dict [subject_id -> construct_id -> [instruct, query, response]]")
             with open(self.eval_examples_path, 'r') as f:
                 examples_dict = json.load(f)
-            # examples_dict = json.load(open(self.eval_examples_path, 'r'))
             logger.info(f"DEBUG: examples dict length: {len(examples_dict)}")
         
         corpus = [json.loads(line)['text'] for line in open(self.eval_corpus_path, 'r')] # list of strings
@@ -177,21 +182,54 @@ class DecoderOnlyEmbedderICLTrainer(AbsEmbedderTrainer):
         correct_ids = [json.loads(line)['correct_id'] for line in open(self.eval_queries_path, 'r')] # list of floats
         print(f"Number of correct ids: {len(correct_ids)}")
         queries = []
+        num_examples = 1
+        use_examples_in_query = True
+        print(f"Number of examples per query: {num_examples}")
         examples_prefix_list = []
         with open(self.eval_queries_path, 'r') as f:
             for line in f:
                 row = json.loads(line)
                 queries.append(get_detailed_instruct(task_description=row['prompt'], query=row['query']))
                 subject_id = str(row['subject_id'])
-                if subject_id in examples_dict:
-                    examples = [get_detailed_example(examples_dict[subject_id]['instruct'], examples_dict[subject_id]['query'], examples_dict[subject_id]['response'])]
-                    examples_prefix_list.append('\n\n'.join(examples) + '\n\n')
+                construct_id = str(row['construct_id'])
+                if use_examples_in_query:
+                    if subject_id in examples_dict:
+                        if construct_id in examples_dict[subject_id]:
+                            examples = []
+                            N = len(examples_dict[subject_id][construct_id])
+                            random_ids = random.sample(list(range(N)), min(N, num_examples))
+                            for random_id in random_ids:
+                                examples.append(get_detailed_example(examples_dict[subject_id][construct_id][random_id]['instruct'], 
+                                                                examples_dict[subject_id][construct_id][random_id]['query'], 
+                                                                examples_dict[subject_id][construct_id][random_id]['response']))
+                            examples_prefix_list.append('\n\n'.join(examples) + '\n\n')
+                        else:
+                            random_construct_id = random.choice(list(examples_dict[subject_id].keys()))
+                            examples = []
+                            N = len(examples_dict[subject_id][random_construct_id])
+                            random_ids = random.sample(list(range(N)), min(N, num_examples))
+                            for random_id in random_ids:
+                                examples.append(get_detailed_example(examples_dict[subject_id][random_construct_id][random_id]['instruct'], 
+                                                            examples_dict[subject_id][random_construct_id][random_id]['query'], 
+                                                            examples_dict[subject_id][random_construct_id][random_id]['response']))
+                            examples_prefix_list.append('\n\n'.join(examples) + '\n\n')
+                    else:
+                        # random sample one
+                        random_subject_id = random.choice(list(examples_dict.keys()))
+                        random_construct_id = random.choice(list(examples_dict[random_subject_id].keys()))
+                        N = len(examples_dict[random_subject_id][random_construct_id])
+                        random_ids = random.sample(list(range(N)), min(N, num_examples))
+                        for random_id in random_ids:
+                            examples.append(get_detailed_example(examples_dict[random_subject_id][random_construct_id][random_id]['instruct'], 
+                                                            examples_dict[random_subject_id][random_construct_id][random_id]['query'], 
+                                                            examples_dict[random_subject_id][random_construct_id][random_id]['response']))
+                        examples_prefix_list.append('\n\n'.join(examples) + '\n\n')
                 else:
                     examples_prefix_list.append('')
-        logger.info(f"Number of examples prefix: {len(examples_prefix_list)}")
+        print(f"Number of examples prefix: {len(examples_prefix_list)}")
         print(f"Number of queries: {len(queries)}")
         
-        query_max_len, doc_max_len = 512, 512
+        query_max_len, doc_max_len = 512, 128
         batch_size = self.args.per_device_eval_batch_size
         device = next(self.model.parameters()).device
         logger.info(f"Eval batch size: {batch_size}")
@@ -206,34 +244,8 @@ class DecoderOnlyEmbedderICLTrainer(AbsEmbedderTrainer):
             cur_doc_max_len = max(cur_doc_max_len, len(self.tokenizer(doc)['input_ids']))
         logger.info(f"Current document max length: {cur_doc_max_len}")
         
-        doc_embeddings = []
-        print("Getting document embeddings...")
-        for i in tqdm(range(0, len(corpus), batch_size)):
-            batch = corpus[i:i+batch_size]
-            batch_dict = self.tokenizer(batch, max_length=doc_max_len, padding=True, truncation=True, return_tensors='pt')
-            batch_dict = batch_to_device(batch_dict, device)
-            embedding = self.model.encode(batch_dict)
-            embedding = embedding.detach().cpu().numpy()
-            doc_embeddings.append(embedding)
-        doc_embeddings = np.concatenate(doc_embeddings, axis=0)
-        print(f"Document embeddings shape: {doc_embeddings.shape}")
-        
-        print("Getting query embeddings...")
-        query_embeddings = []
-        for i in tqdm(range(0, len(queries), batch_size)):
-            batch = queries[i:i+batch_size]
-            batch_examples_prefix = examples_prefix_list[i:i+batch_size]
-            new_max_length, new_queries = get_new_queries_examples_list(batch, query_max_len, batch_examples_prefix, self.tokenizer)
-            # if i == 0 or i == 5:
-            #     logger.info(f"DEBUG: New max length: {new_max_length}")
-            #     logger.info(f"DEBUG: New queries: {new_queries}")
-            batch_dict = self.tokenizer(new_queries, max_length=new_max_length, padding=True, truncation=True, return_tensors='pt')
-            batch_dict = batch_to_device(batch_dict, device)
-            embedding = self.model.encode(batch_dict)
-            embedding = embedding.detach().cpu().numpy()
-            query_embeddings.append(embedding)
-        query_embeddings = np.concatenate(query_embeddings, axis=0)
-        print(f"Query embeddings shape: {query_embeddings.shape}")
+        doc_embeddings = inference_doc(corpus, self.tokenizer, self.model, doc_max_len, batch_size, device)
+        query_embeddings = inference_query_examples_list(queries, query_max_len, examples_prefix_list, self.tokenizer, self.model, batch_size, device)
         
         print("Building index...")
         index = faiss.IndexFlatL2(doc_embeddings.shape[1])
@@ -247,4 +259,41 @@ class DecoderOnlyEmbedderICLTrainer(AbsEmbedderTrainer):
         recall_score = recall_at_k(correct_ids, indices, 25)
         print(f"recall@25_score: {recall_score}")
         
-        return {'map@25_score': mapk_score, 'recall@25_score': recall_score}
+        return {'map@25_score': mapk_score, 'recall@25_score': recall_score, 'eval_loss': eval_loss}
+
+    def _calculate_eval_loss(self, eval_dataset: Dataset) -> float:
+        """计算评估数据集上的损失
+
+        Args:
+            eval_dataset (Dataset): 评估数据集
+
+        Returns:
+            float: 评估损失
+        """
+        # 添加 DistributedSampler
+        if self.args.local_rank != -1:  # 分布式训练时
+            sampler = torch.utils.data.DistributedSampler(
+                eval_dataset,
+                num_replicas=self.args.world_size,
+                rank=self.args.local_rank,
+                shuffle=False
+            )
+        else:
+            sampler = None
+        
+        eval_dataloader = DataLoader(
+            eval_dataset,
+            batch_size=1,
+            collate_fn=self.data_collator,
+            pin_memory=True,
+            sampler=sampler  # 添加 sampler
+        )
+        
+        total_loss = 0.0
+        num_batches = 0
+        for batch in tqdm(eval_dataloader, desc="Evaluating"):
+            batch = self._prepare_inputs(batch)
+            loss = self.compute_loss(self.model, batch, compute_while_eval=True)
+            total_loss += loss
+            num_batches += 1
+        return total_loss / num_batches if num_batches > 0 else float('inf')

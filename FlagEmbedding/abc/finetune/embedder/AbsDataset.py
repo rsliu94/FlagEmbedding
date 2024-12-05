@@ -286,7 +286,7 @@ class AbsEmbedderSameDatasetTrainDataset(AbsEmbedderTrainDataset):
     ):
         self.args = args
         self.shuffle_ratio = args.shuffle_ratio
-        self.defaut_batch_size = default_batch_size
+        self.default_batch_size = default_batch_size
         self.deterministic_generator = np.random.default_rng(seed)
         self.tokenizer = tokenizer
         self.process_index = process_index
@@ -617,6 +617,90 @@ class AbsEmbedderSameDatasetCollator(DataCollatorWithPadding):
             "teacher_scores": teacher_scores,
             "no_in_batch_neg_flag": no_in_batch_neg_flag
         }
+
+
+class AbsEmbedderSameDatasetEvalDataset(AbsEmbedderSameDatasetTrainDataset):
+    """用于评估的数据集类,继承自AbsEmbedderSameDatasetTrainDataset。
+    仅将train_data改为eval_data，并调整相关变量命名。
+    """
+    def __init__(
+        self,
+        args: AbsEmbedderDataArguments,
+        default_batch_size: int,
+        seed: int,
+        tokenizer: PreTrainedTokenizer,
+        process_index: int=0,
+        num_processes: int=1
+    ):
+        self.args = args
+        self.shuffle_ratio = args.shuffle_ratio
+        self.default_batch_size = default_batch_size
+        self.deterministic_generator = np.random.default_rng(seed)
+        self.tokenizer = tokenizer
+        self.process_index = process_index
+        self.num_processes = num_processes
+
+        self.step = 0
+
+        eval_datasets = []
+        each_data_idxs = []
+        batch_size_idxs = []
+        no_in_batch_neg_flags = []
+        cur_all_num = 0
+
+        small_threshold = args.small_threshold
+        drop_threshold = args.drop_threshold
+
+        for data_dir in args.eval_data:
+            if not os.path.isdir(data_dir):
+                no_in_batch_neg_flag = data_dir.split('.')[-2].endswith('no_in_batch_neg')
+                if not (data_dir.endswith('.json') or data_dir.endswith('.jsonl')): continue
+                temp_dataset = self._load_dataset(data_dir)
+
+                if len(temp_dataset) == 0 or len(temp_dataset) < small_threshold: continue
+                else:
+                    eval_datasets.append(temp_dataset)
+                    each_data_idxs.append(np.arange(len(temp_dataset)) + cur_all_num)
+                    cur_all_num += len(temp_dataset)
+                    batch_size_idxs.append(self._get_file_batch_size(temp_dataset, default_batch_size))
+                    no_in_batch_neg_flags.append(no_in_batch_neg_flag)
+
+            else:
+                small_datasets = []
+                small_batch_size = math.inf
+
+                no_in_batch_neg_flag = data_dir.endswith('no_in_batch_neg')
+                for file in os.listdir(data_dir):
+                    if not (file.endswith('.json') or file.endswith('.jsonl')): continue
+                    temp_dataset = self._load_dataset(os.path.join(data_dir, file))
+
+                    if len(temp_dataset) == 0: continue
+                    elif len(temp_dataset) < small_threshold:
+                        small_datasets.append(temp_dataset)
+                        small_batch_size = min(small_batch_size, self._get_file_batch_size(temp_dataset, default_batch_size))
+                    else:
+                        eval_datasets.append(temp_dataset)
+                        each_data_idxs.append(np.arange(len(temp_dataset)) + cur_all_num)
+                        cur_all_num += len(temp_dataset)
+                        batch_size_idxs.append(self._get_file_batch_size(temp_dataset, default_batch_size))
+                        no_in_batch_neg_flags.append(no_in_batch_neg_flag)
+
+                if len(small_datasets) > 0:
+                    small_dataset = datasets.concatenate_datasets(small_datasets)
+                    if len(small_dataset) >= drop_threshold:
+                        eval_datasets.append(small_dataset)
+                        each_data_idxs.append(np.arange(len(small_dataset)) + cur_all_num)
+                        cur_all_num += len(small_dataset)
+                        batch_size_idxs.append(small_batch_size)
+                        no_in_batch_neg_flags.append(no_in_batch_neg_flag)
+
+        self.dataset = datasets.concatenate_datasets(eval_datasets)
+        self.each_data_idxs = each_data_idxs
+        self.datasets_inxs = np.arange(len(each_data_idxs))
+        self.batch_size_idxs = batch_size_idxs
+        self.no_in_batch_neg_flags = no_in_batch_neg_flags
+
+        self.refresh_epoch()
 
 
 class EmbedderTrainerCallbackForDataRefresh(TrainerCallback):

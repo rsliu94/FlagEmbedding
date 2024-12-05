@@ -7,7 +7,7 @@ from transformers import (
     DataCollatorWithPadding,
 )
 
-from FlagEmbedding.abc.finetune.embedder import AbsEmbedderSameDatasetTrainDataset
+from FlagEmbedding.abc.finetune.embedder import AbsEmbedderSameDatasetTrainDataset, AbsEmbedderSameDatasetEvalDataset
 
 from .arguments import DecoderOnlyEmbedderICLDataArguments
 
@@ -288,3 +288,16 @@ class AbsEmbedderSameDatasetCollator(DataCollatorWithPadding):
             "teacher_scores": teacher_scores,
             "no_in_batch_neg_flag": no_in_batch_neg_flag
         }
+
+
+class DecoderOnlyEmbedderICLSameDatasetEvalDataset(
+    DecoderOnlyEmbedderICLSameDatasetTrainDataset,
+    AbsEmbedderSameDatasetEvalDataset
+):
+    """评估数据集类，继承ICL训练数据集的所有功能，但使用eval_data而非train_data。
+    
+    继承顺序很重要：
+    1. DecoderOnlyEmbedderICLSameDatasetTrainDataset 提供ICL特定的方法实现
+    2. AbsEmbedderSameDatasetEvalDataset 提供使用eval_data的初始化逻辑
+    """
+    pass

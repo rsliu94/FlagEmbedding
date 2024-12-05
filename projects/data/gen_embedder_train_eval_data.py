@@ -198,3 +198,19 @@ if __name__ == "__main__":
                 "prompt": line['prompt'],
             }
             f.write(json.dumps(json_line) + "\n")
+    
+    # Generate hn mine input data [for test] when is_submission is False
+    if not args.is_submission:
+        with open(f"{OUTPUT_DIR}/test_queries.jsonl", "r", encoding="utf-8") as f:
+            test_queries = [json.loads(line) for line in f]
+            
+            
+        with open(f"{OUTPUT_DIR}/hn_mine_test_input.jsonl", "w", encoding="utf-8") as f:
+            for line in test_queries:
+                json_line = {
+                    "query": line['query'],
+                    "pos": line['pos'],
+                    "neg": line['neg'],
+                    "prompt": line['prompt'],
+                }
+                f.write(json.dumps(json_line) + "\n")
