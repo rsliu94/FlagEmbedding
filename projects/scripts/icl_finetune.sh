@@ -3,10 +3,10 @@
 source /etc/network_turbo
 
 train_data="\
-    ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined_round3.jsonl \
+    ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined_round0.jsonl \
 "
 eval_data="\
-    ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined_round3_test.jsonl  \
+    ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined_round0_test.jsonl  \
 "
 eval_corpus_path="../data/embedder_train_eval_data/cross_validation/corpus.jsonl"
 eval_queries_path="../data/embedder_train_eval_data/cross_validation/test_queries.jsonl"
@@ -21,10 +21,10 @@ query_max_len=1024
 
 save_merged_lora_model=True
 save_steps=219
-output_dir="../model_output/icl_finetune_round4"
+output_dir="../model_output/icl_hn_finetune_round1"
 
-lora_rank=32
-lora_alpha=64
+lora_rank=64
+lora_alpha=32
 learning_rate=1e-4
 
 # set num_gpus to 2 for testing
