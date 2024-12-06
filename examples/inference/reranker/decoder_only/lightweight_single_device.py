@@ -9,7 +9,7 @@ def test_base_multi_devices():
         query_instruction_for_rerank="A: ",
         passage_instruction_for_rerank="B: ",
         trust_remote_code=True,
-        devices=["cuda:3"],   # if you don't have GPUs, you can use ["cpu", "cpu"]
+        devices=["cuda:0"],   # if you don't have GPUs, you can use ["cpu", "cpu"]
         cache_dir=os.getenv('HF_HUB_CACHE', None),
     )
     
@@ -18,7 +18,7 @@ def test_base_multi_devices():
         ["What is the capital of France?", "The population of China is over 1.4 billion people."],
         ["What is the population of China?", "Paris is the capital of France."],
         ["What is the population of China?", "The population of China is over 1.4 billion people."]
-    ] * 100
+    ]
     
     scores = model.compute_score(pairs, cutoff_layers=[28], compress_ratio=2, compress_layers=[24, 40])
     

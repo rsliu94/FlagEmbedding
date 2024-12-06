@@ -241,14 +241,17 @@ class DecoderOnlyEmbedderICLTrainer(AbsEmbedderTrainer):
         print("Building index...")
         index = faiss.IndexFlatL2(doc_embeddings.shape[1])
         index.add(doc_embeddings)
-        distances, indices = index.search(query_embeddings, k=25)
+        distances, indices = index.search(query_embeddings, k=100)
         print(f"Distances shape: {distances.shape}, Indices shape: {indices.shape}")
 
-        mapk_score = mean_average_precision_at_k(correct_ids, indices, 25)
-        print(f"map@25_score: {mapk_score}")
-
-        recall_score = recall_at_k(correct_ids, indices, 25)
-        print(f"recall@25_score: {recall_score}")
+        for k in [25, 50, 75, 100]:
+            print(f"--------------------------------")
+            mapk_score = mean_average_precision_at_k(correct_ids, indices, k)
+            print(f"map@{k}_score: {mapk_score}")
+            recall_score = recall_at_k(correct_ids, indices, k)
+            print(f"recall@{k}_score: {recall_score}")
+            print(f"eval loss: {eval_loss}")
+            print(f"--------------------------------")
         
         return {'map@25_score': mapk_score, 'recall@25_score': recall_score, 'eval_loss': eval_loss}
 

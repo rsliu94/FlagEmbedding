@@ -159,18 +159,19 @@ if __name__ == "__main__":
     print("Building index...")
     index = faiss.IndexFlatL2(doc_embeddings.shape[1])
     index.add(doc_embeddings)
-    distances, indices = index.search(query_embeddings, k=25)
+    distances, indices = index.search(query_embeddings, k=100)
     print(f"Distances shape: {distances.shape}, Indices shape: {indices.shape}")
     
     if not args.is_submission:
-        mapk_score = mean_average_precision_at_k(correct_ids, indices, 25)
-        print(f"map@25_score: {mapk_score}")
-        
-        mapk_score_2 = mapk([[id] for id in correct_ids], indices, 25)
-        print(f"map@25_score_2: {mapk_score_2}")
+        for k in [25, 50, 75, 100]:
+            mapk_score = mean_average_precision_at_k(correct_ids, indices, k)
+            print(f"map@{k}_score: {mapk_score}")
+            
+            # mapk_score_2 = mapk([[id] for id in correct_ids], indices, k)
+            # print(f"map@{k}_score_2: {mapk_score_2}")
 
-        recall_score = recall_at_k(correct_ids, indices, 25)
-        print(f"recall@25_score: {recall_score}")
+            recall_score = recall_at_k(correct_ids, indices, k)
+            print(f"recall@{k}_score: {recall_score}")
     
     if not args.is_submission:
         df = pd.DataFrame({
