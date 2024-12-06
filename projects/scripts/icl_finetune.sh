@@ -3,10 +3,10 @@
 source /etc/network_turbo
 
 train_data="\
-    ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined_round0.jsonl \
+    ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined_round1.jsonl \
 "
 eval_data="\
-    ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined_round0_test.jsonl  \
+    ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined_round1_test.jsonl  \
 "
 eval_corpus_path="../data/embedder_train_eval_data/cross_validation/corpus.jsonl"
 eval_queries_path="../data/embedder_train_eval_data/cross_validation/test_queries.jsonl"
@@ -14,14 +14,13 @@ eval_examples_path="../data/embedder_train_eval_data/cross_validation/examples.j
 
 # task_description="Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer."
 # set large epochs and small batch size for testing
-# note: deepspeed stage1 uses gradient accumulation steps = 2
 
 retrieval_use_examples=True
 query_max_len=1024
 
 save_merged_lora_model=True
 save_steps=219
-output_dir="../model_output/icl_hn_finetune_round1"
+output_dir="../model_output/icl_hn_finetune_round2"
 
 lora_rank=64
 lora_alpha=32
