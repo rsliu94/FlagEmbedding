@@ -287,9 +287,10 @@ python hn_mine.py \
 | Epoch | MAP@25 | Recall@25 | LB Score |
 |-------|--------|-----------|---------|
 | 0[pretrain] | 0.2299 | 0.590 | 0.216 |
+| 0[augment-examples-n=1] | 0.231 | 0.581 | 0.221 |
+| 0[augment-examples-n=2] | 0.233 | 0.575 | ? |
 | 1 | 0.4452 | 0.8530 | 0.321 |
 
-## Round 1
 ### Merge lora with base model
 ```bash
 python save_merged_model.py \
@@ -297,8 +298,7 @@ python save_merged_model.py \
     --lora_path ../model_output/icl_finetune_round1/lora_epoch_1 \
     --output_dir ../model_output/icl_finetune_round1/merged_model_lora_epoch_1
 ```
-### Mine hard negative use FineTuned icl model
-`projects/model_output/icl_finetune_validation_v3_round1/checkpoint-545`
+### Mine hard negative use FineTuned icl model [Round 1]
 ```bash
 python hn_mine.py \
 --embedder_name_or_path ../model_output/icl_finetune_round1/merged_model_lora_epoch_1 \
@@ -313,8 +313,126 @@ python hn_mine.py \
 --shuffle_data True \
 --query_instruction_for_retrieval "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer." \
 --query_instruction_format '<instruct>{}\n<query>{}' \
---add_examples_for_task True \
+--add_examples_for_task False \
 --batch_size 1024 \
 --embedder_query_max_length 1024 \
 --embedder_passage_max_length 512
+```
+| Epoch | MAP@25 | Recall@25 | LB Score |
+|-------|--------|-----------|---------|
+| 1[augment-examples-n=1] | 0.4484 | 0.8645 | 0.367 |
+| 2[augment-examples-n=1] | 0.5087 | 0.8888 | 0.388 |
+```bash
+python eval_llm_embedder.py \
+--lora_path ../model_output/icl_finetune_round2/lora_epoch_2 \
+--use_examples_in_query=True \
+--num_examples=2 \
+--query_max_len=1024
+```
+
+### Mine hard negative use FineTuned icl model [Round 2]
+```bash
+python hn_mine.py \
+--embedder_name_or_path ../model_output/icl_finetune_round2/merged_model \
+--embedder_model_class decoder-only-icl \
+--pooling_method last_token \
+--input_file ../data/embedder_train_eval_data/cross_validation/hn_mine_input.jsonl \
+--output_file ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined_round2.jsonl \
+--candidate_pool ../data/embedder_train_eval_data/cross_validation/corpus.jsonl \
+--range_for_sampling 2-200 \
+--negative_number 15 \
+--devices cuda:0 \
+--shuffle_data True \
+--query_instruction_for_retrieval "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer." \
+--query_instruction_format '<instruct>{}\n<query>{}' \
+--add_examples_for_task False \
+--batch_size 1024 \
+--embedder_query_max_length 1024 \
+--embedder_passage_max_length 512
+```
+| Epoch | MAP@25 | Recall@25 | LB Score |
+|-------|--------|-----------|---------|
+| 1[augment-examples-n=1] | 0.4621 | 0.8784 | ? |
+| 2[augment-examples-n=1] | 0.4938 (0.50) | 0.8912 | 0.363 |
+Eval with script: 0.50
+```bash
+python eval_llm_embedder.py \
+--lora_path ../model_output/icl_finetune_round3/lora_epoch_2 \
+--use_examples_in_query=True \
+--num_examples=1 \
+--query_max_len=512
+```
+
+### Mine hard negative use FineTuned icl model [Round 3]
+```bash
+python hn_mine.py \
+--embedder_name_or_path ../model_output/icl_finetune_round3/merged_model \
+--embedder_model_class decoder-only-icl \
+--pooling_method last_token \
+--input_file ../data/embedder_train_eval_data/cross_validation/hn_mine_input.jsonl \
+--output_file ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined_round3.jsonl \
+--candidate_pool ../data/embedder_train_eval_data/cross_validation/corpus.jsonl \
+--range_for_sampling 2-200 \
+--negative_number 15 \
+--devices cuda:0 \
+--shuffle_data True \
+--query_instruction_for_retrieval "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer." \
+--query_instruction_format '<instruct>{}\n<query>{}' \
+--add_examples_for_task False \
+--batch_size 1024 \
+--embedder_query_max_length 1024 \
+--embedder_passage_max_length 512
+```
+For test data:
+```bash
+python hn_mine.py \
+--embedder_name_or_path ../model_output/icl_finetune_round3/merged_model \
+--embedder_model_class decoder-only-icl \
+--pooling_method last_token \
+--input_file ../data/embedder_train_eval_data/cross_validation/hn_mine_test_input.jsonl \
+--output_file ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined_round3_test.jsonl \
+--candidate_pool ../data/embedder_train_eval_data/cross_validation/corpus.jsonl \
+--range_for_sampling 2-200 \
+--negative_number 15 \
+--devices cuda:1 \
+--shuffle_data True \
+--query_instruction_for_retrieval "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer." \
+--query_instruction_format '<instruct>{}\n<query>{}' \
+--add_examples_for_task False \
+--batch_size 1024 \
+--embedder_query_max_length 1024 \
+--embedder_passage_max_length 512
+```
+### 训练配置优化
+
+#### 参数调整
+| 参数 | 调整前 | 调整后 |
+|------|--------|--------|
+| 查询示例数量上限 | 6 | 3 |
+| 示例最大长度 | 512 | 384 |
+| 查询最大长度 | 2048 | 1024 |
+
+#### LoRA 参数设置
+当前配置:
+- LoRA rank: 32
+- LoRA alpha: 64
+
+论文建议配置(try it later):
+- LoRA rank: 64 
+- LoRA alpha: 32
+- 学习率: 1e-4
+
+| Epoch | Eval Loss | MAP@25 | Recall@25/50/75/100 | LB Score |
+|-------|-----------|--------|-----------|---------|
+| 0     | 2.77      |        |           |        |
+| 1[augment-examples-n=1] | 1.255 | 0.4395  | 0.8657/0.9178/0.9317/0.9537  |  0.321  |
+| 2[augment-examples-n=1] | 1.2373 | 0.4910  | 0.8761/0.9236/0.9479/0.9583  |  0.360  |
+| 3[augment-examples-n=1] | 1.1455 | 0.4912  | 0.8842/0.9212/0.9398/0.9571  |  0.354  |
+| 4[augment-examples-n=1] | 1.2431 | 0.5128  | 0.8807/0.9247/0.9513/0.9618  |  0.364  |
+| 5[augment-examples-n=1] | 1.2363 | 0.5179  | 0.8807/0.9259/0.9513/0.9606  |  0.378  |
+```bash
+python eval_llm_embedder.py \
+--lora_path ../model_output/icl_finetune_round4/lora_epoch_1 \
+--use_examples_in_query=True \
+--query_max_len=512
 ```
