@@ -1,3 +1,5 @@
+
+# sh icl_finetune.sh 2>&1 | tee ./logs/icl_hn_finetune_round2_$(date +%Y%m%d_%H%M%S).log
 # export WANDB_MODE=disabled
 # 科学上网
 source /etc/network_turbo

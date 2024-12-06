@@ -88,7 +88,7 @@ python hn_mine.py \
 --embedder_model_class decoder-only-icl \
 --pooling_method last_token \
 --input_file ../data/embedder_train_eval_data/cross_validation/hn_mine_input.jsonl \
---output_file ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined_round1_test.jsonl \
+--output_file ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined_round1.jsonl \
 --candidate_pool ../data/embedder_train_eval_data/cross_validation/corpus.jsonl \
 --range_for_sampling 2-100 \
 --negative_number 15 \
@@ -108,7 +108,7 @@ python hn_mine.py \
 --embedder_model_class decoder-only-icl \
 --pooling_method last_token \
 --input_file ../data/embedder_train_eval_data/cross_validation/hn_mine_test_input.jsonl \
---output_file ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined_round1.jsonl \
+--output_file ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined_round1_test.jsonl \
 --candidate_pool ../data/embedder_train_eval_data/cross_validation/corpus.jsonl \
 --range_for_sampling 2-100 \
 --negative_number 15 \
@@ -121,3 +121,8 @@ python hn_mine.py \
 --embedder_query_max_length 1024 \
 --embedder_passage_max_length 512
 ```
+lora r=64,a=32,lr=1e-4, bs=8*2
+5 epochs / 1095 iters / 2hr
+
+| Epoch | eval_loss | MAP@25 | Recall@25/50/75/100 | LB Score |
+|-------|--------|-----------|---------|---------|
