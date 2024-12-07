@@ -5,10 +5,10 @@
 source /etc/network_turbo
 
 train_data="\
-    ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined_round1.jsonl \
+    ../data/embedder_train_eval_data/cross_validation/finetune_data_iter0_hn.jsonl \
 "
 eval_data="\
-    ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined_round1_test.jsonl  \
+    ../data/embedder_train_eval_data/cross_validation/finetune_data_iter0_hn_test.jsonl  \
 "
 eval_corpus_path="../data/embedder_train_eval_data/cross_validation/corpus.jsonl"
 eval_queries_path="../data/embedder_train_eval_data/cross_validation/test_queries.jsonl"
@@ -22,16 +22,16 @@ query_max_len=1024
 
 save_merged_lora_model=True
 save_steps=219
-output_dir="../model_output/icl_hn_finetune_round2"
+output_dir="../model_output/icl_finetune_iter0_hn"
 
-lora_rank=64
-lora_alpha=32
+lora_rank=32
+lora_alpha=64
 learning_rate=1e-4
 
 # set num_gpus to 2 for testing
-num_train_epochs=5
+num_train_epochs=1
 per_device_train_batch_size=8
-num_gpus=2
+num_gpus=4
 
 if [ -z "$HF_HUB_CACHE" ]; then
     export HF_HUB_CACHE="$HOME/.cache/huggingface/hub"
@@ -57,7 +57,7 @@ training_args="\
     --num_train_epochs $num_train_epochs \
     --per_device_train_batch_size $per_device_train_batch_size \
     --per_device_eval_batch_size $per_device_train_batch_size \
-    --dataloader_drop_last False \
+    --dataloader_drop_last True \
     --warmup_ratio 0.1 \
     --gradient_checkpointing \
     --deepspeed ./icl_ds_stage1.json \

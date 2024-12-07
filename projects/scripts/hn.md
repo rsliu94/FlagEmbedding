@@ -14,7 +14,7 @@ python hn_mine.py \
 --embedder_model_class decoder-only-icl \
 --pooling_method last_token \
 --input_file ../data/embedder_train_eval_data/cross_validation/hn_mine_input.jsonl \
---output_file ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined_round0.jsonl \
+--output_file ../data/embedder_train_eval_data/cross_validation/finetune_data_iter0_hn.jsonl \
 --candidate_pool ../data/embedder_train_eval_data/cross_validation/corpus.jsonl \
 --range_for_sampling 2-200 \
 --negative_number 15 \
@@ -35,7 +35,7 @@ python hn_mine.py \
 --embedder_model_class decoder-only-icl \
 --pooling_method last_token \
 --input_file ../data/embedder_train_eval_data/cross_validation/hn_mine_test_input.jsonl \
---output_file ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined_round0_test.jsonl \
+--output_file ../data/embedder_train_eval_data/cross_validation/finetune_data_iter0_hn_test.jsonl \
 --candidate_pool ../data/embedder_train_eval_data/cross_validation/corpus.jsonl \
 --range_for_sampling 2-200 \
 --negative_number 15 \
@@ -51,11 +51,10 @@ python hn_mine.py \
 
 
 ### Finetune
-`0ea36730231892a72d4aeabfb1f3ae904c579e44`
 ```bash
-(sh icl_finetune.sh 2>&1 | tee ./logs/icl_hn_finetune_round1_$(date +%Y%m%d_%H%M%S).log) ; /usr/bin/shutdown
+(sh icl_finetune.sh 2>&1 | tee ./logs/icl_finetune_iter0_hn_$(date +%Y%m%d_%H%M%S).log)               # ; /usr/bin/shutdown
 ```
-lora r=64,a=32,lr=1e-4, bs=8*2
+<!-- lora r=64,a=32,lr=1e-4, bs=8*2
 5 epochs / 1095 iters / 2hr
 
 | Epoch | eval_loss | MAP@25 | Recall@25/50/75/100 | LB Score |
@@ -65,7 +64,11 @@ lora r=64,a=32,lr=1e-4, bs=8*2
 |2[n=2] | 1.04 | 0.4566 | 0.8472/0.9004/0.9270/0.9490 | ? |
 |3[n=3] | 0.96 | 0.4890 | 0.8750/0.9224/0.9513/0.9664 | ? |
 |4[n=4] | 1.07 | 0.4966 | 0.8750/0.9305/0.9513/0.9548 | ? |
-|5[n=5] | 0.88 | 0.5113 | 0.8819/0.9386/0.9537/0.9653 | ? |
+|5[n=5] | 0.88 | 0.5113 | 0.8819/0.9386/0.9537/0.9653 | ? | -->
+
+lora r=32,a=64,lr=1e-4, bs=8*4
+| Epoch | eval_loss | MAP@25 | Recall@25/50/75/100 | LB Score |
+|-------|--------|-----------|---------|---------|
 
 Choose epoch 3 for next round. Merge model and save.
 ```bash
