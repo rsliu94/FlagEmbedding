@@ -290,4 +290,16 @@ class DecoderOnlyEmbedderICLTrainer(AbsEmbedderTrainer):
             loss = self.compute_loss(self.model, batch, compute_while_eval=True)
             total_loss += loss
             num_batches += 1
+        
+        # 在计算平均损失之前汇总所有GPU的结果
+        if self.args.local_rank != -1:  # 分布式训练时
+            # 汇总 total_loss
+            total_loss_tensor = torch.tensor(total_loss).to(self.args.device)
+            torch.distributed.all_reduce(total_loss_tensor, op=torch.distributed.ReduceOp.SUM)
+            total_loss = total_loss_tensor.item()
+            
+            # 汇总 num_batches
+            num_batches_tensor = torch.tensor(num_batches).to(self.args.device)
+            torch.distributed.all_reduce(num_batches_tensor, op=torch.distributed.ReduceOp.SUM)
+            num_batches = num_batches_tensor.item()
         return total_loss / num_batches if num_batches > 0 else float('inf')
