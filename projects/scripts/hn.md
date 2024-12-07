@@ -124,5 +124,34 @@ python hn_mine.py \
 lora r=64,a=32,lr=1e-4, bs=8*2
 5 epochs / 1095 iters / 2hr
 
+```bash
+sh icl_finetune.sh 2>&1 | tee ./logs/icl_hn_finetune_round2_$(date +%Y%m%d_%H%M%S).log
+```
+
 | Epoch | eval_loss | MAP@25 | Recall@25/50/75/100 | LB Score |
 |-------|--------|-----------|---------|---------|
+|1      | 1.36   |  0.4595    | 0.8553/0.9027/0.9305/0.9409 | ? |
+|2      | 1.30  |  0.4756    | 0.8645/0.9212/0.9421/0.9537 | 0.366 |
+|3      | 1.38   |  0.5035    | 0.8715/0.9203/0.9537/0.9652 | ? |
+|4      | 1.45   |  0.5189    | 0.875/0.9270/0.9490/0.9629 | ? |
+Choose Epoch 2 for next round. Merge model and save.
+```bash
+python save_merged_model.py \
+--base_model_path BAAI/bge-en-icl \
+--lora_path ../model_output/icl_hn_finetune_round2/lora_epoch_2 \
+--output_dir ../model_output/icl_hn_finetune_round2/merged_model_lora_epoch_2
+```
+
+Eval & Save retrieval results:
+`Saving retrieval results to ../model_output/icl_hn_finetune_round2/retrieval_results.jsonl`
+```bash
+python eval_llm_embedder.py \
+--use_examples_in_query True \
+--model_path BAAI/bge-en-icl \
+--lora_path ../model_output/icl_hn_finetune_round2/lora_epoch_2 \
+--query_max_len 512 \
+--device cuda:0 \
+--save_retrieval_results True \
+--k 100 \
+--retrieval_results_path ../model_output/icl_hn_finetune_round2/retrieval_results.jsonl
+```
