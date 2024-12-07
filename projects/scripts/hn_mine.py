@@ -10,8 +10,20 @@ from transformers import HfArgumentParser
 from FlagEmbedding import FlagAutoModel
 from FlagEmbedding.abc.inference import AbsEmbedder
 from FlagEmbedding.utils.constants import TASK_DESCRIPTION
+import numpy as np
 import random
-random.seed(42)
+import torch  # 需要添加这个导入
+
+# 设置所有随机种子
+def set_seed(seed=42):
+    random.seed(seed)
+    np.random.seed(seed)
+    if torch.cuda.is_available():
+        torch.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+        # 为了完全的确定性，可以添加：
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
 
 @dataclass
 class DataArgs:
@@ -262,6 +274,7 @@ def shuffle_data(output_file: str):
             f.write(json.dumps(line) + '\n')
 
 def main(data_args: DataArgs, model_args: ModelArgs):
+    set_seed(42)
     model = load_model(model_args)
 
     find_knn_neg(
