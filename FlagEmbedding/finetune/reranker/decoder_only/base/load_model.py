@@ -74,7 +74,7 @@ def get_model(model_args: RerankerModelArguments):
     if model_args.model_name_or_path:
         model = AutoModelForCausalLM.from_pretrained(
             model_args.model_name_or_path,
-            # torch_dtype=torch.bfloat16,
+            torch_dtype=torch.bfloat16,
             use_flash_attention_2=True if model_args.use_flash_attn else False,
             token=model_args.token,
             cache_dir=model_args.cache_dir,

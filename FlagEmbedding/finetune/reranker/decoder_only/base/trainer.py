@@ -108,7 +108,7 @@ class DecoderOnlyRerankerTrainer(AbsRerankerTrainer):
             candidates = retrieval['candidate_texts']
             pairs.extend( [[query, candidate] for candidate in candidates])
         
-        batch_size = 8
+        batch_size = 16
         scores = []
         for i in tqdm(range(0, len(pairs), batch_size), desc="Evaluating Metrics"):
             batch_pairs = pairs[i:i+batch_size]
@@ -137,7 +137,7 @@ class DecoderOnlyRerankerTrainer(AbsRerankerTrainer):
         recall_ids = [retrieval['candidate_ids'] for retrieval in retrievals]
 
         # 计算评估指标
-        logger.info("Calculating MAP@25 and Recall@25 metrics... with sample ratio: {self.eval_retrieval_sample_ratio}")
+        logger.info(f"Calculating MAP@25 and Recall@25 metrics... with sample ratio: {self.eval_retrieval_sample_ratio}")
         print("==Rerank==")
         mapk_score = mean_average_precision_at_k(correct_ids, np.array(reranked_ids), 25)
         print(f"map@25_score: {mapk_score}")

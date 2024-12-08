@@ -43,6 +43,26 @@ def inference_doc(documents, tokenizer, model, doc_max_len, batch_size, device):
     print(f"Document embeddings shape: {doc_embeddings.shape}")
     return doc_embeddings
 
+@torch.no_grad()
+def inference_query_base(queries, tokenizer, model, query_max_len, batch_size, device):
+    print("Getting query embeddings...")
+    query_embeddings = []
+    for i in tqdm(range(0, len(queries), batch_size)):
+        batch = queries[i:i+batch_size]
+        batch_dict = tokenizer(batch, max_length=query_max_len, padding=True, truncation=True, return_tensors='pt')
+        batch_dict = batch_to_device(batch_dict, device)
+        if hasattr(model, 'encode'):
+            embedding = model.encode(batch_dict)
+        else:
+            outputs = model(**batch_dict)
+            embedding = last_token_pool(outputs.last_hidden_state, batch_dict['attention_mask'])
+            embedding = F.normalize(embedding, p=2, dim=1)
+        embedding = embedding.detach().cpu().numpy()
+        query_embeddings.append(embedding)
+    query_embeddings = np.concatenate(query_embeddings, axis=0)
+    print(f"Query embeddings shape: {query_embeddings.shape}")
+    return query_embeddings
+
 def get_new_queries(queries, query_max_len, examples_prefix, tokenizer):
     inputs = tokenizer(
         queries,
@@ -158,16 +178,29 @@ def get_inputs(pairs, tokenizer, prompt=None, max_length=1024):
                                    add_special_tokens=False,
                                    max_length=max_length,
                                    truncation=True)
-        item = tokenizer.prepare_for_model(
-            [tokenizer.bos_token_id] + query_inputs['input_ids'],
-            sep_inputs + passage_inputs['input_ids'],
-            truncation='only_second',
-            max_length=max_length,
-            padding=False,
-            return_attention_mask=False,
-            return_token_type_ids=False,
-            add_special_tokens=False
-        )
+        
+        if tokenizer.bos_token_id is not None and tokenizer.bos_token_id != tokenizer.pad_token_id:
+            item = tokenizer.prepare_for_model(
+                [tokenizer.bos_token_id] + query_inputs['input_ids'],
+                sep_inputs + passage_inputs['input_ids'],
+                truncation='only_second',
+                max_length=max_length,
+                padding=False,
+                return_attention_mask=False,
+                return_token_type_ids=False,
+                add_special_tokens=False
+            )
+        else:
+            item = tokenizer.prepare_for_model(
+                query_inputs['input_ids'],
+                sep_inputs + passage_inputs['input_ids'],
+                truncation='only_second',
+                max_length=max_length,
+                padding=False,
+                return_attention_mask=False,
+                return_token_type_ids=False,
+                add_special_tokens=False
+            )
         item['input_ids'] = item['input_ids'] + sep_inputs + prompt_inputs
         item['attention_mask'] = [1] * len(item['input_ids'])
         inputs.append(item)
