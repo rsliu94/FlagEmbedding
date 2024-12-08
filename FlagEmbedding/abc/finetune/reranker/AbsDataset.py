@@ -14,7 +14,7 @@ from transformers import (
     DataCollatorForSeq2Seq
 )
 from typing import List
-
+from FlagEmbedding.utils.constants import RERANKER_PROMPT
 from .AbsArguments import AbsRerankerDataArguments
 
 logger = logging.getLogger(__name__)
@@ -301,8 +301,8 @@ class AbsLLMRerankerTrainDataset(AbsRerankerTrainDataset):
                 for p in passages
             ]
 
-        prompt = self.dataset[item].get('prompt', "Given a query A and a passage B, determine whether the passage contains an answer to the query by providing a prediction of either 'Yes' or 'No'.")
-
+        prompt = self.dataset[item].get('rerank_prompt', RERANKER_PROMPT)
+        # logger.info(f"DEBUG: used rerank_prompt: {prompt}")
         query_inputs = self.tokenizer(
             query,
             return_tensors=None,
@@ -367,7 +367,18 @@ class AbsLLMRerankerEvalDataset(AbsLLMRerankerTrainDataset,
                              AbsRerankerEvalDataset):
     """Abstract class for reranker evaluation dataset.
     """
-    pass
+    def __init__(
+        self,
+        args: AbsRerankerDataArguments,
+        tokenizer: PreTrainedTokenizer
+    ):
+        super().__init__(args, tokenizer)
+        sep = self.args.sep_token
+        self.sep_inputs = self.tokenizer(
+            sep,
+            return_tensors=None,
+            add_special_tokens=False
+        )['input_ids']
 
 @dataclass
 class AbsLLMRerankerCollator(DataCollatorForSeq2Seq):
