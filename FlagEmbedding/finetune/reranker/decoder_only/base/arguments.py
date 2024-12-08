@@ -60,3 +60,7 @@ class RerankerModelArguments(AbsRerankerModelArguments):
         default=False,
         metadata={"help": "use qlora for training"}
     )
+    label_smoothing: float = field(
+        default=0.0,
+        metadata={"help": "The label smoothing rate for the loss function."}
+    )

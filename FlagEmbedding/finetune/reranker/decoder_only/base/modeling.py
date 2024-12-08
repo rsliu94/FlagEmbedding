@@ -1,7 +1,7 @@
 import torch
 from transformers import PreTrainedModel, AutoTokenizer
 import logging
-
+from torch import nn
 from FlagEmbedding.abc.finetune.reranker import AbsRerankerModel
 
 logger = logging.getLogger(__name__)
@@ -21,13 +21,15 @@ class CrossDecoderModel(AbsRerankerModel):
         base_model: PreTrainedModel,
         tokenizer: AutoTokenizer = None,
         train_batch_size: int = 4,
+        label_smoothing: float = 0.0,
     ):
         super().__init__(
             base_model,
             tokenizer=tokenizer,
             train_batch_size=train_batch_size,
         )
-
+        self.cross_entropy = nn.CrossEntropyLoss(reduction='mean', label_smoothing=label_smoothing)
+        
     def encode(self, features):
         """Encodes input features to logits.
 

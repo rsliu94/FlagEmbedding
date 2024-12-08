@@ -132,6 +132,7 @@ class DecoderOnlyRerankerRunner(AbsRerankerRunner):
             base_model,
             tokenizer=tokenizer,
             train_batch_size=self.training_args.per_device_train_batch_size,
+            label_smoothing=self.model_args.label_smoothing,
         )
 
         if self.training_args.gradient_checkpointing:
