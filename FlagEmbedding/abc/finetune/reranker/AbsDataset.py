@@ -317,6 +317,15 @@ class AbsLLMRerankerTrainDataset(AbsRerankerTrainDataset):
             add_special_tokens=False
         )['input_ids']
 
+        # prompt_inputs = self.tokenizer(
+        #                         prompt,
+        #                         return_tensors=None,
+        #                         add_special_tokens=False)['input_ids']  + \
+        #                 self.tokenizer(
+        #                         'Yes',
+        #                         return_tensors=None,
+        #                         add_special_tokens=False)['input_ids']
+
         max_length = self.max_length - len(prompt_inputs) - len(self.sep_inputs)
 
         passages_inputs = []

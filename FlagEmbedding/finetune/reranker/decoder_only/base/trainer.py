@@ -108,7 +108,7 @@ class DecoderOnlyRerankerTrainer(AbsRerankerTrainer):
             candidates = retrieval['candidate_texts']
             pairs.extend( [[query, candidate] for candidate in candidates])
         
-        batch_size = 16
+        batch_size = 8
         scores = []
         for i in tqdm(range(0, len(pairs), batch_size), desc="Evaluating Metrics"):
             batch_pairs = pairs[i:i+batch_size]

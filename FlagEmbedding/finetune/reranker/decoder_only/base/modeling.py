@@ -45,10 +45,12 @@ class CrossDecoderModel(AbsRerankerModel):
                              attention_mask=features['attention_mask'],
                              position_ids=features['position_ids'] if 'position_ids' in features.keys() else None,
                              output_hidden_states=True)
-        # _, max_indices = torch.max(features['labels'], dim=1)
-        # predict_indices = max_indices - 1
-        # logits = [outputs.logits[i, predict_indices[i], :] for i in range(outputs.logits.shape[0])]
-        # logits = torch.stack(logits, dim=0)
-        # scores = logits[:, self.yes_loc]
+        # if 'labels' in features.keys():
+        #     _, max_indices = torch.max(features['labels'], dim=1)
+        #     predict_indices = max_indices - 1
+        #     logits = [outputs.logits[i, predict_indices[i], :] for i in range(outputs.logits.shape[0])]
+        #     logits = torch.stack(logits, dim=0)
+        #     scores = logits[:, self.yes_loc]
+        # else:
         scores = outputs.logits[:, -1, self.yes_loc]
         return scores.contiguous()
