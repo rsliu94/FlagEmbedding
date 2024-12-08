@@ -1,8 +1,60 @@
 
 # sh icl_finetune.sh 2>&1 | tee ./logs/icl_hn_finetune_round2_$(date +%Y%m%d_%H%M%S).log
+# sh icl_finetune.sh --epochs 1 --batch_size 8 --num_gpus 2 --gpu_ids "0,1" 2>&1 | tee ./logs/icl_finetune_iter0_hn_$(date +%Y%m%d_%H%M%S).log
 # export WANDB_MODE=disabled
+# echo 'export HF_TOKEN=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' >> ~/.bashrc
 # 科学上网
 source /etc/network_turbo
+
+# 打印初始参数
+echo "输入参数: $@"
+
+# 添加参数解析
+while [[ $# -gt 0 ]]; do
+  key="$1"
+  echo "处理参数: $key"
+  
+  case $key in
+    --epochs)
+      num_train_epochs="$2"
+      echo "设置 epochs = $num_train_epochs"
+      shift 2
+      ;;
+    --batch_size)
+      per_device_train_batch_size="$2"
+      echo "设置 batch_size = $per_device_train_batch_size"
+      shift 2
+      ;;
+    --num_gpus)
+      num_gpus="$2"
+      echo "设置 num_gpus = $num_gpus"
+      shift 2
+      ;;
+    --gpu_ids)
+      export CUDA_VISIBLE_DEVICES="$2"
+      echo "设置 CUDA_VISIBLE_DEVICES = $CUDA_VISIBLE_DEVICES"
+      shift 2
+      ;;
+    *)
+      echo "错误: 未知参数 '$key'"
+      echo "可用参数: --epochs, --batch_size, --num_gpus, --gpu_ids"
+      exit 1
+      ;;
+  esac
+done
+
+# 打印最终设置的值
+echo "最终配置:"
+echo "num_train_epochs = $num_train_epochs"
+echo "per_device_train_batch_size = $per_device_train_batch_size"
+echo "num_gpus = $num_gpus"
+echo "CUDA_VISIBLE_DEVICES = $CUDA_VISIBLE_DEVICES"
+
+# 设置默认值
+: ${num_train_epochs:=3}
+: ${per_device_train_batch_size:=8}
+: ${num_gpus:=2}
+
 
 train_data="\
     ../data/embedder_train_eval_data/cross_validation/finetune_data_iter0_hn.jsonl \
@@ -28,17 +80,21 @@ lora_rank=32
 lora_alpha=64
 learning_rate=1e-4
 
+model_name_or_path=mistralai/Mistral-7B-v0.1
+
 # set num_gpus to 2 for testing
-num_train_epochs=3
-per_device_train_batch_size=8
-num_gpus=2
+
+# 设置默认值
+: ${num_train_epochs:=3}
+: ${per_device_train_batch_size:=8}
+: ${num_gpus:=2}
 
 if [ -z "$HF_HUB_CACHE" ]; then
     export HF_HUB_CACHE="$HOME/.cache/huggingface/hub"
 fi
 
 model_args="\
-    --model_name_or_path BAAI/bge-en-icl \
+    --model_name_or_path $model_name_or_path \
     --cache_dir $HF_HUB_CACHE \
     --use_lora True \
     --lora_rank $lora_rank \
@@ -60,7 +116,7 @@ training_args="\
     --dataloader_drop_last True \
     --warmup_ratio 0.1 \
     --gradient_checkpointing \
-    --deepspeed ./icl_ds_stage1.json \
+    --deepspeed ./ds_stage1_icl.json \
     --logging_steps 10 \
     --save_steps $save_steps \
     --negatives_cross_device \

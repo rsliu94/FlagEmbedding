@@ -1,12 +1,15 @@
 import logging
 from typing import Tuple
+import os
+import torch
 from pathlib import Path
 from FlagEmbedding.abc.finetune.reranker.AbsArguments import AbsRerankerDataArguments, AbsRerankerTrainingArguments
 from transformers import (
     AutoTokenizer, PreTrainedTokenizer
 )
-
+from transformers.trainer import TrainerCallback
 from FlagEmbedding.abc.finetune.reranker import AbsRerankerRunner, AbsRerankerModel
+from FlagEmbedding.abc.finetune.reranker.AbsDataset import AbsLLMRerankerEvalDataset
 
 from .modeling import CrossDecoderModel
 from .arguments import RerankerModelArguments
@@ -14,6 +17,64 @@ from .trainer import DecoderOnlyRerankerTrainer
 from .load_model import get_model, save_merged_model
 
 logger = logging.getLogger(__name__)
+
+class SaveLoraCallback(TrainerCallback):
+    def on_epoch_end(self, args, state, control, model=None, tokenizer=None, **kwargs):
+        """每个epoch结束时被调用"""
+        if not state.is_world_process_zero:
+            return
+        
+        epoch = state.epoch
+        output_dir = args.output_dir
+        # 创建带有epoch编号的LoRA保存目录
+        lora_output_dir = os.path.join(output_dir, f'lora_epoch_{int(epoch)}')
+        os.makedirs(lora_output_dir, exist_ok=True)
+        logger.info(f'Saving LoRA weights for epoch {int(epoch)} to {lora_output_dir}')
+        
+        if not hasattr(model.model, 'peft_config'):
+            raise ValueError("模型不是PEFT模型，无法保存LoRA权重")
+        
+        try:
+            # 保存LoRA权重和配置
+            model.model.save_pretrained(
+                lora_output_dir,
+                save_embedding_layers="auto",
+            )
+            
+            # 保存tokenizer配置
+            if tokenizer is not None and state.is_world_process_zero:
+                tokenizer.save_pretrained(lora_output_dir)
+            
+            # 保存训练参数
+            if state.is_world_process_zero:
+                torch.save(args, os.path.join(lora_output_dir, "training_args.bin"))
+            
+            logger.info("Successfully saved LoRA weights")
+            
+        except Exception as e:
+            logger.error(f"Error saving LoRA weights: {str(e)}")
+            raise
+
+
+class EvaluateCallback(TrainerCallback):
+    def on_epoch_end(self, args, state, control, **kwargs):
+        """
+        Callback method triggered at the end of each epoch.
+        Performs model evaluation.
+        
+        Args:
+            args: Training arguments
+            state: Current training state
+            control: Training control object
+            kwargs: Additional keyword arguments (includes trainer and model)
+        """
+        # Ensure evaluation happens after each epoch
+        control.should_evaluate = True
+        
+        # Optional: Add custom logging or additional actions
+        print(f"Epoch {state.epoch} completed. Running evaluation...")
+        
+        return control
 
 
 class DecoderOnlyRerankerRunner(AbsRerankerRunner):
@@ -88,9 +149,18 @@ class DecoderOnlyRerankerRunner(AbsRerankerRunner):
             model=self.model,
             args=self.training_args,
             train_dataset=self.train_dataset,
+            eval_dataset=self.eval_dataset,
             data_collator=self.data_collator,
-            tokenizer=self.tokenizer
+            tokenizer=self.tokenizer,
+            eval_retrieval_result_path=self.data_args.eval_retrieval_result_path,
+            eval_retrieval_sample_ratio=self.data_args.eval_retrieval_sample_ratio,
         )
+        if self.data_args.eval_data is not None:
+            logger.info('Add EvaluateCallback')
+            trainer.add_callback(EvaluateCallback())
+        if self.training_args.save_lora_every_epoch:
+            logger.info('Add SaveLoraCallback')
+            trainer.add_callback(SaveLoraCallback())
         return trainer
 
     def run(self):
@@ -100,6 +170,9 @@ class DecoderOnlyRerankerRunner(AbsRerankerRunner):
         Path(self.training_args.output_dir).mkdir(parents=True, exist_ok=True)
 
         # Training
+        if self.training_args.resume_from_checkpoint and self.training_args.resume_from_checkpoint == 'True':
+            self.training_args.resume_from_checkpoint = True
+        logger.info(f'Resume from checkpoint: {self.training_args.resume_from_checkpoint}, type: {type(self.training_args.resume_from_checkpoint)}')
         self.trainer.train(resume_from_checkpoint=self.training_args.resume_from_checkpoint)
         self.trainer.save_model()
 

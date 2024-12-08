@@ -55,6 +55,12 @@ class AbsRerankerDataArguments:
             "nargs": "+"
         }
     )
+    eval_data: str = field(
+        default=None, metadata={
+            "help": "One or more paths to evaluation data. `query: str`, `pos: List[str]`, `neg: List[str]` are required in the evaluation data.",
+            "nargs": "+"
+        }
+    )
     cache_path: Optional[str] = field(
         default=None, metadata={"help": "Where do you want to store the cached data"}
     )
@@ -118,6 +124,14 @@ class AbsRerankerDataArguments:
     sep_token: str = field(
         default='\n', metadata={"help": "The sep token for LLM reranker to discriminate between query and passage"}
     )
+    eval_retrieval_result_path: Optional[str] = field(
+        default=None, 
+        metadata={"help": "The path to the evaluation retrieval result file [jsonl]. If provided, the evaluation retrieval result will be used for evaluation."}
+    )
+    eval_retrieval_sample_ratio: float = field(
+        default=1.0,
+        metadata={"help": "The ratio of retrieval samples to be used for evaluation."}
+    )
 
     # def __post_init__(self):
     #     for train_dir in self.train_data:
@@ -128,3 +142,7 @@ class AbsRerankerDataArguments:
 @dataclass
 class AbsRerankerTrainingArguments(TrainingArguments):
     sub_batch_size: Optional[int] = field(default=None, metadata={"help": "sub batch size for training, not implemented yet"})
+    save_lora_every_epoch: bool = field(
+        default=False,
+        metadata={"help": "If passed, will save the lora weights every epoch."}
+    )

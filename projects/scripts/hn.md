@@ -51,9 +51,20 @@ python hn_mine.py \
 
 
 ### Finetune
+
 ```bash
 (sh icl_finetune.sh 2>&1 | tee ./logs/icl_finetune_iter0_hn_$(date +%Y%m%d_%H%M%S).log)               # ; /usr/bin/shutdown
 ```
+lora r=32,a=64,lr=1e-4, bs=8*4
+| Epoch | eval_loss | MAP@25 | Recall@25/50/75/100 | LB Score |
+|-------|--------|-----------|---------|---------|
+| 1     | 1.2708 | 0.4683 | 0.8692/0.9247/0.9502/0.9629 | ? |
+
+<!-- lora r=32,a=64,lr=1e-4, bs=8*2, on mistral-7b [note: add 3 special tokens, emb changed]
+| Epoch | eval_loss | MAP@25 | Recall@25/50/75/100 | LB Score |
+|-------|--------|-----------|---------|---------|
+| 1     | 0.9872 | 0.4255 | 0.8506/0.9097/0.9421/0.9517 | ? | -->
+
 <!-- lora r=64,a=32,lr=1e-4, bs=8*2
 5 epochs / 1095 iters / 2hr
 
@@ -66,18 +77,15 @@ python hn_mine.py \
 |4[n=4] | 1.07 | 0.4966 | 0.8750/0.9305/0.9513/0.9548 | ? |
 |5[n=5] | 0.88 | 0.5113 | 0.8819/0.9386/0.9537/0.9653 | ? | -->
 
-lora r=32,a=64,lr=1e-4, bs=8*4
-| Epoch | eval_loss | MAP@25 | Recall@25/50/75/100 | LB Score |
-|-------|--------|-----------|---------|---------|
-| 1     | 1.2708 | 0.4683 | 0.8692/0.9247/0.9502/0.9629 | ? |
-
 Choose epoch 1 for next round. Merge model and save.
-<!-- ```bash
+
+```bash
 python save_merged_model.py \
 --base_model_path BAAI/bge-en-icl \
 --lora_path ../model_output/icl_finetune_iter0_hn/lora_epoch_1 \
 --output_dir ../model_output/icl_finetune_iter0_hn/merged_model_lora_epoch_1
-``` -->
+```
+
 Eval & Save retrieval results:
 ```bash
 python eval_llm_embedder.py \
@@ -143,8 +151,8 @@ sh icl_finetune.sh 2>&1 | tee ./logs/icl_finetune_iter1_hn_$(date +%Y%m%d_%H%M%S
 ```
 | Epoch | eval_loss | MAP@25 | Recall@25/50/75/100 | LB Score |
 |-------|--------|-----------|---------|---------|
-|1      | 1.4966 | 0.4423 | 0.8622/0.9212/0.9490/0.9560 | ? |
-|2      | 1.4050 | 0.4994 | 0.8854/0.9259/0.9444/0.9629 | ? |
+|1      | 1.4966 | 0.4423 | 0.8622/0.9212/0.9490/0.9560 | ？ |
+|2      | 1.4050 | 0.4994 | 0.8854/0.9259/0.9444/0.9629 | 0.365 |
 |3      | 1.4305 | 0.5224 | 0.8904/0.9247/0.9525/0.9618 | ? |
 <!-- 
 | Epoch | eval_loss | MAP@25 | Recall@25/50/75/100 | LB Score |

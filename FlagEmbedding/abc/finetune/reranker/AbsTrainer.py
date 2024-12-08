@@ -14,7 +14,7 @@ class AbsRerankerTrainer(ABC, Trainer):
     def _save(self, output_dir: Optional[str] = None, state_dict=None):
         pass
 
-    def compute_loss(self, model, inputs, return_outputs=False, **kwargs):
+    def compute_loss(self, model, inputs, return_outputs=False, compute_while_eval=False, **kwargs):
         """
         How the loss is computed by Trainer. By default, all models return the loss in the first element.
 
@@ -31,7 +31,7 @@ class AbsRerankerTrainer(ABC, Trainer):
                 also returns the model's outputs in a tuple ``(loss, outputs)``.
         """
 
-        outputs = model(**inputs)
+        outputs = model(**inputs, compute_while_eval=compute_while_eval)
         loss = outputs.loss
 
         return (loss, outputs) if return_outputs else loss

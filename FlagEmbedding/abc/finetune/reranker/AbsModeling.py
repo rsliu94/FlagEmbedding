@@ -65,7 +65,7 @@ class AbsRerankerModel(ABC, nn.Module):
         """
         pass
 
-    def forward(self, pair: Union[Dict[str, Tensor], List[Dict[str, Tensor]]] = None, teacher_scores: Optional[Tensor] = None):
+    def forward(self, pair: Union[Dict[str, Tensor], List[Dict[str, Tensor]]] = None, teacher_scores: Optional[Tensor] = None, compute_while_eval: bool = False):
         """The computation performed at every call.
 
         Args:
@@ -81,7 +81,7 @@ class AbsRerankerModel(ABC, nn.Module):
             teacher_targets = teacher_scores.view(self.train_batch_size, -1)
             teacher_targets = torch.softmax(teacher_targets.detach(), dim=-1)
 
-        if self.training:
+        if self.training or compute_while_eval:
             grouped_logits = ranker_logits.view(self.train_batch_size, -1)
             target = torch.zeros(self.train_batch_size, device=grouped_logits.device, dtype=torch.long)
             loss = self.compute_loss(grouped_logits, target)

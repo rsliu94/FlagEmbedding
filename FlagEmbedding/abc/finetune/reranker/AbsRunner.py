@@ -15,7 +15,7 @@ from .AbsTrainer import AbsRerankerTrainer
 from .AbsModeling import AbsRerankerModel
 from .AbsDataset import (
     AbsRerankerTrainDataset, AbsRerankerCollator,
-    AbsLLMRerankerTrainDataset, AbsLLMRerankerCollator
+    AbsLLMRerankerTrainDataset, AbsLLMRerankerCollator, AbsLLMRerankerEvalDataset
 )
 
 logger = logging.getLogger(__name__)
@@ -72,7 +72,10 @@ class AbsRerankerRunner(ABC):
 
         self.tokenizer, self.model = self.load_tokenizer_and_model()
         self.train_dataset = self.load_train_dataset()
+        self.eval_dataset = self.load_eval_dataset()
+        logger.info(f"DEBUG: len of train dataset: {len(self.train_dataset)}, len of eval dataset: {len(self.eval_dataset)}")
         self.data_collator = self.load_data_collator()
+        
         self.trainer = self.load_trainer()
 
     @abstractmethod
@@ -110,6 +113,18 @@ class AbsRerankerRunner(ABC):
                 tokenizer=self.tokenizer
             )
         return train_dataset
+    
+    def load_eval_dataset(self) -> AbsLLMRerankerEvalDataset:
+        """Load the dataset instance for evaluation.
+
+        Returns:
+            AbsRerankerEvalDataset: The evaluation dataset instance.
+        """
+        eval_dataset = AbsLLMRerankerEvalDataset(
+                args=self.data_args,
+                tokenizer=self.tokenizer
+            )
+        return eval_dataset
 
     def load_data_collator(self) -> AbsRerankerCollator:
         """Loads the appropriate data collator.

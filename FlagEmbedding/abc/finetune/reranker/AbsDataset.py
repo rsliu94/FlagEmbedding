@@ -174,6 +174,34 @@ class AbsRerankerTrainDataset(Dataset):
             batch_data.append(self.create_one_example(query, passage))
 
         return batch_data, teacher_scores
+    
+class AbsRerankerEvalDataset(AbsRerankerTrainDataset):
+    """Abstract class for reranker evaluation dataset.
+    """
+    def __init__(
+        self,
+        args: AbsRerankerDataArguments,
+        tokenizer: PreTrainedTokenizer
+    ):
+        self.args = args
+        self.tokenizer = tokenizer
+
+        eval_datasets = []
+        for data_dir in args.eval_data:
+            if not os.path.isdir(data_dir):
+                if not (data_dir.endswith('.json') or data_dir.endswith('.jsonl')): continue
+                temp_dataset = self._load_dataset(data_dir)
+                if len(temp_dataset) == 0: continue
+                eval_datasets.append(temp_dataset)
+            else:
+                for file in os.listdir(data_dir):
+                    if not (file.endswith('.json') or file.endswith('.jsonl')): continue
+                    temp_dataset = self._load_dataset(os.path.join(data_dir, file))
+                    if len(temp_dataset) == 0: continue
+                    eval_datasets.append(temp_dataset)
+        self.dataset = datasets.concatenate_datasets(eval_datasets)
+
+        self.max_length = self.args.query_max_len + self.args.passage_max_len
 
 @dataclass
 class AbsRerankerCollator(DataCollatorWithPadding):
@@ -335,6 +363,11 @@ class AbsLLMRerankerTrainDataset(AbsRerankerTrainDataset):
 
         return passages_inputs, teacher_scores
 
+class AbsLLMRerankerEvalDataset(AbsLLMRerankerTrainDataset,
+                             AbsRerankerEvalDataset):
+    """Abstract class for reranker evaluation dataset.
+    """
+    pass
 
 @dataclass
 class AbsLLMRerankerCollator(DataCollatorForSeq2Seq):

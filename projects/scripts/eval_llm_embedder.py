@@ -36,6 +36,10 @@ parser.add_argument("--lora_path", type=str, default=None, help="The path of the
 parser.add_argument("--is_submission", type=bool, default=False, help="Whether is submission")
 parser.add_argument("--query_max_len", type=int, default=1024, help="The maximum length of the query")
 parser.add_argument("--doc_max_len", type=int, default=128, help="The maximum length of the document")
+parser.add_argument("--k", type=int, default=100, help="The number of retrieved documents")
+parser.add_argument("--save_retrieval_results", type=bool, default=False, help="Whether to save the retrieval results")
+parser.add_argument("--retrieval_results_path", type=str, default='./retrieval_results.jsonl', help="The path to save the retrieval results")
+parser.add_argument("--device", type=str, default='cuda:0', help="The device to use")
 args = parser.parse_args()
 # show args
 print("\nScript arguments:")
@@ -124,14 +128,14 @@ if __name__ == "__main__":
     if args.lora_path is not None:
         print("Loading LoRA model...")
         tokenizer = AutoTokenizer.from_pretrained(args.lora_path)
-        device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+        device = args.device
         print(f"Device: {device}")
         model = AutoModel.from_pretrained(args.model_path, quantization_config=None)
         model = PeftModel.from_pretrained(model, args.lora_path, is_trainable=False)
     else:
         print("Loading base model...")
         tokenizer = AutoTokenizer.from_pretrained(args.model_path)
-        device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+        device = args.device
         print(f"Device: {device}")
         model = AutoModel.from_pretrained(args.model_path, quantization_config=None)
     
@@ -166,10 +170,8 @@ if __name__ == "__main__":
         for k in [25, 50, 75, 100]:
             mapk_score = mean_average_precision_at_k(correct_ids, indices, k)
             print(f"map@{k}_score: {mapk_score}")
-            
             # mapk_score_2 = mapk([[id] for id in correct_ids], indices, k)
             # print(f"map@{k}_score_2: {mapk_score_2}")
-
             recall_score = recall_at_k(correct_ids, indices, k)
             print(f"recall@{k}_score: {recall_score}")
     
@@ -186,6 +188,30 @@ if __name__ == "__main__":
             'MisconceptionId': [' '.join(map(str, c)) for c in indices.tolist()]
         })
         df.to_csv("./submission.csv", index=False)
+        
+    if args.save_retrieval_results:
+        print(f"Saving Top-{args.k} retrieval results... Reading test queries from {queries_path}")
+        # query is the same as test_queries.jsonl
+        queries = [json.loads(line) for line in open(queries_path, 'r')]
+        
+        print(f"Number of queries read: {len(queries)}")
+        assert len(queries) == query_embeddings.shape[0]
+        
+        print(f"Retrieving Top-{args.k} results...")
+        distances, indices = index.search(query_embeddings, k=args.k)
+        
+        print(f"Distances shape: {distances.shape}, Indices shape: {indices.shape}")
+        corpus = [json.loads(line)['text'] for line in open(corpus_path, 'r')] # list of strings
+        
+        print(f"Saving retrieval results to {args.retrieval_results_path}")
+        with open(args.retrieval_results_path, 'w') as f:
+            for query, indice in zip(queries, indices):
+                query['candidate_ids'] = indice.tolist()
+                query['candidate_texts'] = [corpus[i] for i in indice]
+                f.write(json.dumps(query) + '\n')
+        print(f"Done!")
+        
+        
         
     # import pickle
     # np.save('query_embeddings.npy', query_embeddings)

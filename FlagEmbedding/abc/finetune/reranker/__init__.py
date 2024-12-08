@@ -1,7 +1,7 @@
 from .AbsArguments import AbsRerankerDataArguments, AbsRerankerModelArguments, AbsRerankerTrainingArguments
 from .AbsDataset import (
     AbsRerankerTrainDataset, AbsRerankerCollator,
-    AbsLLMRerankerTrainDataset, AbsLLMRerankerCollator
+    AbsLLMRerankerTrainDataset, AbsLLMRerankerCollator, AbsLLMRerankerEvalDataset
 )
 from .AbsModeling import AbsRerankerModel, RerankerOutput
 from .AbsTrainer import AbsRerankerTrainer
@@ -19,4 +19,5 @@ __all__ = [
     "RerankerOutput",
     "AbsRerankerTrainer",
     "AbsRerankerRunner",
+    "AbsLLMRerankerEvalDataset",
 ]

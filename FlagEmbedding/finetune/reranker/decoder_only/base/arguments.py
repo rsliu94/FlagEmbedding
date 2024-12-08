@@ -56,3 +56,7 @@ class RerankerModelArguments(AbsRerankerModelArguments):
         default=False,
         metadata={"help": "If passed, will merge the lora modules and save the entire model."}
     )
+    use_qlora: bool = field(
+        default=False,
+        metadata={"help": "use qlora for training"}
+    )
