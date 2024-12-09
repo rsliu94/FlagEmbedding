@@ -1,12 +1,25 @@
 from typing import Optional, List
 from dataclasses import dataclass, field
 
-from FlagEmbedding.abc.finetune.embedder import AbsEmbedderModelArguments
+from FlagEmbedding.abc.finetune.embedder import AbsEmbedderModelArguments, AbsEmbedderDataArguments
 
 
 def default_target_modules() -> List[int]:
     return ['v_proj', 'q_proj', 'k_proj', 'gate_proj', 'down_proj', 'o_proj', 'up_proj']
 
+@dataclass
+class DecoderOnlyEmbedderDataArguments(AbsEmbedderDataArguments):
+    """
+    Data argument class for decoder only icl model.
+    """
+    eval_corpus_path: Optional[str] = field(
+        default=None, 
+        metadata={"help": "The path to the corpus file [jsonl]. If provided, the corpus will be used for evaluation."}
+    )
+    eval_queries_path: Optional[str] = field(
+        default=None, 
+        metadata={"help": "The path to the evaluation queries file [jsonl]. If provided, the evaluation queries will be used for evaluation."}
+    )
 
 @dataclass
 class DecoderOnlyEmbedderModelArguments(AbsEmbedderModelArguments):
@@ -68,4 +81,9 @@ class DecoderOnlyEmbedderModelArguments(AbsEmbedderModelArguments):
     save_merged_lora_model: bool = field(
         default=False,
         metadata={"help": "If passed, will merge the lora modules and save the entire model."}
+    )
+
+    use_qlora: bool = field(
+        default=False,
+        metadata={"help": "If passed, will use qlora to train the model."}
     )

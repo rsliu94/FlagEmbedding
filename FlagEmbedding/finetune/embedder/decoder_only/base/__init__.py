@@ -1,17 +1,19 @@
 from FlagEmbedding.abc.finetune.embedder import (
-    AbsEmbedderDataArguments as DecoderOnlyEmbedderDataArguments,
     AbsEmbedderTrainingArguments as DecoderOnlyEmbedderTrainingArguments,
 )
 
-from .arguments import DecoderOnlyEmbedderModelArguments
+from .arguments import (
+    DecoderOnlyEmbedderModelArguments,
+    DecoderOnlyEmbedderDataArguments
+)
 from .modeling import BiDecoderOnlyEmbedderModel
 from .trainer import DecoderOnlyEmbedderTrainer
 from .runner import DecoderOnlyEmbedderRunner
 
 __all__ = [
-    'DecoderOnlyEmbedderDataArguments',
     'DecoderOnlyEmbedderTrainingArguments',
     'DecoderOnlyEmbedderModelArguments',
+    'DecoderOnlyEmbedderDataArguments',
     'BiDecoderOnlyEmbedderModel',
     'DecoderOnlyEmbedderTrainer',
     'DecoderOnlyEmbedderRunner',

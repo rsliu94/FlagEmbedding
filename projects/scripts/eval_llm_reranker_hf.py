@@ -22,6 +22,7 @@ from FlagEmbedding.utils.constants import RERANKER_PROMPT
 import argparse
 import random
 import json
+from safetensors.torch import load_file
 
 # set random seed
 random.seed(42)
@@ -49,11 +50,46 @@ for arg, value in vars(args).items():
 print()
 
 if __name__ == "__main__":
-    tokenizer = AutoTokenizer.from_pretrained(args.model_path)
-    model = AutoModelForCausalLM.from_pretrained(args.model_path, torch_dtype=torch.float16)
+    bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_compute_dtype=torch.bfloat16
+        )   
+    
+    if args.lora_path is not None:
+        print("Loading LoRA model...")
+        tokenizer = AutoTokenizer.from_pretrained(args.lora_path)
+        model = AutoModel.from_pretrained(args.model_path, quantization_config=bnb_config, torch_dtype=torch.float16)
+        
+        config = LoraConfig(
+            r=32,
+            lora_alpha=64,
+            target_modules=[
+                "q_proj",
+                "k_proj",
+                "v_proj",
+                "o_proj",
+                "gate_proj",
+                "up_proj",
+                "down_proj",
+            ],
+            bias="none",
+            lora_dropout=0.05,
+            task_type="CAUSAL_LM",
+        )
+        model = get_peft_model(model, config)
+        d = load_file(os.path.join(args.lora_path, "adapter_model.safetensors"), device=model.device)
+        model.load_state_dict(d, strict=False)
+        model = model.merge_and_unload()
+    else:
+        print("Loading base model...")
+        tokenizer = AutoTokenizer.from_pretrained(args.model_path)
+        model = AutoModelForCausalLM.from_pretrained(args.model_path, torch_dtype=torch.float16, quantization_config=bnb_config, device_map=args.device)
+        
     yes_loc = tokenizer('Yes', add_special_tokens=False)['input_ids'][0]
     model.eval()
-    model = model.to(args.device)
+    # model = model.to(args.device)
     
     retrievals = [json.loads(line) for line in open(args.retrieval_results_path, 'r')]
     pairs = []

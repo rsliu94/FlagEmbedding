@@ -1,7 +1,7 @@
 import logging
 
 import torch
-from transformers import AutoModel, AutoTokenizer
+from transformers import AutoModel, AutoTokenizer, AutoConfig
 
 from FlagEmbedding.abc.finetune.embedder import AbsEmbedderModel
 
@@ -34,6 +34,7 @@ class BiDecoderOnlyEmbedderModel(AbsEmbedderModel):
         kd_loss_type: str = 'kl_div',
         sentence_pooling_method: str = 'last_token',
         normalize_embeddings: bool = False,
+        config: AutoConfig = None,
     ):
         super().__init__(
             base_model,
@@ -46,7 +47,7 @@ class BiDecoderOnlyEmbedderModel(AbsEmbedderModel):
         self.sentence_pooling_method = sentence_pooling_method
         self.normalize_embeddings = normalize_embeddings
         self.cross_entropy = torch.nn.CrossEntropyLoss(reduction='mean')
-
+        self.config = config
     def encode(self, features):
         """
         Encode and get the embedding.

@@ -1,13 +1,14 @@
 import logging
 from typing import Tuple
 from pathlib import Path
+import torch
 from transformers import AutoConfig, AutoTokenizer, PreTrainedTokenizer
 
 from FlagEmbedding.abc.finetune.embedder.AbsArguments import AbsEmbedderDataArguments, AbsEmbedderTrainingArguments
-from FlagEmbedding.abc.finetune.embedder import AbsEmbedderRunner, AbsEmbedderModel, EmbedderTrainerCallbackForDataRefresh
+from FlagEmbedding.abc.finetune.embedder import AbsEmbedderRunner, AbsEmbedderModel, EmbedderTrainerCallbackForDataRefresh, EvaluateCallback, AbsEmbedderEvalDataset
 
-from .arguments import DecoderOnlyEmbedderModelArguments
-from .trainer import DecoderOnlyEmbedderTrainer
+from .arguments import DecoderOnlyEmbedderModelArguments, DecoderOnlyEmbedderDataArguments
+from .trainer import DecoderOnlyEmbedderTrainer, SaveLoraCallback
 from .modeling import BiDecoderOnlyEmbedderModel
 from .load_model import get_model, save_merged_model
 
@@ -25,10 +26,11 @@ class DecoderOnlyEmbedderRunner(AbsEmbedderRunner):
     def __init__(
         self,
         model_args: DecoderOnlyEmbedderModelArguments,
-        data_args: AbsEmbedderDataArguments,
+        data_args: DecoderOnlyEmbedderDataArguments,
         training_args: AbsEmbedderTrainingArguments
     ):
         super().__init__(model_args, data_args, training_args)
+        self.data_args = data_args
 
     def load_tokenizer_and_model(self) -> Tuple[PreTrainedTokenizer, AbsEmbedderModel]:
         """Load tokenizer and model.
@@ -82,7 +84,8 @@ class DecoderOnlyEmbedderRunner(AbsEmbedderRunner):
             sub_batch_size=self.training_args.sub_batch_size,
             kd_loss_type=self.training_args.kd_loss_type,
             sentence_pooling_method=self.training_args.sentence_pooling_method,
-            normalize_embeddings=self.training_args.normalize_embeddings
+            normalize_embeddings=self.training_args.normalize_embeddings,
+            config=config
         )
 
         if self.training_args.gradient_checkpointing:
@@ -106,11 +109,31 @@ class DecoderOnlyEmbedderRunner(AbsEmbedderRunner):
             args=self.training_args,
             train_dataset=self.train_dataset,
             data_collator=self.data_collator,
-            tokenizer=self.tokenizer
+            tokenizer=self.tokenizer,
+            eval_corpus_path=self.data_args.eval_corpus_path,
+            eval_queries_path=self.data_args.eval_queries_path
         )
         if self.data_args.same_dataset_within_batch:
             trainer.add_callback(EmbedderTrainerCallbackForDataRefresh(self.train_dataset))
+        if self.data_args.eval_corpus_path is not None and self.data_args.eval_queries_path is not None:
+            logger.info('Add EvaluateCallback')
+            trainer.add_callback(EvaluateCallback())
+        if self.training_args.save_lora_every_epoch:
+            logger.info('Add SaveLoraCallback')
+            trainer.add_callback(SaveLoraCallback())
         return trainer
+    
+    def load_eval_dataset(self) -> AbsEmbedderEvalDataset:
+        """Load the evaluation dataset.
+
+        Returns:
+            DecoderOnlyEmbedderEvalDataset: The loaded dataset instance.
+        """
+        eval_dataset = AbsEmbedderEvalDataset(
+                args=self.data_args,
+                tokenizer=self.tokenizer
+        )
+        return eval_dataset
 
     def run(self):
         """
@@ -119,6 +142,9 @@ class DecoderOnlyEmbedderRunner(AbsEmbedderRunner):
         Path(self.training_args.output_dir).mkdir(parents=True, exist_ok=True)
 
         # Training
+        if self.training_args.resume_from_checkpoint and self.training_args.resume_from_checkpoint == 'True':
+            self.training_args.resume_from_checkpoint = True
+        logger.info(f'Resume from checkpoint: {self.training_args.resume_from_checkpoint}, type: {type(self.training_args.resume_from_checkpoint)}')
         self.trainer.train(resume_from_checkpoint=self.training_args.resume_from_checkpoint)
         self.trainer.save_model()
 

@@ -1,9 +1,8 @@
 from transformers import HfArgumentParser
-
 from FlagEmbedding.finetune.embedder.decoder_only.base import (
-    DecoderOnlyEmbedderDataArguments,
     DecoderOnlyEmbedderTrainingArguments,
     DecoderOnlyEmbedderModelArguments,
+    DecoderOnlyEmbedderDataArguments,
     DecoderOnlyEmbedderRunner,
 )
 

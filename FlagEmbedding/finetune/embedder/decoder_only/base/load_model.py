@@ -2,8 +2,8 @@ import os
 import re
 import torch
 import logging
-from transformers import AutoConfig, AutoModel, AutoTokenizer
-from peft import LoraConfig, TaskType, get_peft_model, PeftModel
+from transformers import AutoConfig, AutoModel, AutoTokenizer, BitsAndBytesConfig
+from peft import LoraConfig, TaskType, get_peft_model, PeftModel, prepare_model_for_kbit_training
 
 from .arguments import DecoderOnlyEmbedderModelArguments
 
@@ -47,6 +47,13 @@ def get_model(model_args: DecoderOnlyEmbedderModelArguments, output_dir: str, re
     Returns:
         transformers.PreTrainedModel or PeftModel: The loaded model.
     """
+    bnb_config = None
+    if model_args.use_qlora:
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_compute_dtype=torch.bfloat16
+        )
     if model_args.config_name:
         config = AutoConfig.from_pretrained(
             model_args.config_name,
@@ -75,6 +82,9 @@ def get_model(model_args: DecoderOnlyEmbedderModelArguments, output_dir: str, re
             from_tf=bool(".ckpt" in model_args.model_name_or_path),
             config=config,
         )
+        if model_args.use_qlora:
+            logger.info("Using QLoRA for training, preparing model for k-bit training")
+            model = prepare_model_for_kbit_training(model)
     else:
         logger.info("Training new model from scratch")
         model = model_args.from_config(config)

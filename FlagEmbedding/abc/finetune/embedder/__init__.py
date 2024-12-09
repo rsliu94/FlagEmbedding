@@ -8,7 +8,7 @@ from .AbsDataset import (
     AbsEmbedderSameDatasetTrainDataset,
     AbsEmbedderSameDatasetEvalDataset,
     AbsEmbedderTrainDataset,
-    EmbedderTrainerCallbackForDataRefresh,
+    EmbedderTrainerCallbackForDataRefresh, AbsEmbedderEvalDataset
 )
 from .AbsModeling import AbsEmbedderModel, EmbedderOutput
 from .AbsTrainer import AbsEmbedderTrainer, EvaluateCallback
@@ -30,4 +30,5 @@ __all__ = [
     "EmbedderOutput",
     "EmbedderTrainerCallbackForDataRefresh",
     "EvaluateCallback",
+    "AbsEmbedderEvalDataset",
 ]

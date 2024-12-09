@@ -157,11 +157,6 @@ recall@25_score: 0.9302325581395349
 map@25_score: 0.5499526902711938
 recall@25_score: 0.9186046511627907
 
-train [ep=5]
-```bash
-sh reranker_finetune.sh --epochs 5 --batch_size 1 --num_gpus 4 --gpu_ids "0,1,2,3" 2>&1 | tee ./logs/reranker_finetune_qwen_5ep_$(date +%Y%m%d_%H%M%S).log && /usr/bin/shutdown
-```
-
 Eval with script:
 ```bash
 python eval_llm_reranker.py \
@@ -178,3 +173,5 @@ python eval_llm_reranker.py \
 --batch_size 1 \
 --device cuda:0
 ```
+
+train: ds-2 + gradient_accumulation_steps=4 + 5 epochs

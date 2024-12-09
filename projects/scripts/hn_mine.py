@@ -9,7 +9,7 @@ import faiss
 from transformers import HfArgumentParser
 from FlagEmbedding import FlagAutoModel
 from FlagEmbedding.abc.inference import AbsEmbedder
-from FlagEmbedding.utils.constants import TASK_DESCRIPTION
+from FlagEmbedding.utils.constants import TASK_DESCRIPTION, RERANKER_PROMPT
 import numpy as np
 import random
 import torch  # 需要添加这个导入

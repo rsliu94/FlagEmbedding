@@ -1,5 +1,5 @@
 # export WANDB_MODE=disabled
-# sh reranker_finetune.sh --epochs 1 --batch_size 2 --num_gpus 2 --gpu_ids "0,1" 2>&1 | tee ./logs/reranker_finetune_iter1_$(date +%Y%m%d_%H%M%S).log
+# sh reranker_finetune.sh --epochs 1 --batch_size 1 --num_gpus 2 --gpu_ids "0,1" 2>&1 | tee ./logs/reranker_finetune_iter1_$(date +%Y%m%d_%H%M%S).log
 # sh reranker_finetune.sh --epochs 4 --batch_size 2 --num_gpus 1 --gpu_ids "0"
 # sh reranker_finetune.sh --epochs 5 --batch_size 1 --num_gpus 4 --gpu_ids "0,1,2,3" 2>&1 | tee ./logs/reranker_finetune_qwen_$(date +%Y%m%d_%H%M%S).log && /usr/bin/shutdown
 source /etc/network_turbo
@@ -65,7 +65,7 @@ eval_retrieval_sample_ratio=0.1
 # set large epochs and small batch size for testing
 
 use_qlora=True
-gradient_accumulation_steps=8
+gradient_accumulation_steps=4
 train_group_size=16
 deepspeed_config_path="./ds_stage2_rerank.json"
 
@@ -77,9 +77,9 @@ label_smoothing=0.0
 
 # model_name_or_path="BAAI/bge-reranker-v2-gemma"
 model_name_or_path="Qwen/Qwen2.5-14B-Instruct"
-output_dir="../model_output/reranker_finetune_iter1_test_qwen_ep5"
+output_dir="../model_output/reranker_finetune_iter1_test_qwen_ep5_ds2"
 save_merged_lora_model=True
-save_steps=109
+save_steps=500
 
 if [ -z "$HF_HUB_CACHE" ]; then
     export HF_HUB_CACHE="$HOME/.cache/huggingface/hub"

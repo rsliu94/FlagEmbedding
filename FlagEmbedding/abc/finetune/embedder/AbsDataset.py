@@ -149,6 +149,32 @@ class AbsEmbedderTrainDataset(Dataset):
 
         return query, passages, teacher_scores
 
+
+class AbsEmbedderEvalDataset(AbsEmbedderTrainDataset):
+    def __init__(
+        self,
+        args: AbsEmbedderDataArguments,
+        tokenizer: PreTrainedTokenizer
+    ):
+        self.args = args
+        self.tokenizer = tokenizer
+        self.shuffle_ratio = args.shuffle_ratio
+
+        eval_datasets = []
+        for data_dir in args.eval_data:
+            if not os.path.isdir(data_dir):
+                if not (data_dir.endswith('.json') or data_dir.endswith('.jsonl')): continue
+                temp_dataset = self._load_dataset(data_dir)
+                if len(temp_dataset) == 0: continue
+                eval_datasets.append(temp_dataset)
+            else:
+                for file in os.listdir(data_dir):
+                    if not (file.endswith('.json') or file.endswith('.jsonl')): continue
+                    temp_dataset = self._load_dataset(os.path.join(data_dir, file))
+                    if len(temp_dataset) == 0: continue
+                    eval_datasets.append(temp_dataset)
+        self.dataset = datasets.concatenate_datasets(eval_datasets)
+
 @dataclass
 class AbsEmbedderEvalCollator(DataCollatorWithPadding):
     """

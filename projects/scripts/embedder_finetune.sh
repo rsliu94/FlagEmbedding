@@ -1,11 +1,11 @@
-
 # sh icl_finetune.sh 2>&1 | tee ./logs/icl_hn_finetune_round2_$(date +%Y%m%d_%H%M%S).log
 # sh icl_finetune.sh --epochs 1 --batch_size 8 --num_gpus 2 --gpu_ids "0,1" 2>&1 | tee ./logs/icl_finetune_iter0_hn_$(date +%Y%m%d_%H%M%S).log
+# sh embedder_finetune.sh --epochs 1 --batch_size 1 --num_gpus 1 --gpu_ids "4" 2>&1 | tee ./logs/emb_qwen_finetune_iter0_hn_$(date +%Y%m%d_%H%M%S).log
 # export WANDB_MODE=disabled
 # echo 'export HF_TOKEN=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' >> ~/.bashrc
 # 科学上网
 source /etc/network_turbo
-
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 # 打印初始参数
 echo "输入参数: $@"
 
@@ -52,9 +52,8 @@ echo "CUDA_VISIBLE_DEVICES = $CUDA_VISIBLE_DEVICES"
 
 # 设置默认值
 : ${num_train_epochs:=3}
-: ${per_device_train_batch_size:=8}
-: ${num_gpus:=2}
-
+: ${per_device_train_batch_size:=1}
+: ${num_gpus:=1}
 
 train_data="\
     ../data/embedder_train_eval_data/cross_validation/finetune_data_iter0_hn.jsonl \
@@ -64,24 +63,20 @@ eval_data="\
 "
 eval_corpus_path="../data/embedder_train_eval_data/cross_validation/corpus.jsonl"
 eval_queries_path="../data/embedder_train_eval_data/cross_validation/test_queries.jsonl"
-eval_examples_path="../data/embedder_train_eval_data/cross_validation/examples.json"
 
-# task_description="Given a multiple choice math question and a student's wrong answer to it, retrieve the math misconception behind the wrong answer."
-# set large epochs and small batch size for testing
-
-retrieval_use_examples=True
-query_max_len=1024
+query_max_len=128
+passage_max_len=64
+gradient_accumulation_steps=1
 
 save_merged_lora_model=True
 save_steps=219
-output_dir="../model_output/icl_finetune_iter0_hn"
+output_dir="../model_output/emb_qwen_finetune_iter0_hn"
 
-lora_rank=32
-lora_alpha=64
+lora_rank=8
+lora_alpha=16
 learning_rate=1e-4
 
-model_name_or_path=BAAI/bge-en-icl
-
+model_name_or_path=Qwen/Qwen2.5-14B-Instruct
 
 if [ -z "$HF_HUB_CACHE" ]; then
     export HF_HUB_CACHE="$HOME/.cache/huggingface/hub"
@@ -93,8 +88,9 @@ model_args="\
     --use_lora True \
     --lora_rank $lora_rank \
     --lora_alpha $lora_alpha \
+    --use_qlora True \
     --target_modules q_proj k_proj v_proj o_proj gate_proj down_proj up_proj \
-    --additional_special_tokens '<instruct>' '<query>' '<response>' \
+    --additional_special_tokens '<instruct>' '<query>' \
     --save_merged_lora_model $save_merged_lora_model \
 "
 
@@ -107,18 +103,19 @@ training_args="\
     --num_train_epochs $num_train_epochs \
     --per_device_train_batch_size $per_device_train_batch_size \
     --per_device_eval_batch_size $per_device_train_batch_size \
+    --gradient_accumulation_steps $gradient_accumulation_steps \
     --dataloader_drop_last True \
     --warmup_ratio 0.1 \
     --gradient_checkpointing \
-    --deepspeed ./ds_stage1_icl.json \
-    --logging_steps 10 \
+    --deepspeed ./ds_stage2_rerank.json \
+    --logging_steps 1 \
+    --save_total_limit 2 \
     --save_steps $save_steps \
     --negatives_cross_device \
-    --save_total_limit 2 \
     --temperature 0.02 \
     --sentence_pooling_method last_token \
     --normalize_embeddings True \
-    --kd_loss_type kl_div \
+    --kd_loss_type m3_kd_loss \
 "
 
 data_args="\
@@ -126,27 +123,21 @@ data_args="\
     --eval_data $eval_data \
     --eval_corpus_path $eval_corpus_path \
     --eval_queries_path $eval_queries_path \
-    --eval_examples_path $eval_examples_path \
     --cache_path ~/.cache \
     --train_group_size 8 \
     --query_max_len $query_max_len \
-    --passage_max_len 128 \
+    --passage_max_len $passage_max_len \
     --pad_to_multiple_of 8 \
     --query_instruction_for_retrieval \"Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.\" \
     --query_instruction_format '<instruct>{}\n<query>{}' \
     --knowledge_distillation False \
-    --same_dataset_within_batch True \
-    --small_threshold 0 \
-    --drop_threshold 0 \
-    --example_query_max_len 384 \
-    --example_passage_max_len 128 \
-    --retrieval_use_examples $retrieval_use_examples \
-    --icl_suffix_str '\n<response>' \
 "
 
-
+MASTER_PORT=$(shuf -i 29502-39999 -n 1)
+echo "使用端口: ${MASTER_PORT}"
 cmd="torchrun --nproc_per_node $num_gpus \
-    -m FlagEmbedding.finetune.embedder.decoder_only.icl \
+    --master_port $MASTER_PORT \
+    -m FlagEmbedding.finetune.embedder.decoder_only.base \
     $model_args \
     $data_args \
     $training_args \
