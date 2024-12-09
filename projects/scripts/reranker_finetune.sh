@@ -95,7 +95,7 @@ eval_retrieval_sample_ratio=0.1
 
 use_qlora=True
 train_group_size=16
-deepspeed_config_path="./ds_stage2_rerank.json"
+deepspeed_config_path="./ds_stage2.json"
 
 query_max_len=384
 passage_max_len=64

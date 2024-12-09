@@ -93,7 +93,7 @@ eval_examples_path="../data/embedder_train_eval_data/cross_validation/examples.j
 
 retrieval_use_examples=True
 query_max_len=1024
-deepspeed_config_path="./ds_stage1_icl.json"
+deepspeed_config_path="./ds_stage2.json"
 save_merged_lora_model=True
 save_steps=500
 
