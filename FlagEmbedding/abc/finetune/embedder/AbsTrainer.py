@@ -37,7 +37,7 @@ class AbsEmbedderTrainer(ABC, Trainer):
         return (loss, outputs) if return_outputs else loss
     
 class EvaluateCallback(TrainerCallback):
-    def on_step_end(self, args, state, control, **kwargs):
+    def on_epoch_end(self, args, state, control, **kwargs):
         """
         Callback method triggered at the end of each epoch.
         Performs model evaluation.
