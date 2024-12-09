@@ -2,7 +2,6 @@
 # sh icl_finetune.sh --epochs 1 --batch_size 8 --num_gpus 2 --gpu_ids "0,1" 2>&1 | tee ./logs/icl_finetune_iter0_hn_$(date +%Y%m%d_%H%M%S).log
 # sh embedder_finetune.sh --epochs 1 --batch_size 1 --num_gpus 1 --gpu_ids "4" 2>&1 | tee ./logs/emb_qwen_finetune_iter0_hn_$(date +%Y%m%d_%H%M%S).log
 # export WANDB_MODE=disabled
-# echo 'export HF_TOKEN=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' >> ~/.bashrc
 # 科学上网
 source /etc/network_turbo
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True

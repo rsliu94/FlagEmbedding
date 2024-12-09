@@ -2,7 +2,6 @@
 # sh icl_finetune.sh 2>&1 | tee ./logs/icl_hn_finetune_round2_$(date +%Y%m%d_%H%M%S).log
 # sh icl_finetune.sh --epochs 1 --batch_size 8 --num_gpus 2 --gpu_ids "0,1" 2>&1 | tee ./logs/icl_finetune_iter0_hn_$(date +%Y%m%d_%H%M%S).log
 # export WANDB_MODE=disabled
-# echo 'export HF_TOKEN=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' >> ~/.bashrc
 # 科学上网
 source /etc/network_turbo
 
