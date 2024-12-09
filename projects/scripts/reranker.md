@@ -179,7 +179,7 @@ train: try qwen 7b, ds-2
 sh reranker_finetune.sh \
 --epochs 1 \
 --batch_size 4 \
---gradient_accumulation_steps 1 \
+--gradient_accumulation_steps 4 \
 --num_gpus 1 \
 --gpu_ids "0" \
 --train_data ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_from_emb_iter1.jsonl \
@@ -189,13 +189,14 @@ sh reranker_finetune.sh \
 ```
 单卡 L20 1epoch bs1*ga1 -> 1.4s 一个 batch / 3504 iter -> 1.4 * 3504 = 4905.6s = 1hr30min / 14G 显存
 单卡 L20 1epoch bs4*ga1 -> 8s 一个 batch / 876 iter -> 8 * 876 = 6992s = 1hr40min / 37G 显存
+单卡 L20 1epoch bs4*ga4 ->
 
 train: try qwen 14b, ds-2
 ```bash
 sh reranker_finetune.sh \
 --epochs 1 \
 --batch_size 2 \
---gradient_accumulation_steps 1 \
+--gradient_accumulation_steps 8 \
 --num_gpus 1 \
 --gpu_ids "0" \
 --train_data ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_from_emb_iter1.jsonl \
@@ -204,6 +205,7 @@ sh reranker_finetune.sh \
 --output_dir ../model_output/reranker_ft_qwen14b_ep1_ds2
 ```
 单卡 L20 1epoch bs1*ga1 -> 3s 一个 batch / 3504 iter -> 3 * 3504 = 10512s = 2hr50min / 21G 显存
-单卡 L20 1epoch bs2*ga1 -> 7.6s 一个 batch / 1753 iter -> 7.6 * 1753 = 13322.8s = 3hr43min / 30G 显存
+单卡 L20 1epoch bs2*ga1 -> 6s 一个 batch / 1753 iter -> 6 * 1753 = 10518s = 2hr55min / 30G 显存 
+单卡 L20 1epoch bs2*ga8 -> 56s 一个 batch / 219 iter -> 56 * 219 = 12264s = 2hr25min / 32G 显存 / 4卡 50min
 
 
