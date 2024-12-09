@@ -174,4 +174,36 @@ python eval_llm_reranker.py \
 --device cuda:0
 ```
 
-train: ds-2 + gradient_accumulation_steps=4 + 5 epochs
+train: try qwen 7b, ds-2
+```bash
+sh reranker_finetune.sh \
+--epochs 1 \
+--batch_size 4 \
+--gradient_accumulation_steps 1 \
+--num_gpus 1 \
+--gpu_ids "0" \
+--train_data ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_from_emb_iter1.jsonl \
+--eval_data ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_from_emb_iter1_test.jsonl \
+--model_name_or_path Qwen/Qwen2.5-7B-Instruct \
+--output_dir ../model_output/reranker_ft_qwen7b_ep1_ds2
+```
+单卡 L20 1epoch bs1*ga1 -> 1.4s 一个 batch / 3504 iter -> 1.4 * 3504 = 4905.6s = 1hr30min / 14G 显存
+单卡 L20 1epoch bs4*ga1 -> 8s 一个 batch / 876 iter -> 8 * 876 = 6992s = 1hr40min / 37G 显存
+
+train: try qwen 14b, ds-2
+```bash
+sh reranker_finetune.sh \
+--epochs 1 \
+--batch_size 2 \
+--gradient_accumulation_steps 1 \
+--num_gpus 1 \
+--gpu_ids "0" \
+--train_data ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_from_emb_iter1.jsonl \
+--eval_data ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_from_emb_iter1_test.jsonl \
+--model_name_or_path Qwen/Qwen2.5-14B-Instruct \
+--output_dir ../model_output/reranker_ft_qwen14b_ep1_ds2
+```
+单卡 L20 1epoch bs1*ga1 -> 3s 一个 batch / 3504 iter -> 3 * 3504 = 10512s = 2hr50min / 21G 显存
+单卡 L20 1epoch bs2*ga1 -> 7.6s 一个 batch / 1753 iter -> 7.6 * 1753 = 13322.8s = 3hr43min / 30G 显存
+
+

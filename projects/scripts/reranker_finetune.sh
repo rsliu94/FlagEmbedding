@@ -33,9 +33,34 @@ while [[ $# -gt 0 ]]; do
       echo "设置 CUDA_VISIBLE_DEVICES = $CUDA_VISIBLE_DEVICES"
       shift 2
       ;;
+    --train_data)
+      train_data="$2"
+      echo "设置 train_data = $train_data"
+      shift 2
+      ;;
+    --eval_data)
+      eval_data="$2"
+      echo "设置 eval_data = $eval_data"
+      shift 2
+      ;;
+    --model_name_or_path)
+      model_name_or_path="$2"
+      echo "设置 model_name_or_path = $model_name_or_path"
+      shift 2
+      ;;
+    --output_dir)
+      output_dir="$2"
+      echo "设置 output_dir = $output_dir"
+      shift 2
+      ;;
+    --gradient_accumulation_steps)
+      gradient_accumulation_steps="$2"
+      echo "设置 gradient_accumulation_steps = $gradient_accumulation_steps"
+      shift 2
+      ;;
     *)
       echo "错误: 未知参数 '$key'"
-      echo "可用参数: --epochs, --batch_size, --num_gpus, --gpu_ids"
+      echo "可用参数: --epochs, --batch_size, --num_gpus, --gpu_ids, --train_data, --eval_data, --model_name_or_path, --output_dir, --gradient_accumulation_steps"
       exit 1
       ;;
   esac
@@ -47,17 +72,21 @@ echo "num_train_epochs = $num_train_epochs"
 echo "per_device_train_batch_size = $per_device_train_batch_size"
 echo "num_gpus = $num_gpus"
 echo "CUDA_VISIBLE_DEVICES = $CUDA_VISIBLE_DEVICES"
+echo "train_data = $train_data"
+echo "eval_data = $eval_data"
+echo "model_name_or_path = $model_name_or_path"
+echo "output_dir = $output_dir"
+echo "gradient_accumulation_steps = $gradient_accumulation_steps"
 
 # 设置默认值
+: ${model_name_or_path:="Qwen/Qwen2.5-14B-Instruct"}
+: ${output_dir:="../model_output/reranker_finetune_iter1_test_qwen_ep5_ds2"}
 : ${num_train_epochs:=3}
 : ${per_device_train_batch_size:=8}
 : ${num_gpus:=2}
-
-train_data="\
-    ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_from_emb_iter1.jsonl "
-
-eval_data="\
-    ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_from_emb_iter1_test.jsonl "
+: ${train_data:="../data/embedder_train_eval_data/cross_validation/finetune_data_hn_from_emb_iter1.jsonl"}
+: ${eval_data:="../data/embedder_train_eval_data/cross_validation/finetune_data_hn_from_emb_iter1_test.jsonl"}
+: ${gradient_accumulation_steps:=4}
 
 eval_retrieval_result_path="../model_output/icl_finetune_iter1_hn/retrieval_results.jsonl"
 eval_retrieval_sample_ratio=0.1
@@ -65,7 +94,6 @@ eval_retrieval_sample_ratio=0.1
 # set large epochs and small batch size for testing
 
 use_qlora=True
-gradient_accumulation_steps=4
 train_group_size=16
 deepspeed_config_path="./ds_stage2_rerank.json"
 
@@ -75,9 +103,6 @@ passage_max_len=64
 learning_rate=2e-4
 label_smoothing=0.0
 
-# model_name_or_path="BAAI/bge-reranker-v2-gemma"
-model_name_or_path="Qwen/Qwen2.5-14B-Instruct"
-output_dir="../model_output/reranker_finetune_iter1_test_qwen_ep5_ds2"
 save_merged_lora_model=True
 save_steps=500
 

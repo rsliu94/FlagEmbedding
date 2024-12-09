@@ -24,6 +24,16 @@ while [[ $# -gt 0 ]]; do
       echo "设置 batch_size = $per_device_train_batch_size"
       shift 2
       ;;
+    --train_data)
+      train_data="$2"
+      echo "设置 train_data = $train_data"
+      shift 2
+      ;;
+    --eval_data)
+      eval_data="$2"
+      echo "设置 eval_data = $eval_data"
+      shift 2
+      ;;
     --num_gpus)
       num_gpus="$2"
       echo "设置 num_gpus = $num_gpus"
@@ -34,9 +44,24 @@ while [[ $# -gt 0 ]]; do
       echo "设置 CUDA_VISIBLE_DEVICES = $CUDA_VISIBLE_DEVICES"
       shift 2
       ;;
+    --output_dir)
+      output_dir="$2"
+      echo "设置 output_dir = $output_dir"
+      shift 2
+      ;;
+    --model_name)
+      model_name_or_path="$2"
+      echo "设置 model_name_or_path = $model_name_or_path"
+      shift 2
+      ;;
+    --gradient_accumulation_steps)
+      gradient_accumulation_steps="$2"
+      echo "设置 gradient_accumulation_steps = $gradient_accumulation_steps"
+      shift 2
+      ;;
     *)
       echo "错误: 未知参数 '$key'"
-      echo "可用参数: --epochs, --batch_size, --num_gpus, --gpu_ids"
+      echo "可用参数: --epochs, --batch_size, --num_gpus, --gpu_ids, --train_data, --eval_data, --output_dir, --model_name, --gradient_accumulation_steps"
       exit 1
       ;;
   esac
@@ -53,14 +78,12 @@ echo "CUDA_VISIBLE_DEVICES = $CUDA_VISIBLE_DEVICES"
 : ${num_train_epochs:=3}
 : ${per_device_train_batch_size:=8}
 : ${num_gpus:=2}
+: ${train_data:="../data/embedder_train_eval_data/cross_validation/finetune_data_iter0_hn.jsonl"}
+: ${eval_data:="../data/embedder_train_eval_data/cross_validation/finetune_data_iter0_hn_test.jsonl"}
+: ${output_dir:="../model_output/icl_finetune_iter0_hn"}
+: ${model_name_or_path:="BAAI/bge-en-icl"}
+: ${gradient_accumulation_steps:=1}
 
-
-train_data="\
-    ../data/embedder_train_eval_data/cross_validation/finetune_data_iter0_hn.jsonl \
-"
-eval_data="\
-    ../data/embedder_train_eval_data/cross_validation/finetune_data_iter0_hn_test.jsonl  \
-"
 eval_corpus_path="../data/embedder_train_eval_data/cross_validation/corpus.jsonl"
 eval_queries_path="../data/embedder_train_eval_data/cross_validation/test_queries.jsonl"
 eval_examples_path="../data/embedder_train_eval_data/cross_validation/examples.json"
@@ -70,16 +93,15 @@ eval_examples_path="../data/embedder_train_eval_data/cross_validation/examples.j
 
 retrieval_use_examples=True
 query_max_len=1024
-
+deepspeed_config_path="./ds_stage1_icl.json"
 save_merged_lora_model=True
-save_steps=219
-output_dir="../model_output/icl_finetune_iter0_hn"
+save_steps=500
 
 lora_rank=32
 lora_alpha=64
+lora_dropout=0.05
 learning_rate=1e-4
-
-model_name_or_path=BAAI/bge-en-icl
+use_qlora=True
 
 
 if [ -z "$HF_HUB_CACHE" ]; then
@@ -92,9 +114,11 @@ model_args="\
     --use_lora True \
     --lora_rank $lora_rank \
     --lora_alpha $lora_alpha \
+    --lora_dropout $lora_dropout \
     --target_modules q_proj k_proj v_proj o_proj gate_proj down_proj up_proj \
     --additional_special_tokens '<instruct>' '<query>' '<response>' \
     --save_merged_lora_model $save_merged_lora_model \
+    --use_qlora $use_qlora \
 "
 
 training_args="\
@@ -106,11 +130,12 @@ training_args="\
     --num_train_epochs $num_train_epochs \
     --per_device_train_batch_size $per_device_train_batch_size \
     --per_device_eval_batch_size $per_device_train_batch_size \
+    --gradient_accumulation_steps $gradient_accumulation_steps \
     --dataloader_drop_last True \
     --warmup_ratio 0.1 \
     --gradient_checkpointing \
-    --deepspeed ./ds_stage1_icl.json \
-    --logging_steps 10 \
+    --deepspeed $deepspeed_config_path \
+    --logging_steps 1 \
     --save_steps $save_steps \
     --negatives_cross_device \
     --save_total_limit 2 \

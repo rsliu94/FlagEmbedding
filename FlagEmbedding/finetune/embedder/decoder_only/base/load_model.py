@@ -81,6 +81,7 @@ def get_model(model_args: DecoderOnlyEmbedderModelArguments, output_dir: str, re
             cache_dir=model_args.cache_dir,
             from_tf=bool(".ckpt" in model_args.model_name_or_path),
             config=config,
+            quantization_config=bnb_config
         )
         if model_args.use_qlora:
             logger.info("Using QLoRA for training, preparing model for k-bit training")
