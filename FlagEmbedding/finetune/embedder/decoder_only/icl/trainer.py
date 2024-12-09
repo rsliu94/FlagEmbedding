@@ -11,50 +11,13 @@ from FlagEmbedding.utils.format_utils import get_detailed_example, get_detailed_
 from FlagEmbedding.utils.infer_utils import batch_to_device, get_new_queries, get_new_queries_examples_list, inference_doc, inference_query_examples_list
 from FlagEmbedding.utils.data_utils import preprocess_text
 from FlagEmbedding.utils.metrics import mean_average_precision_at_k, recall_at_k
+from peft import get_peft_model_state_dict
 import faiss
 from transformers import TrainerCallback
 import random
 random.seed(42)
 
 logger = logging.getLogger(__name__)
-
-
-class SaveLoraCallback(TrainerCallback):
-    def on_epoch_end(self, args, state, control, model=None, tokenizer=None, **kwargs):
-        """每个epoch结束时被调用"""
-        if not state.is_world_process_zero:
-            return
-        
-        epoch = state.epoch
-        output_dir = args.output_dir
-        # 创建带有epoch编号的LoRA保存目录
-        lora_output_dir = os.path.join(output_dir, f'lora_epoch_{int(epoch)}')
-        os.makedirs(lora_output_dir, exist_ok=True)
-        logger.info(f'Saving LoRA weights for epoch {int(epoch)} to {lora_output_dir}')
-        
-        if not hasattr(model.model, 'peft_config'):
-            raise ValueError("模型不是PEFT模型，无法保存LoRA权重")
-        
-        try:
-            # 保存LoRA权重和配置
-            model.model.save_pretrained(
-                lora_output_dir,
-                save_embedding_layers="auto",
-            )
-            
-            # 保存tokenizer配置
-            if tokenizer is not None and state.is_world_process_zero:
-                tokenizer.save_pretrained(lora_output_dir)
-            
-            # 保存训练参数
-            if state.is_world_process_zero:
-                torch.save(args, os.path.join(lora_output_dir, "training_args.bin"))
-            
-            logger.info("Successfully saved LoRA weights")
-            
-        except Exception as e:
-            logger.error(f"Error saving LoRA weights: {str(e)}")
-            raise
 
 
 class DecoderOnlyEmbedderICLTrainer(AbsEmbedderTrainer):
@@ -92,44 +55,16 @@ class DecoderOnlyEmbedderICLTrainer(AbsEmbedderTrainer):
             self.tokenizer.save_pretrained(output_dir)
 
         torch.save(self.args, os.path.join(output_dir, "training_args.bin"))
-
-        # save the checkpoint for sentence-transformers library
-        # if self.is_world_process_zero():
-        #     save_ckpt_for_sentence_transformers(output_dir,
-        #                                         pooling_mode=self.args.sentence_pooling_method,
-        #                                         normlized=self.args.normlized)
-
-    def save_lora_weights(self, output_dir: str = None):
-        """只保存LoRA权重
-    
-        Args:
-            output_dir (Optional[str], optional): 输出目录. 默认为 None，使用trainer的输出目录.
-        """
-        output_dir = output_dir if output_dir is not None else self.args.output_dir
-        os.makedirs(output_dir, exist_ok=True)
-        if not hasattr(self.model.model, 'peft_config'):
-            raise ValueError("模型不是PEFT模型，无法保存LoRA权重")
         
-        try:
-            # 保存LoRA权重和配置
-            self.model.model.save_pretrained(
-                output_dir,
-                save_embedding_layers="auto",
-            )
-            
-            # 保存tokenizer配置
-            if self.tokenizer is not None and self.is_world_process_zero():
-                self.tokenizer.save_pretrained(output_dir)
-            
-            # 保存训练参数
-            if self.is_world_process_zero():
-                torch.save(self.args, os.path.join(output_dir, "training_args.bin"))
-            
-            logger.info("Successfully saved LoRA weights")
-            
-        except Exception as e:
-            logger.error(f"Error saving LoRA weights: {str(e)}")
-            raise
+        if state_dict is None:
+            state_dict = self.model.state_dict()
+        prefix = 'model.'
+        assert all(k.startswith(prefix) for k in state_dict.keys()), list(state_dict.keys())
+        state_dict = {k[len(prefix):]: v for k, v in state_dict.items()}
+        lora_state_dict = get_peft_model_state_dict(self.model.model, state_dict)
+        if self.args.process_index <= 0:
+            torch.save(lora_state_dict, os.path.join(output_dir, "adapter_model.bin"))
+            print(f"Save adapter model at {output_dir}")
         
     @torch.no_grad()
     def evaluate(self, eval_dataset: Optional[Dataset] = None, ignore_keys: Optional[List[str]] = None):
