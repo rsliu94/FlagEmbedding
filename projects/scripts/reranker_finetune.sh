@@ -93,7 +93,7 @@ eval_retrieval_sample_ratio=0.1
 
 # set large epochs and small batch size for testing
 
-use_qlora=True
+use_qlora=False
 train_group_size=16
 deepspeed_config_path="./ds_stage2.json"
 

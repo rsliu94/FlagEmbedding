@@ -209,3 +209,17 @@ sh reranker_finetune.sh \
 单卡 L20 1epoch bs2*ga8 -> 56s 一个 batch / 219 iter -> 56 * 219 = 12264s = 2hr25min / 32G 显存 / 4卡 50min
 
 
+train: qwen 7b, 4 gpus
+train_group_size=16, qlora=False, deepspeed=2, dropout=0.05, lr=2e-4, ls=0.0, epoch=5
+```bash
+sh reranker_finetune.sh \
+--epochs 5 \
+--batch_size 4 \
+--gradient_accumulation_steps 4 \
+--num_gpus 4 \
+--gpu_ids "0,1,2,3" \
+--train_data ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_from_emb_iter1.jsonl \
+--eval_data ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_from_emb_iter1_test.jsonl \
+--model_name_or_path Qwen/Qwen2.5-7B-Instruct \
+--output_dir ../model_output/reranker_ft_qwen7b_5ep_4gpu
+```
