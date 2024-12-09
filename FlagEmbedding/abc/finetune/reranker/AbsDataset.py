@@ -301,7 +301,7 @@ class AbsLLMRerankerTrainDataset(AbsRerankerTrainDataset):
                 for p in passages
             ]
 
-        prompt = self.dataset[item].get('rerank_prompt', RERANKER_PROMPT)
+        prompt = self.dataset[item].get('reranker_prompt', RERANKER_PROMPT)
         # logger.info(f"DEBUG: used rerank_prompt: {prompt}")
         query_inputs = self.tokenizer(
             query,
