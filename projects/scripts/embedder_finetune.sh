@@ -34,9 +34,34 @@ while [[ $# -gt 0 ]]; do
       echo "设置 CUDA_VISIBLE_DEVICES = $CUDA_VISIBLE_DEVICES"
       shift 2
       ;;
+    --train_data)
+      train_data="$2"
+      echo "设置 train_data = $train_data"
+      shift 2
+      ;;
+    --eval_data)
+      eval_data="$2"
+      echo "设置 eval_data = $eval_data"
+      shift 2
+      ;;
+    --output_dir)
+      output_dir="$2"
+      echo "设置 output_dir = $output_dir"
+      shift 2
+      ;;
+    --model_name_or_path)
+      model_name_or_path="$2"
+      echo "设置 model_name_or_path = $model_name_or_path"
+      shift 2
+      ;;
+    --gradient_accumulation_steps)
+      gradient_accumulation_steps="$2"
+      echo "设置 gradient_accumulation_steps = $gradient_accumulation_steps"
+      shift 2
+      ;;
     *)
       echo "错误: 未知参数 '$key'"
-      echo "可用参数: --epochs, --batch_size, --num_gpus, --gpu_ids"
+      echo "可用参数: --epochs, --batch_size, --num_gpus, --gpu_ids, --train_data, --eval_data, --output_dir, --model_name_or_path, --gradient_accumulation_steps"
       exit 1
       ;;
   esac
@@ -48,34 +73,36 @@ echo "num_train_epochs = $num_train_epochs"
 echo "per_device_train_batch_size = $per_device_train_batch_size"
 echo "num_gpus = $num_gpus"
 echo "CUDA_VISIBLE_DEVICES = $CUDA_VISIBLE_DEVICES"
+echo "train_data = $train_data"
+echo "eval_data = $eval_data"
+echo "output_dir = $output_dir"
+echo "model_name_or_path = $model_name_or_path"
+echo "gradient_accumulation_steps = $gradient_accumulation_steps"
 
 # 设置默认值
 : ${num_train_epochs:=3}
 : ${per_device_train_batch_size:=1}
 : ${num_gpus:=1}
+: ${train_data:="../data/embedder_train_eval_data/cross_validation/finetune_data_iter0_hn.jsonl"}
+: ${eval_data:="../data/embedder_train_eval_data/cross_validation/finetune_data_iter0_hn_test.jsonl"}
+: ${output_dir:="../model_output/emb_qwen_finetune_iter0_hn"}
+: ${model_name_or_path:="Qwen/Qwen2.5-14B-Instruct"}
+: ${gradient_accumulation_steps:=1}
 
-train_data="\
-    ../data/embedder_train_eval_data/cross_validation/finetune_data_iter0_hn.jsonl \
-"
-eval_data="\
-    ../data/embedder_train_eval_data/cross_validation/finetune_data_iter0_hn_test.jsonl  \
-"
 eval_corpus_path="../data/embedder_train_eval_data/cross_validation/corpus.jsonl"
 eval_queries_path="../data/embedder_train_eval_data/cross_validation/test_queries.jsonl"
 
-query_max_len=128
-passage_max_len=64
-gradient_accumulation_steps=1
+query_max_len=512
+passage_max_len=128
 
-save_merged_lora_model=True
+save_merged_lora_model=False
 save_steps=219
-output_dir="../model_output/emb_qwen_finetune_iter0_hn"
 
-lora_rank=8
-lora_alpha=16
+deepspeed_config_path="./ds_stage1.json"
+lora_rank=32
+lora_alpha=64
+lora_dropout=0.05
 learning_rate=1e-4
-
-model_name_or_path=Qwen/Qwen2.5-14B-Instruct
 
 if [ -z "$HF_HUB_CACHE" ]; then
     export HF_HUB_CACHE="$HOME/.cache/huggingface/hub"
@@ -87,6 +114,7 @@ model_args="\
     --use_lora True \
     --lora_rank $lora_rank \
     --lora_alpha $lora_alpha \
+    --lora_dropout $lora_dropout \
     --use_qlora True \
     --target_modules q_proj k_proj v_proj o_proj gate_proj down_proj up_proj \
     --additional_special_tokens '<instruct>' '<query>' \
@@ -104,14 +132,15 @@ training_args="\
     --per_device_eval_batch_size $per_device_train_batch_size \
     --gradient_accumulation_steps $gradient_accumulation_steps \
     --dataloader_drop_last True \
-    --warmup_ratio 0.1 \
+    --warmup_ratio 0.05 \
     --gradient_checkpointing \
-    --deepspeed ./ds_stage2_rerank.json \
+    --deepspeed $deepspeed_config_path \
     --logging_steps 1 \
     --save_total_limit 2 \
     --save_steps $save_steps \
     --negatives_cross_device \
     --temperature 0.02 \
+    --weight_decay 0.01 \
     --sentence_pooling_method last_token \
     --normalize_embeddings True \
     --kd_loss_type m3_kd_loss \

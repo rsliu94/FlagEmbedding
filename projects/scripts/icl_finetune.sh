@@ -49,7 +49,7 @@ while [[ $# -gt 0 ]]; do
       echo "设置 output_dir = $output_dir"
       shift 2
       ;;
-    --model_name)
+    --model_name_or_path)
       model_name_or_path="$2"
       echo "设置 model_name_or_path = $model_name_or_path"
       shift 2
@@ -61,7 +61,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     *)
       echo "错误: 未知参数 '$key'"
-      echo "可用参数: --epochs, --batch_size, --num_gpus, --gpu_ids, --train_data, --eval_data, --output_dir, --model_name, --gradient_accumulation_steps"
+      echo "可用参数: --epochs, --batch_size, --num_gpus, --gpu_ids, --train_data, --eval_data, --output_dir, --model_name_or_path, --gradient_accumulation_steps"
       exit 1
       ;;
   esac
@@ -73,6 +73,11 @@ echo "num_train_epochs = $num_train_epochs"
 echo "per_device_train_batch_size = $per_device_train_batch_size"
 echo "num_gpus = $num_gpus"
 echo "CUDA_VISIBLE_DEVICES = $CUDA_VISIBLE_DEVICES"
+echo "model_name_or_path = $model_name_or_path"
+echo "gradient_accumulation_steps = $gradient_accumulation_steps"
+echo "train_data = $train_data"
+echo "eval_data = $eval_data"
+echo "output_dir = $output_dir"
 
 # 设置默认值
 : ${num_train_epochs:=3}
@@ -93,15 +98,15 @@ eval_examples_path="../data/embedder_train_eval_data/cross_validation/examples.j
 
 retrieval_use_examples=True
 query_max_len=1024
-deepspeed_config_path="./ds_stage2.json"
-save_merged_lora_model=True
+deepspeed_config_path="./ds_stage1.json"
+save_merged_lora_model=False
 save_steps=500
 
 lora_rank=32
 lora_alpha=64
 lora_dropout=0.05
 learning_rate=1e-4
-use_qlora=True
+use_qlora=False
 
 
 if [ -z "$HF_HUB_CACHE" ]; then

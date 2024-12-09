@@ -103,7 +103,7 @@ passage_max_len=64
 learning_rate=2e-4
 label_smoothing=0.0
 
-save_merged_lora_model=True
+save_merged_lora_model=False
 save_steps=500
 
 if [ -z "$HF_HUB_CACHE" ]; then

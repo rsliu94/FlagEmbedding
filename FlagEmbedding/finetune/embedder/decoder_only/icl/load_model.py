@@ -4,6 +4,7 @@ import torch
 import logging
 from transformers import AutoConfig, AutoModel, AutoTokenizer, BitsAndBytesConfig
 from peft import LoraConfig, TaskType, get_peft_model, PeftModel, prepare_model_for_kbit_training
+import collections
 
 from .arguments import DecoderOnlyEmbedderICLModelArguments
 
@@ -98,7 +99,7 @@ def get_model(model_args: DecoderOnlyEmbedderICLModelArguments, output_dir: str,
     if resize:
         model.resize_token_embeddings(resize_tokens)
         os.makedirs(os.path.join(output_dir, 'embedding'), exist_ok=True)
-        torch.save(model.embed_tokens, os.path.join(output_dir, 'embedding', 'emb.pth'))
+        torch.save(model.embed_tokens.state_dict(), os.path.join(output_dir, 'embedding', 'emb.pth'))
         target_modules = model_args.target_modules
     else:
         target_modules = model_args.target_modules
@@ -107,7 +108,12 @@ def get_model(model_args: DecoderOnlyEmbedderICLModelArguments, output_dir: str,
 
     if model_args.from_peft is not None:
         if os.path.exists(os.path.join(model_args.from_peft, 'embedding')):
-            model.set_input_embeddings(torch.load(os.path.join(model_args.from_peft, 'embedding', 'emb.pth')))
+            loaded_emb = torch.load(os.path.join(model_args.from_peft, 'embedding', 'emb.pth'))
+            if isinstance(loaded_emb, collections.OrderedDict):
+                embedding = torch.nn.Embedding.from_pretrained(loaded_emb['weight'])
+                model.set_input_embeddings(embedding)
+            else:
+                model.set_input_embeddings(loaded_emb)
             torch.save(model.embed_tokens, os.path.join(output_dir, 'embedding', 'emb.pth'))
         model = PeftModel.from_pretrained(model, model_args.from_peft, is_trainable=True)
         model.print_trainable_parameters()
@@ -173,7 +179,12 @@ def save_merged_model(model_args: DecoderOnlyEmbedderICLModelArguments, output_d
         model = model.merge_and_unload()
 
     if os.path.exists(os.path.join(output_dir, 'embedding', 'emb.pth')):
-        model.set_input_embeddings(torch.load(os.path.join(output_dir, 'embedding', 'emb.pth')))
+        loaded_emb = torch.load(os.path.join(output_dir, 'embedding', 'emb.pth'))
+        if isinstance(loaded_emb, collections.OrderedDict):
+            embedding = torch.nn.Embedding.from_pretrained(loaded_emb['weight'])
+            model.set_input_embeddings(embedding)
+        else:
+            model.set_input_embeddings(loaded_emb)
 
     try:
         model = PeftModel.from_pretrained(model, output_dir)

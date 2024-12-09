@@ -13,7 +13,6 @@ from FlagEmbedding.utils.data_utils import preprocess_text
 from FlagEmbedding.utils.metrics import mean_average_precision_at_k, recall_at_k
 from peft import get_peft_model_state_dict
 import faiss
-from transformers import TrainerCallback
 import random
 random.seed(42)
 

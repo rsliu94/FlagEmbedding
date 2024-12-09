@@ -2,18 +2,27 @@ import logging
 from typing import Tuple
 from pathlib import Path
 import torch
-from transformers import AutoConfig, AutoTokenizer, PreTrainedTokenizer
+from transformers import AutoConfig, AutoTokenizer, PreTrainedTokenizer, TrainerCallback
 
 from FlagEmbedding.abc.finetune.embedder.AbsArguments import AbsEmbedderDataArguments, AbsEmbedderTrainingArguments
 from FlagEmbedding.abc.finetune.embedder import AbsEmbedderRunner, AbsEmbedderModel, EmbedderTrainerCallbackForDataRefresh, EvaluateCallback, AbsEmbedderEvalDataset
 
 from .arguments import DecoderOnlyEmbedderModelArguments, DecoderOnlyEmbedderDataArguments
-from .trainer import DecoderOnlyEmbedderTrainer, SaveLoraCallback
+from .trainer import DecoderOnlyEmbedderTrainer
 from .modeling import BiDecoderOnlyEmbedderModel
 from .load_model import get_model, save_merged_model
 
 logger = logging.getLogger(__name__)
 
+class SaveLoraCallback(TrainerCallback):
+    def on_epoch_end(self, args, state, control, model=None, tokenizer=None, **kwargs):
+
+        """每个epoch结束时被调用"""
+        
+        control.should_save = True
+        logger.info(f"DEBUG: should_save: {control.should_save}")
+        logger.info(f"Epoch {state.epoch} completed. Saving LoRA model...")
+        return control
 
 class DecoderOnlyEmbedderRunner(AbsEmbedderRunner):
     """Runner class for decoder only embedding model.
@@ -108,6 +117,7 @@ class DecoderOnlyEmbedderRunner(AbsEmbedderRunner):
             model=self.model,
             args=self.training_args,
             train_dataset=self.train_dataset,
+            eval_dataset=self.eval_dataset,
             data_collator=self.data_collator,
             tokenizer=self.tokenizer,
             eval_corpus_path=self.data_args.eval_corpus_path,

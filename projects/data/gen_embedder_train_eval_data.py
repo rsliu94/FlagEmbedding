@@ -7,7 +7,7 @@ import shutil
 import pandas as pd
 from FlagEmbedding.utils.data_utils import preprocess_data
 from FlagEmbedding.utils.env_utils import get_env_info
-from FlagEmbedding.utils.constants import TASK_DESCRIPTION
+from FlagEmbedding.utils.constants import TASK_DESCRIPTION, RERANKER_PROMPT
 
 # Add str2bool helper function
 def str2bool(v):
@@ -97,6 +97,7 @@ if __name__ == "__main__":
                 "subject_id": subject_id,
                 "construct_id": construct_id,
                 "prompt": TASK_DESCRIPTION,
+                "reranker_prompt": RERANKER_PROMPT,
             }
             f.write(json.dumps(json_line) + "\n")
     
@@ -121,6 +122,7 @@ if __name__ == "__main__":
                     "subject_id": subject_id,
                     "construct_id": construct_id,
                     "prompt": TASK_DESCRIPTION,
+                    "reranker_prompt": RERANKER_PROMPT,
                 }
                 f.write(json.dumps(json_line) + "\n")
     else:
@@ -149,6 +151,7 @@ if __name__ == "__main__":
                     "subject_id": subject_id,
                     "construct_id": construct_id,
                     "prompt": TASK_DESCRIPTION,
+                    "reranker_prompt": RERANKER_PROMPT,
                 }
                 f.write(json.dumps(json_line) + "\n")
           
@@ -196,6 +199,7 @@ if __name__ == "__main__":
                 "pos": line['pos'],
                 "neg": line['neg'],
                 "prompt": line['prompt'],
+                "reranker_prompt": line['reranker_prompt'],
             }
             f.write(json.dumps(json_line) + "\n")
     
@@ -212,5 +216,6 @@ if __name__ == "__main__":
                     "pos": line['pos'],
                     "neg": line['neg'],
                     "prompt": line['prompt'],
+                    "reranker_prompt": line['reranker_prompt'],
                 }
                 f.write(json.dumps(json_line) + "\n")
