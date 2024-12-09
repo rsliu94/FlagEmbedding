@@ -34,7 +34,7 @@ if torch.cuda.is_available():
 # argparser
 parser = argparse.ArgumentParser(description="Evaluate the raw LLM reranker")
 parser.add_argument("--retrieval_results_path", type=str, default='./retrieval_results.jsonl', help="The path to save the retrieval results")
-parser.add_argument("--model_path", type=str, default="BAAI/bge-reranker-v2-gemma", help="The path of the model")
+parser.add_argument("--model_path", type=str, default="Qwen/Qwen2.5-14B-Instruct", help="The path of the model")
 parser.add_argument("--lora_path", type=str, default=None, help="The path of the LoRA weights")
 parser.add_argument("--is_submission", type=bool, default=False, help="Whether is submission")
 parser.add_argument("--max_len", type=int, default=512, help="The maximum length")
@@ -60,7 +60,7 @@ if __name__ == "__main__":
     if args.lora_path is not None:
         print("Loading LoRA model...")
         tokenizer = AutoTokenizer.from_pretrained(args.lora_path)
-        model = AutoModel.from_pretrained(args.model_path, quantization_config=bnb_config, torch_dtype=torch.float16)
+        model = AutoModelForCausalLM.from_pretrained(args.model_path, quantization_config=bnb_config, torch_dtype=torch.float16)
         
         config = LoraConfig(
             r=32,
@@ -79,9 +79,14 @@ if __name__ == "__main__":
             task_type="CAUSAL_LM",
         )
         model = get_peft_model(model, config)
-        d = load_file(os.path.join(args.lora_path, "adapter_model.safetensors"), device=model.device)
+        d = torch.load(lora_path, map_location=model.device)
         model.load_state_dict(d, strict=False)
         model = model.merge_and_unload()
+        
+        # model = get_peft_model(model, config)
+        # d = load_file(os.path.join(args.lora_path, "adapter_model.safetensors"), device=model.device)
+        # model.load_state_dict(d, strict=False)
+        # model = model.merge_and_unload()
     else:
         print("Loading base model...")
         tokenizer = AutoTokenizer.from_pretrained(args.model_path)

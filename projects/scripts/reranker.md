@@ -210,12 +210,12 @@ sh reranker_finetune.sh \
 
 
 train: qwen 7b, 4 gpus
-train_group_size=16, qlora=False, deepspeed=2, dropout=0.05, lr=2e-4, ls=0.0, epoch=5
+train_group_size=16, qlora=False, deepspeed=2, dropout=0.05, lr=2e-4, ls=0.0, epoch=5, 显存30G, 30min/epoch
 ```bash
 sh reranker_finetune.sh \
 --epochs 5 \
---batch_size 4 \
---gradient_accumulation_steps 4 \
+--batch_size 2 \
+--gradient_accumulation_steps 8 \
 --num_gpus 4 \
 --gpu_ids "0,1,2,3" \
 --train_data ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_from_emb_iter1.jsonl \
@@ -223,3 +223,18 @@ sh reranker_finetune.sh \
 --model_name_or_path Qwen/Qwen2.5-7B-Instruct \
 --output_dir ../model_output/reranker_ft_qwen7b_5ep_4gpu
 ```
+ep1: eval_loss=0.98
+==Rerank==
+map@25_score: 0.5061454662908151
+recall@25_score: 0.8953488372093024
+==Recall==
+map@25_score: 0.5499526902711938
+recall@25_score: 0.9186046511627907
+
+ep2: eval_loss=2.56
+==Rerank==
+map@25_score: 0.5218941812101867
+recall@25_score: 0.9418604651162791
+==Recall==
+map@25_score: 0.5499526902711938
+recall@25_score: 0.9186046511627907

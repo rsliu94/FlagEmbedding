@@ -36,7 +36,7 @@ parser.add_argument("--lora_path", type=str, default=None, help="The path of the
 parser.add_argument("--is_submission", type=bool, default=False, help="Whether is submission")
 parser.add_argument("--query_max_len", type=int, default=1024, help="The maximum length of the query")
 parser.add_argument("--doc_max_len", type=int, default=128, help="The maximum length of the document")
-parser.add_argument("--k", type=int, default=100, help="The number of retrieved documents")
+parser.add_argument("--k", type=int, default=25, help="The number of retrieved documents")
 parser.add_argument("--save_retrieval_results", type=bool, default=False, help="Whether to save the retrieval results")
 parser.add_argument("--retrieval_results_path", type=str, default='./retrieval_results.jsonl', help="The path to save the retrieval results")
 parser.add_argument("--device", type=str, default='cuda:0', help="The device to use")
