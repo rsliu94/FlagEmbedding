@@ -18,14 +18,8 @@ logger = logging.getLogger(__name__)
 
 class SaveLoraCallback(TrainerCallback):
     def on_epoch_end(self, args, state, control, model=None, tokenizer=None, **kwargs):
-
         """每个epoch结束时被调用"""
-        
-        # control.should_save = True
-        # logger.info(f"DEBUG: should_save: {control.should_save}")
-        # logger.info(f"Epoch {state.epoch} completed. Saving LoRA model...")
-        # return control
-        
+        logger.info("DEBUG: Use old lora saver")
         if not state.is_world_process_zero:
             return
         
@@ -36,46 +30,30 @@ class SaveLoraCallback(TrainerCallback):
         os.makedirs(lora_output_dir, exist_ok=True)
         logger.info(f'Saving LoRA weights for epoch {int(epoch)} to {lora_output_dir}')
         
-        if tokenizer is not None and state.is_world_process_zero:
-            tokenizer.save_pretrained(lora_output_dir)
-
-        torch.save(args, os.path.join(lora_output_dir, "training_args.bin"))
-
-        # logger.info(f"DEBUG: check if deepspeed zero3 is enabled")
-        # if is_deepspeed_zero3_enabled():
-        # logger.info(f"DEBUG: Zero3 enabled")
-        state_dict = None
-        if state_dict is None:
-            state_dict = model.state_dict()
-        prefix = 'model.'
-        assert all(k.startswith(prefix) for k in state_dict.keys()), list(state_dict.keys())
-        state_dict = {k[len(prefix):]: v for k, v in state_dict.items()}
-        lora_state_dict = get_peft_model_state_dict(model.model, state_dict)
-        if args.process_index <= 0:
-            torch.save(lora_state_dict, os.path.join(lora_output_dir, "adapter_model.bin"))
-            print(f"Save adapter model at {lora_output_dir}")
+        if not hasattr(model.model, 'peft_config'):
+            raise ValueError("模型不是PEFT模型，无法保存LoRA权重")
         
-        # try:
-        #     # 保存LoRA权重和配置
-        #     model.model.save_pretrained(
-        #         lora_output_dir,
-        #         save_embedding_layers="auto",
-        #     )
+        try:
+            # 保存LoRA权重和配置
+            model.model.save_pretrained(
+                lora_output_dir,
+                save_embedding_layers="auto",
+            )
             
-        #     # 保存tokenizer配置
-        #     if tokenizer is not None and state.is_world_process_zero:
-        #         tokenizer.save_pretrained(lora_output_dir)
+            # 保存tokenizer配置
+            if tokenizer is not None and state.is_world_process_zero:
+                tokenizer.save_pretrained(lora_output_dir)
             
-        #     # 保存训练参数
-        #     if state.is_world_process_zero:
-        #         torch.save(args, os.path.join(lora_output_dir, "training_args.bin"))
+            # 保存训练参数
+            if state.is_world_process_zero:
+                torch.save(args, os.path.join(lora_output_dir, "training_args.bin"))
             
-        #     logger.info("Successfully saved LoRA weights")
+            logger.info("Successfully saved LoRA weights")
             
-        # except Exception as e:
-        #     logger.error(f"Error saving LoRA weights: {str(e)}")
-        #     raise
-
+        except Exception as e:
+            logger.error(f"Error saving LoRA weights: {str(e)}")
+            raise
+  
 class DecoderOnlyEmbedderICLRunner(AbsEmbedderRunner):
     """Runner class for decoder only icl model.
 
@@ -189,6 +167,7 @@ class DecoderOnlyEmbedderICLRunner(AbsEmbedderRunner):
         #         except Exception as e:
         #             logger.info(f"{attr}: <无法获取值: {str(e)}>")
         # logger.info("=====================")
+        
         if self.data_args.same_dataset_within_batch:
             trainer.add_callback(EmbedderTrainerCallbackForDataRefresh(self.train_dataset))
         if self.data_args.eval_corpus_path is not None and self.data_args.eval_queries_path is not None:

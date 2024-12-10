@@ -37,6 +37,7 @@ parser.add_argument("--is_submission", type=bool, default=False, help="Whether i
 parser.add_argument("--query_max_len", type=int, default=1024, help="The maximum length of the query")
 parser.add_argument("--doc_max_len", type=int, default=128, help="The maximum length of the document")
 parser.add_argument("--k", type=int, default=25, help="The number of retrieved documents")
+parser.add_argument("--batch_size", type=int, default=4, help="The batch size")
 parser.add_argument("--save_retrieval_results", type=bool, default=False, help="Whether to save the retrieval results")
 parser.add_argument("--retrieval_results_path", type=str, default='./retrieval_results.jsonl', help="The path to save the retrieval results")
 parser.add_argument("--device", type=str, default='cuda:0', help="The device to use")
@@ -111,39 +112,26 @@ if __name__ == "__main__":
     print(f"Number of queries: {len(queries)}")
 
     print("Loading tokenizer and model...")
-    # bnb_config = BitsAndBytesConfig(
-    #             load_in_4bit=False,
-    #             load_in_8bit=False,
-    #             bnb_4bit_compute_dtype=torch.float16,
-    #             llm_int8_has_fp16_weight=True,
-    #         )
     
-    # bnb_config = BitsAndBytesConfig(
-    #             load_in_4bit=True,
-    #             bnb_4bit_use_double_quant=True,
-    #             bnb_4bit_quant_type="nf4",
-    #             bnb_4bit_compute_dtype=torch.bfloat16
-    #         )
-    
+    bnb_config = BitsAndBytesConfig(
+        load_in_4bit=True,
+        bnb_4bit_use_double_quant=False,
+        bnb_4bit_quant_type="fp4",
+        bnb_4bit_compute_dtype=torch.float16
+    )
     if args.lora_path is not None:
-        print("Loading LoRA model...")
+        print("Loading LoRA tokenizer...")
         tokenizer = AutoTokenizer.from_pretrained(args.lora_path)
-        device = args.device
-        print(f"Device: {device}")
-        model = AutoModel.from_pretrained(args.model_path, quantization_config=None)
-        model = PeftModel.from_pretrained(model, args.lora_path, is_trainable=False)
     else:
-        print("Loading base model...")
         tokenizer = AutoTokenizer.from_pretrained(args.model_path)
-        device = args.device
-        print(f"Device: {device}")
-        model = AutoModel.from_pretrained(args.model_path, quantization_config=None)
-    
-    model = model.half()
-    model = model.to(device)
+    model = AutoModel.from_pretrained(args.model_path, 
+                                      device_map=args.device,
+                                      quantization_config=bnb_config)
+    if args.lora_path is not None:
+        print("Loading LoRA model from {}".format(args.lora_path))
+        model = PeftModel.from_pretrained(model, args.lora_path, is_trainable=False)
     
     model = model.eval()
-    batch_size = 4
     print(f"Model device: {next(model.parameters()).device}")
 
     print("Check query/document token length...")
@@ -158,8 +146,8 @@ if __name__ == "__main__":
     print(f"Current document max length: {cur_doc_max_len}")
 
 
-    doc_embeddings = inference_doc(corpus, tokenizer, model, args.doc_max_len, batch_size, device)
-    query_embeddings = inference_query_examples_list(queries, args.query_max_len, examples_prefix_list, tokenizer, model, batch_size, device)
+    doc_embeddings = inference_doc(corpus, tokenizer, model, args.doc_max_len, args.batch_size, args.device)
+    query_embeddings = inference_query_examples_list(queries, args.query_max_len, examples_prefix_list, tokenizer, model, args.batch_size, args.device)
     print("Building index...")
     index = faiss.IndexFlatL2(doc_embeddings.shape[1])
     index.add(doc_embeddings)
@@ -210,19 +198,3 @@ if __name__ == "__main__":
                 query['candidate_texts'] = [corpus[i] for i in indice]
                 f.write(json.dumps(query) + '\n')
         print(f"Done!")
-        
-        
-        
-    # import pickle
-    # np.save('query_embeddings.npy', query_embeddings)
-    # np.save('doc_embeddings.npy', doc_embeddings)
-    # with open('queries.pkl', 'wb') as f:
-    #     pickle.dump(queries, f)
-    # with open('corpus.pkl', 'wb') as f:
-    #     pickle.dump(corpus, f)
-
-    # with open('queries.pkl', 'rb') as f:
-    #     loaded_queries = pickle.load(f)
-    # print(loaded_queries == queries)
-    # query_embeddings_load = np.load('query_embeddings.npy')
-    # print(np.array_equal(query_embeddings_load, query_embeddings))

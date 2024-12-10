@@ -64,15 +64,15 @@ class DecoderOnlyRerankerTrainer(AbsRerankerTrainer):
         # logger.info(f"DEBUG: check if deepspeed zero3 is enabled")
         # if is_deepspeed_zero3_enabled():
         # logger.info(f"DEBUG: Zero3 enabled")
-        if state_dict is None:
-            state_dict = self.model.state_dict()
-        prefix = 'model.'
-        assert all(k.startswith(prefix) for k in state_dict.keys()), list(state_dict.keys())
-        state_dict = {k[len(prefix):]: v for k, v in state_dict.items()}
-        lora_state_dict = get_peft_model_state_dict(self.model.model, state_dict)
-        if self.args.process_index <= 0:
-            torch.save(lora_state_dict, os.path.join(output_dir, "adapter_model.bin"))
-            print(f"Save adapter model at {output_dir}")
+        # if state_dict is None:
+        #     state_dict = self.model.state_dict()
+        # prefix = 'model.'
+        # assert all(k.startswith(prefix) for k in state_dict.keys()), list(state_dict.keys())
+        # state_dict = {k[len(prefix):]: v for k, v in state_dict.items()}
+        # lora_state_dict = get_peft_model_state_dict(self.model.model, state_dict)
+        # if self.args.process_index <= 0:
+        #     torch.save(lora_state_dict, os.path.join(output_dir, "adapter_model.bin"))
+        #     print(f"Save adapter model at {output_dir}")
 
     @torch.no_grad()
     def evaluate(self, eval_dataset: Optional[Dataset] = None, ignore_keys: Optional[List[str]] = None):
@@ -115,7 +115,7 @@ class DecoderOnlyRerankerTrainer(AbsRerankerTrainer):
         scores = []
         for i in tqdm(range(0, len(pairs), batch_size), desc="Evaluating Metrics"):
             batch_pairs = pairs[i:i+batch_size]
-            batch_inputs = get_inputs(batch_pairs, prompt=RERANKER_PROMPT, tokenizer=self.tokenizer, max_length=512)
+            batch_inputs = get_inputs(batch_pairs, prompt=RERANKER_PROMPT, tokenizer=self.tokenizer, query_max_len=512, doc_max_len=128)
             batch_inputs = batch_to_device(batch_inputs, next(self.model.parameters()).device)
             scores_tensor = self.model.encode(batch_inputs).view(-1, ).float()
             scores.extend(scores_tensor.tolist())

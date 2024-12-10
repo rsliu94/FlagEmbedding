@@ -156,7 +156,7 @@ def inference_query_examples_list(queries, query_max_len, examples_prefix_list, 
     return query_embeddings
 
 
-def get_inputs(pairs, tokenizer, prompt=None, max_length=1024):
+def get_inputs(pairs, tokenizer, prompt=None, query_max_len=512, doc_max_len=128):
     if prompt is None:
         prompt = "Given a query A and a passage B, determine whether the passage contains an answer to the query by providing a prediction of either 'Yes' or 'No'."
     sep = "\n"
@@ -171,12 +171,12 @@ def get_inputs(pairs, tokenizer, prompt=None, max_length=1024):
         query_inputs = tokenizer(f'A: {query}',
                                  return_tensors=None,
                                  add_special_tokens=False,
-                                 max_length=max_length * 3 // 4,
+                                 max_length=query_max_len,
                                  truncation=True)
         passage_inputs = tokenizer(f'B: {passage}',
                                    return_tensors=None,
                                    add_special_tokens=False,
-                                   max_length=max_length,
+                                   max_length=doc_max_len,
                                    truncation=True)
         
         if tokenizer.bos_token_id is not None and tokenizer.bos_token_id != tokenizer.pad_token_id:
@@ -184,7 +184,7 @@ def get_inputs(pairs, tokenizer, prompt=None, max_length=1024):
                 [tokenizer.bos_token_id] + query_inputs['input_ids'],
                 sep_inputs + passage_inputs['input_ids'],
                 truncation='only_second',
-                max_length=max_length,
+                max_length=query_max_len + doc_max_len,
                 padding=False,
                 return_attention_mask=False,
                 return_token_type_ids=False,
@@ -195,7 +195,7 @@ def get_inputs(pairs, tokenizer, prompt=None, max_length=1024):
                 query_inputs['input_ids'],
                 sep_inputs + passage_inputs['input_ids'],
                 truncation='only_second',
-                max_length=max_length,
+                max_length=query_max_len + doc_max_len,
                 padding=False,
                 return_attention_mask=False,
                 return_token_type_ids=False,
@@ -207,7 +207,7 @@ def get_inputs(pairs, tokenizer, prompt=None, max_length=1024):
     return tokenizer.pad(
             inputs,
             padding=True,
-            max_length=max_length + len(sep_inputs) + len(prompt_inputs),
+            max_length=query_max_len + doc_max_len + len(sep_inputs) + len(prompt_inputs),
             pad_to_multiple_of=8,
             return_tensors='pt',
     )

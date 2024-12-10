@@ -99,12 +99,12 @@ eval_examples_path="../data/embedder_train_eval_data/cross_validation/examples.j
 retrieval_use_examples=True
 query_max_len=1024
 deepspeed_config_path="./ds_stage1.json"
-save_merged_lora_model=False
+save_merged_lora_model=True
 save_steps=500
 
 lora_rank=32
 lora_alpha=64
-lora_dropout=0.05
+lora_dropout=0.1
 learning_rate=1e-4
 use_qlora=False
 
@@ -121,7 +121,6 @@ model_args="\
     --lora_alpha $lora_alpha \
     --lora_dropout $lora_dropout \
     --target_modules q_proj k_proj v_proj o_proj gate_proj down_proj up_proj \
-    --additional_special_tokens '<instruct>' '<query>' '<response>' \
     --save_merged_lora_model $save_merged_lora_model \
     --use_qlora $use_qlora \
 "
