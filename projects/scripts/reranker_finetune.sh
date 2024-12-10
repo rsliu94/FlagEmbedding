@@ -159,7 +159,7 @@ training_args="\
     --deepspeed $deepspeed_config_path \
     --logging_steps 1 \
     --save_steps $save_steps \
-    --save_total_limit 2 \
+    --save_total_limit 5 \
 "
 
 cmd="torchrun --nproc_per_node $num_gpus \
