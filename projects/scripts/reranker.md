@@ -60,6 +60,19 @@ python hn_mine.py \
 --embedder_query_max_length 1024 \
 --embedder_passage_max_length 512
 ```
+```bash
+python eval_llm_embedder.py \
+--use_examples_in_query True \
+--model_path BAAI/bge-en-icl \
+--lora_path ../model_output/icl_finetune_iter1_hn/lora_epoch_2 \
+--query_max_len 512 \
+--device cuda:0 \
+--save_retrieval_results True \
+--k 25 \
+--retrieval_results_path ../model_output/icl_finetune_iter1_hn/retrieval_results_top25.jsonl
+```
+
+
 ## Eval raw model
 ```bash
 python eval_llm_reranker.py \
@@ -238,3 +251,47 @@ recall@25_score: 0.9418604651162791
 ==Recall==
 map@25_score: 0.5499526902711938
 recall@25_score: 0.9186046511627907
+
+ep3: eval_loss=3.47
+==Rerank==
+map@25_score: 0.5406017211402769
+recall@25_score: 0.9186046511627907
+==Recall==
+map@25_score: 0.5499526902711938
+recall@25_score: 0.9186046511627907
+
+ep4: eval_loss=5.16
+map@25_score: 0.5365388395773953
+recall@25_score: 0.9186046511627907
+==Recall==
+map@25_score: 0.5499526902711938
+recall@25_score: 0.9186046511627907
+
+```bash
+sh reranker_finetune.sh \
+--epochs 2 \
+--batch_size 2 \
+--gradient_accumulation_steps 8 \
+--num_gpus 4 \
+--gpu_ids "0,1,2,3" \
+--train_data ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_from_emb_iter1.jsonl \
+--eval_data ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_from_emb_iter1_test.jsonl \
+--model_name_or_path Qwen/Qwen2.5-7B-Instruct \
+--output_dir ../model_output/reranker_ft_qwen7b_2ep_4gpu
+```
+On Top-25 results
+ep1: eval_loss=2.33
+==Rerank==
+map@25_score: 0.5061244844722764
+recall@25_score: 0.8831018518518519
+==Recall==
+map@25_score: 0.49682847285225723
+recall@25_score: 0.8831018518518519
+
+ep2: eval_loss=2.64
+==Rerank==
+map@25_score: 0.5414676648680952
+recall@25_score: 0.8831018518518519
+==Recall==
+map@25_score: 0.49682847285225723
+recall@25_score: 0.8831018518518519

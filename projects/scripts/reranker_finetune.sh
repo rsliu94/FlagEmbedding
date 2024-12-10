@@ -88,8 +88,8 @@ echo "gradient_accumulation_steps = $gradient_accumulation_steps"
 : ${eval_data:="../data/embedder_train_eval_data/cross_validation/finetune_data_hn_from_emb_iter1_test.jsonl"}
 : ${gradient_accumulation_steps:=4}
 
-eval_retrieval_result_path="../model_output/icl_finetune_iter1_hn/retrieval_results.jsonl"
-eval_retrieval_sample_ratio=0.1
+eval_retrieval_result_path="../model_output/icl_finetune_iter1_hn/retrieval_results_top25.jsonl"
+eval_retrieval_sample_ratio=1.0
 
 # set large epochs and small batch size for testing
 
