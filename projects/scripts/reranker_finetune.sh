@@ -58,9 +58,18 @@ while [[ $# -gt 0 ]]; do
       echo "设置 gradient_accumulation_steps = $gradient_accumulation_steps"
       shift 2
       ;;
+    --eval_retrieval_result_path)
+      eval_retrieval_result_path="$2"
+      echo "设置 eval_retrieval_result_path = $eval_retrieval_result_path"
+      shift 2
+      ;;
+    --learning_rate)
+      learning_rate="$2"
+      shift 2
+      ;;
     *)
       echo "错误: 未知参数 '$key'"
-      echo "可用参数: --epochs, --batch_size, --num_gpus, --gpu_ids, --train_data, --eval_data, --model_name_or_path, --output_dir, --gradient_accumulation_steps"
+      echo "可用参数: --epochs, --batch_size, --num_gpus, --gpu_ids, --train_data, --eval_data, --model_name_or_path, --output_dir, --gradient_accumulation_steps, --eval_retrieval_result_path, --learning_rate"
       exit 1
       ;;
   esac
@@ -77,6 +86,8 @@ echo "eval_data = $eval_data"
 echo "model_name_or_path = $model_name_or_path"
 echo "output_dir = $output_dir"
 echo "gradient_accumulation_steps = $gradient_accumulation_steps"
+echo "eval_retrieval_result_path = $eval_retrieval_result_path"
+echo "learning_rate = $learning_rate"
 
 # 设置默认值
 : ${model_name_or_path:="Qwen/Qwen2.5-14B-Instruct"}
@@ -87,8 +98,9 @@ echo "gradient_accumulation_steps = $gradient_accumulation_steps"
 : ${train_data:="../data/embedder_train_eval_data/cross_validation/finetune_data_hn_from_emb_iter1.jsonl"}
 : ${eval_data:="../data/embedder_train_eval_data/cross_validation/finetune_data_hn_from_emb_iter1_test.jsonl"}
 : ${gradient_accumulation_steps:=4}
+: ${eval_retrieval_result_path:="../model_output/icl_finetune_iter1_hn/retrieval_results_top25.jsonl"}
+: ${learning_rate:="2e-4"}
 
-eval_retrieval_result_path="../model_output/icl_finetune_iter1_hn/retrieval_results_top25.jsonl"
 eval_retrieval_sample_ratio=1.0
 
 # set large epochs and small batch size for testing
@@ -100,7 +112,6 @@ deepspeed_config_path="./ds_stage2.json"
 query_max_len=384
 passage_max_len=64
 
-learning_rate=2e-4
 label_smoothing=0.0
 
 save_merged_lora_model=True

@@ -59,9 +59,14 @@ while [[ $# -gt 0 ]]; do
       echo "设置 gradient_accumulation_steps = $gradient_accumulation_steps"
       shift 2
       ;;
+    --learning_rate)
+      learning_rate="$2"
+      echo "设置 learning_rate = $learning_rate"
+      shift 2
+      ;;
     *)
       echo "错误: 未知参数 '$key'"
-      echo "可用参数: --epochs, --batch_size, --num_gpus, --gpu_ids, --train_data, --eval_data, --output_dir, --model_name_or_path, --gradient_accumulation_steps"
+      echo "可用参数: --epochs, --batch_size, --num_gpus, --gpu_ids, --train_data, --eval_data, --output_dir, --model_name_or_path, --gradient_accumulation_steps, --learning_rate"
       exit 1
       ;;
   esac
@@ -75,6 +80,7 @@ echo "num_gpus = $num_gpus"
 echo "CUDA_VISIBLE_DEVICES = $CUDA_VISIBLE_DEVICES"
 echo "model_name_or_path = $model_name_or_path"
 echo "gradient_accumulation_steps = $gradient_accumulation_steps"
+echo "learning_rate = $learning_rate"
 echo "train_data = $train_data"
 echo "eval_data = $eval_data"
 echo "output_dir = $output_dir"
@@ -88,6 +94,7 @@ echo "output_dir = $output_dir"
 : ${output_dir:="../model_output/icl_finetune_iter0_hn"}
 : ${model_name_or_path:="BAAI/bge-en-icl"}
 : ${gradient_accumulation_steps:=1}
+: ${learning_rate:=2e-4}
 
 eval_corpus_path="../data/embedder_train_eval_data/cross_validation/corpus.jsonl"
 eval_queries_path="../data/embedder_train_eval_data/cross_validation/test_queries.jsonl"
@@ -105,7 +112,6 @@ save_steps=500
 lora_rank=32
 lora_alpha=64
 lora_dropout=0.1
-learning_rate=1e-4
 use_qlora=False
 
 
