@@ -23,7 +23,7 @@ import argparse
 import random
 import json
 from safetensors.torch import load_file
-
+from threading import Lock, Thread
 # set random seed
 random.seed(42)
 np.random.seed(42)
@@ -41,6 +41,7 @@ parser.add_argument("--query_max_len", type=int, default=512, help="The maximum 
 parser.add_argument("--doc_max_len", type=int, default=128, help="The maximum length")
 parser.add_argument("--k", type=int, default=25, help="The number of retrieved documents")
 parser.add_argument("--save_reranker_results", type=bool, default=False, help="Whether to save the reranker results")
+parser.add_argument("--devices", type=str, default='cuda:0,cuda:1', help="The devices to use, separated by commas")
 parser.add_argument("--batch_size", type=int, default=8, help="The batch size")
 parser.add_argument("--device", type=str, default="cuda:0", help="The device")
 args = parser.parse_args()
@@ -51,27 +52,36 @@ for arg, value in vars(args).items():
 print()
 
 if __name__ == "__main__":
+    devices = args.devices.split(',')
+    print(f"DEBUG: devices: {devices}")
+    models = []
     
-    bnb_config = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_use_double_quant=True,
-        bnb_4bit_quant_type="fp4",
-        bnb_4bit_compute_dtype=torch.float16
-    )
+    for device in devices:
+        print(f"Loading tokenizer and model... on {device}")
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_quant_type="fp4",
+            bnb_4bit_compute_dtype=torch.float16
+        )
+        if args.lora_path is not None:
+            print("Loading LoRA tokenizer...")
+            tokenizer = AutoTokenizer.from_pretrained(args.lora_path)
+        else:
+            tokenizer = AutoTokenizer.from_pretrained(args.model_path)
+        model = AutoModelForCausalLM.from_pretrained(args.model_path, 
+                                        device_map=device,
+                                        quantization_config=bnb_config)
+        if args.lora_path is not None:
+            print("Loading LoRA model from {}".format(args.lora_path))
+            model = PeftModel.from_pretrained(model, args.lora_path, is_trainable=False)
+        model = model.eval()
+        models.append((model, tokenizer))
+    
     if args.lora_path is not None:
-        print("Loading LoRA tokenizer...")
         tokenizer = AutoTokenizer.from_pretrained(args.lora_path)
     else:
         tokenizer = AutoTokenizer.from_pretrained(args.model_path)
-    model = AutoModelForCausalLM.from_pretrained(args.model_path, 
-                                      device_map=args.device,
-                                      quantization_config=bnb_config)
-    if args.lora_path is not None:
-        print("Loading LoRA model from {}".format(args.lora_path))
-        model = PeftModel.from_pretrained(model, args.lora_path, is_trainable=False)
-    
-    model = model.eval()
-    
     yes_loc = tokenizer('Yes', add_special_tokens=False)['input_ids'][0]
     
     retrievals = [json.loads(line) for line in open(args.retrieval_results_path, 'r')] # containing top-25 candidates retrieved by embedder, produced by eval_llm_embedder.py
@@ -81,14 +91,58 @@ if __name__ == "__main__":
         candidates = retrieval['candidate_texts']
         pairs.extend( [[query, candidate] for candidate in candidates])
         
-    scores = []
-    with torch.no_grad():
-        for i in tqdm(range(0, len(pairs), args.batch_size), desc="Evaluating Metrics"):
-            batch_pairs = pairs[i:i+args.batch_size]
-            batch_inputs = get_inputs(batch_pairs, prompt=RERANKER_PROMPT, tokenizer=tokenizer, query_max_len=args.query_max_len, doc_max_len=args.doc_max_len)
-            batch_inputs = batch_to_device(batch_inputs, next(model.parameters()).device)
+    n_gpu = len(devices)
+    assert n_gpu == 2
+    
+    # pairs_parts = np.array_split(pairs, n_gpu)
+    len_pairs = [len(tokenizer(pair[0])['input_ids']) + len(tokenizer(pair[1])['input_ids']) for pair in pairs]
+    sorted_indices = sorted(range(len(len_pairs)), key=lambda k: len_pairs[k], reverse=True)
+    pairs_part_1_idx = [sorted_indices[i] for i in range(len(sorted_indices)) if i % 2 == 0]
+    pairs_part_2_idx = [sorted_indices[i] for i in range(len(sorted_indices)) if i % 2 == 1]
+    pairs_part_1 = [pairs[i] for i in pairs_part_1_idx]
+    pairs_part_2 = [pairs[i] for i in pairs_part_2_idx]
+    pairs_parts = [pairs_part_1, pairs_part_2]
+    
+    score_results = [None] * n_gpu
+    score_results_lock = Lock()
+    
+    def infer_pairs(pairs, tokenizer, model, yes_loc, device, query_max_len, doc_max_len, batch_size=32):
+        scores = []
+        for i in tqdm(range(0, len(pairs), batch_size), desc="Evaluating Metrics"):
+            batch_pairs = pairs[i:i+batch_size]
+            batch_inputs = get_inputs(batch_pairs, prompt=RERANKER_PROMPT, tokenizer=tokenizer, query_max_len=query_max_len, doc_max_len=doc_max_len)
+            batch_inputs = batch_to_device(batch_inputs, device)
             scores_tensor = model(**batch_inputs, return_dict=True).logits[:, -1, yes_loc].view(-1, ).float()
             scores.extend(scores_tensor.tolist())
+        return scores
+    
+    def run_inference_pairs(model, tokenizer, pairs_part, device, index):
+        result = infer_pairs(pairs_part, tokenizer, model, yes_loc, device, args.query_max_len, args.doc_max_len, args.batch_size)
+        with score_results_lock:
+            score_results[index] = result
+        
+    threads = []
+    for index, device in enumerate(devices):
+        thread = Thread(target=run_inference_pairs, args=(models[index][0], models[index][1], pairs_parts[index], device, index))
+        threads.append(thread)
+        
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+        
+    print(f"DEBUG: len score_results: {len(score_results)}")
+    scores_unsorted = score_results[0] + score_results[1]
+    print(f"DEBUG: scores_unsorted.shape: {len(scores_unsorted)}")
+    original_indexes = pairs_part_1_idx + pairs_part_2_idx
+    # Pair each score with its original index
+    paired_list = list(zip(scores_unsorted, original_indexes))
+
+    # Sort the paired list based on the original indexes
+    sorted_paired_list = sorted(paired_list, key=lambda x: x[1])
+
+    # Extract the scores in original order
+    scores = [score for score, index in sorted_paired_list]
     print(f"DEBUG: scores length: {len(scores)}")
     
     # 处理每个检索结果的重排序
@@ -123,45 +177,3 @@ if __name__ == "__main__":
 
     recall_score = recall_at_k(correct_ids, np.array(recall_ids), 25)
     print(f"recall@25_score: {recall_score}")
-    
-    
-    
-# # usage
-# ```bash
-# python eval_llm_reranker.py \
-# --retrieval_results_path ../model_output/icl_finetune_iter1_hn/retrieval_results.jsonl \
-# --model_path BAAI/bge-reranker-v2.5-gemma2-lightweight \
-# --batch_size 8 \
-# --device cuda:2
-# ```
-
-
-# num_to_score = 864*100, bs=16, peak=19G
-# cutoff_layers=[25], compress_ratio=2, compress_layers=[8]
-# 1hr infer
-
-# cutoff_layers=[28], compress_ratio=2, compress_layers=[24, 40]
-# 1hr05min infer, bs=8, peak=18G
-# ==Rerank==
-# map@25_score: 0.23624466721795276
-# recall@25_score: 0.7442129629629629
-# ==Recall==
-# map@25_score: 0.4970577497482009
-# recall@25_score: 0.8819444444444444
-
-# KD from pretrained ranker is meaningless. We need to finetune ranker first!
-
-
-# python eval_llm_reranker.py \
-# --retrieval_results_path ../model_output/icl_finetune_iter1_hn/retrieval_results.jsonl \
-# --model_path BAAI/bge-reranker-v2-minicpm-layerwise \
-# --batch_size 8 \
-# --device cuda:2
-
-# minicpm : speed! 25min + low resources: 6G
-# ==Rerank==
-# map@25_score: 0.20568411986350413
-# recall@25_score: 0.7025462962962963
-# ==Recall==
-# map@25_score: 0.4970577497482009
-# recall@25_score: 0.8819444444444444

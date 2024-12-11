@@ -103,7 +103,7 @@ passage_max_len=64
 learning_rate=2e-4
 label_smoothing=0.0
 
-save_merged_lora_model=False
+save_merged_lora_model=True
 save_steps=500
 
 if [ -z "$HF_HUB_CACHE" ]; then
@@ -159,7 +159,7 @@ training_args="\
     --deepspeed $deepspeed_config_path \
     --logging_steps 1 \
     --save_steps $save_steps \
-    --save_total_limit 5 \
+    --save_total_limit 2 \
 "
 
 cmd="torchrun --nproc_per_node $num_gpus \

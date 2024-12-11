@@ -256,3 +256,29 @@ recall@75_score: 0.9548611111111112
 map@100_score: 0.4582945450617536
 
 Finally!!!!!!!!!!!!!!
+
+多线程 1min for query
+```bash
+python eval_llm_embedder_multi_device.py \
+--use_examples_in_query True \
+--model_path Qwen/Qwen2.5-14B-Instruct \
+--lora_path ../model_output/embedder_icl_finetune_qwen14b_ep2_ds2_fix_emb_old_saver/lora_epoch_2 \
+--query_max_len 512 \
+--use_examples_in_query True \
+--device cuda:0,cuda:1 \
+--save_retrieval_results True \
+--k 25 \
+--batch_size 8 \
+--retrieval_results_path ../model_output/embedder_icl_finetune_qwen14b_ep2_ds2_fix_emb_old_saver/retrieval_results_top25.jsonl
+```
+map@25_score: 0.4560116255302163
+recall@25_score: 0.8854166666666666
+map@50_score: 0.45751441716339275
+recall@50_score: 0.9351851851851852
+map@75_score: 0.45784334626086726
+recall@75_score: 0.9548611111111112
+map@100_score: 0.4579097320126816
+recall@100_score: 0.9606481481481481
+
+# HN using qwen14b embedder
+projects/model_output/embedder_icl_finetune_qwen14b_ep2_ds2_fix_emb_old_saver/merged_model

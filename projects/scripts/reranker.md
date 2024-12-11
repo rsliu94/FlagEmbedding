@@ -342,3 +342,98 @@ recall@25_score: 0.8831018518518519
 ==Recall==
 map@25_score: 0.49682847285225723
 recall@25_score: 0.8831018518518519
+
+# check eval results
+bs=8 -> 16.8G 显存
+```bash
+python eval_llm_reranker.py \
+--retrieval_results_path ../model_output/icl_finetune_iter1_hn/retrieval_results_top25.jsonl \
+--model_path Qwen/Qwen2.5-14B-Instruct \
+--lora_path ../model_output/reranker_ft_qwen14b_ep4_4gpu/checkpoint-219 \
+--batch_size 8 \
+--max_len 512 \
+--device cuda:0
+```
+bs=4 -> 19.2G peak 26G 显存 ?? 25min [864*25]; try use query_max_len + doc_max_len
+```bash
+python eval_llm_reranker.py \
+--retrieval_results_path ../model_output/icl_finetune_iter1_hn/retrieval_results_top25.jsonl \
+--model_path Qwen/Qwen2.5-14B-Instruct \
+--lora_path ../model_output/reranker_ft_qwen14b_ep4_4gpu/checkpoint-219 \
+--batch_size 4 \
+--max_len 512 \
+--device cuda:0
+```
+==Rerank==
+map@25_score: 0.5648703460884994
+recall@25_score: 0.8831018518518519
+==Recall==
+map@25_score: 0.49682847285225723
+recall@25_score: 0.8831018518518519
+
+bs=4, qlen=384, dlen=128, ep3, 18G 显存
+```bash
+python eval_llm_reranker.py \
+--retrieval_results_path ../model_output/icl_finetune_iter1_hn/retrieval_results_top25.jsonl \
+--model_path Qwen/Qwen2.5-14B-Instruct \
+--lora_path ../model_output/reranker_ft_qwen14b_ep4_4gpu/checkpoint-328 \
+--batch_size 4 \
+--query_max_len 512 \
+--doc_max_len 128 \
+--device cuda:0
+```
+==Rerank==
+map@25_score: 0.5832279745422134
+recall@25_score: 0.8831018518518519
+==Recall==
+map@25_score: 0.49682847285225723
+recall@25_score: 0.8831018518518519
+
+多线程 还是25min？显存高
+```bash
+python eval_llm_reranker_multi_device.py \
+--retrieval_results_path ../model_output/icl_finetune_iter1_hn/retrieval_results_top25.jsonl \
+--model_path Qwen/Qwen2.5-14B-Instruct \
+--lora_path ../model_output/reranker_ft_qwen14b_ep4_4gpu/checkpoint-328 \
+--batch_size 2 \
+--query_max_len 512 \
+--doc_max_len 128 \
+--devices cuda:0,cuda:1
+```
+==Rerank==
+map@25_score: 0.5800102902430341
+recall@25_score: 0.8831018518518519
+==Recall==
+map@25_score: 0.49682847285225723
+recall@25_score: 0.8831018518518519
+
+多线程 用了multiprocessing，17min 显存13G Good
+```bash
+python eval_llm_reranker_multi_device.py \
+--retrieval_results_path ../model_output/icl_finetune_iter1_hn/retrieval_results_top25.jsonl \
+--model_path Qwen/Qwen2.5-14B-Instruct \
+--lora_path ../model_output/reranker_ft_qwen14b_ep4_4gpu/checkpoint-328 \
+--batch_size 2 \
+--query_max_len 512 \
+--doc_max_len 128 \
+--devices cuda:0,cuda:1
+```
+map@25_score: 0.3209701519847125
+recall@25_score: 0.8831018518518519
+==Recall==
+map@25_score: 0.49682847285225723
+recall@25_score: 0.8831018518518519
+Not Good..
+
+```bash [threading][25min]
+python eval_llm_reranker_multi_device.py \
+--retrieval_results_path ../model_output/icl_finetune_iter1_hn/retrieval_results_top25.jsonl \
+--model_path Qwen/Qwen2.5-14B-Instruct \
+--lora_path ../model_output/reranker_ft_qwen14b_ep4_4gpu/checkpoint-328 \
+--batch_size 2 \
+--query_max_len 512 \
+--doc_max_len 128 \
+--k 25 \
+--devices cuda:0,cuda:1
+```
+优化顺序：
