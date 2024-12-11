@@ -139,7 +139,7 @@ recall@75_score: 0.9432870370370371
 recall@100_score: 0.9652777777777778
 
 ## 5. Finetune reranker [Qwen2.5-14B-Instruct-finetuned] using hard negative mine by finetuned embedder [3.5hr]
-bs1*ga8*n4 lr=2e-4; 40G 显存, 3.5hr for 4epochs
+bs1*ga8*n4 lr=2e-4; 40G 显存, 3.5hr for 4epochs [sample eval files 0.4 to avoid NCCL timeout]
 ```bash
 sh reranker_finetune.sh \
 --epochs 4 \
@@ -154,6 +154,8 @@ sh reranker_finetune.sh \
 --model_name_or_path Qwen/Qwen2.5-14B-Instruct \
 --output_dir ../model_output/cross_validation/reranker_finetune_qwen14b_iter0
 ```
+| Epoch | eval_loss | MAP@25 | Recall@25 | LB Score |
+|-------|--------|-----------|---------|---------|
 
 ## 6. Eval reranker
 ```bash
