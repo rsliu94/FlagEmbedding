@@ -139,7 +139,7 @@ recall@75_score: 0.9432870370370371
 recall@100_score: 0.9652777777777778
 
 ## 5. Finetune reranker [Qwen2.5-14B-Instruct-finetuned] using hard negative mine by finetuned embedder [3.5hr]
-bs1*ga8*n4 lr=2e-4; 40G 显存, 3.5hr
+bs1*ga8*n4 lr=2e-4; 40G 显存, 3.5hr for 4epochs
 ```bash
 sh reranker_finetune.sh \
 --epochs 4 \
@@ -230,26 +230,27 @@ python add_reranker_score.py \
 --passage_instruction_format '{}{}' \
 --prompt 'Given a query A and a passage B, determine whether the passage B explains the mathematical misconception that leads to the wrong answer in query A by providing a prediction of either "Yes" or "No".' \
 --reranker_max_length 512 \
---use_fp16 True \
+--use_bf16 True \
 --reranker_batch_size 16 \
---compress_ratio 2 \
---compress_layers 24 40 \
---cutoff_layers 28 \
 --devices cuda:0
 ```
 Test data:
 ```bash
 python add_reranker_score.py \
---input_file ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined_round2_test.jsonl \
---output_file ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined_round2_test_score.jsonl \
---reranker_name_or_path BAAI/bge-reranker-v2.5-gemma2-lightweight \
+--input_file ../data/embedder_train_eval_data/cross_validation/finetune_data_iter1_hn_test.jsonl \
+--output_file ../data/embedder_train_eval_data/cross_validation/finetune_data_iter1_hn_test_scored.jsonl \
+--reranker_name_or_path ../model_output/cross_validation/reranker_finetune_qwen14b_iter0/merged_model \
+--reranker_model_class decoder-only-base \
 --query_instruction_for_rerank 'A: ' \
 --query_instruction_format '{}{}' \
 --passage_instruction_for_rerank 'B: ' \
 --passage_instruction_format '{}{}' \
---prompt "Predict whether the passage B explains the mathematical misconception that leads to the wrong answer in query A." \
---reranker_max_length 384 \
---use_fp16 True \
+--prompt 'Given a query A and a passage B, determine whether the passage B explains the mathematical misconception that leads to the wrong answer in query A by providing a prediction of either "Yes" or "No".' \
+--reranker_max_length 512 \
+--use_bf16 True \
 --reranker_batch_size 16 \
---devices cuda:1
+--devices cuda:0
 ```
+
+## 3. Finetune Qwen2.5-14B-Instruct with Hard negative mining results [Using embedder iter 0]
+Use Teacher Scores or Not?
