@@ -106,23 +106,44 @@ sh icl_finetune.sh \
 | 1     | 0.9577 | 0.4444 | 0.8680/0.9131/0.9340/0.9502 | ? |
 | 2     | 0.8767 | 0.4676 | 0.8865/0.9236/0.9409/0.9560 | ? |
 
-2 epochs / 2 gpus / lr 1e-4 ga=1 [Best Recipe]
+2 epochs / 2 gpus / lr 1e-4 ga=1 [Best Recipe][1hr]
 ```bash
 sh icl_finetune.sh \
 --epochs 2 \
 --batch_size 8 \
 --gradient_accumulation_steps 1 \
 --num_gpus 2 \
+--learning_rate 1e-4 \
 --gpu_ids "0,1" \
 --train_data ../data/embedder_train_eval_data/cross_validation/finetune_data_iter0_hn.jsonl \
 --eval_data ../data/embedder_train_eval_data/cross_validation/finetune_data_iter0_hn_test.jsonl \
---output_dir ../model_output/cross_validation/embedder_icl_finetune_qwen14b_iter0_v1 \
+--output_dir ../model_output/cross_validation/embedder_icl_finetune_qwen14b_iter0 \
 --model_name_or_path Qwen/Qwen2.5-14B-Instruct
 ```
 | Epoch | eval_loss | MAP@25 | Recall@25/50/75/100 | LB Score |
 |-------|--------|-----------|---------|---------|
 | 1     | 0.8871 | 0.4547 | 0.8784/0.9247/0.9375/0.9560 | ? |
-| 2     | 0.8026 | 0.4853 | 0.9016/0.9363/0.9490/0.9606 | ? |
+| 2     | 0.8026 | 0.4853 | 0.9016/0.9363/0.9490/0.9606 | CHECK LB |
+
+2 epochs / 4 gpus / lr 2e-4 ga=1 [25min][???? insanely good?]
+```bash
+sh icl_finetune.sh \
+--epochs 2 \
+--batch_size 8 \
+--gradient_accumulation_steps 1 \
+--num_gpus 4 \
+--learning_rate 2e-4 \
+--gpu_ids "0,1,2,3" \
+--train_data ../data/embedder_train_eval_data/cross_validation/finetune_data_iter0_hn.jsonl \
+--eval_data ../data/embedder_train_eval_data/cross_validation/finetune_data_iter0_hn_test.jsonl \
+--output_dir ../model_output/cross_validation/embedder_icl_finetune_qwen14b_iter0_v3 \
+--model_name_or_path Qwen/Qwen2.5-14B-Instruct
+```
+| Epoch | eval_loss | MAP@25 | Recall@25/50/75/100 | LB Score |
+|-------|--------|-----------|---------|---------|
+| 1     | 1.194 | 0.4665 | 0.8773/0.9280/0.9502/0.9664 | ? |
+| 2     | 1.0966 | 0.5031 | 0.8958/0.9363/0.9583/0.9722 | CHECK LB |
+
 
 2 epochs / 2 gpus / lr 1e-4 ga=1 + wd + beta2
 ```bash
