@@ -172,8 +172,8 @@ data_args="\
     --icl_suffix_str '\n<response>' \
 "
 
-
-cmd="torchrun --nproc_per_node $num_gpus \
+random_port=$(shuf -i 29500-65535 -n 1)
+cmd="torchrun --nproc_per_node $num_gpus --master_port $random_port \
     -m FlagEmbedding.finetune.embedder.decoder_only.icl \
     $model_args \
     $data_args \
