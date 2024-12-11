@@ -127,9 +127,10 @@ class AbsEmbedderDataArguments:
         for train_dir in self.train_data:
             if not os.path.exists(train_dir):
                 raise FileNotFoundError(f"cannot find file: {train_dir}, please set a true path")
-        for eval_dir in self.eval_data:
-            if not os.path.exists(eval_dir):
-                raise FileNotFoundError(f"cannot find file: {eval_dir}, please set a true path")
+        if self.eval_data is not None:
+            for eval_dir in self.eval_data:
+                if not os.path.exists(eval_dir):
+                    raise FileNotFoundError(f"cannot find file: {eval_dir}, please set a true path")
 
 
 @dataclass

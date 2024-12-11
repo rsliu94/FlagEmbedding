@@ -383,7 +383,7 @@ python eval_llm_reranker.py \
 --device cuda:0
 ```
 ==Rerank==
-map@25_score: 0.5832279745422134
+map@25_score: 0.5832279745422134 [cv 0.471]
 recall@25_score: 0.8831018518518519
 ==Recall==
 map@25_score: 0.49682847285225723

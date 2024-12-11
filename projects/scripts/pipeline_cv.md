@@ -165,6 +165,7 @@ Merge
 ```bash
 python save_merged_model.py \
 --base_model_path Qwen/Qwen2.5-14B-Instruct \
+--type reranker \
 --lora_path ../model_output/cross_validation/reranker_finetune_qwen14b_iter0/lora_epoch_2 \
 --output_dir ../model_output/cross_validation/reranker_finetune_qwen14b_iter0/merged_model
 ```
@@ -179,7 +180,18 @@ python eval_llm_reranker.py \
 --doc_max_len 128 \
 --device cuda:0
 ```
-Double check
+==Rerank==
+map@25_score: 0.5441250714745003
+recall@25_score: 0.9027777777777778
+==Recall==
+map@25_score: 0.48167870154282266
+recall@25_score: 0.9027777777777778
+
+Double check [some problem with lm_heads?]
+
+Some weights of Qwen2ForCausalLM were not initialized from the model checkpoint at ../model_output/cross_validation/reranker_finetune_qwen14b_iter0/merged_model and are newly initialized: ['lm_head.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+
 ```bash
 python eval_llm_reranker.py \
 --retrieval_results_path ../model_output/cross_validation/embedder_icl_finetune_qwen14b_iter0/retrieval_results_top25_for_ranker_test.jsonl \
@@ -189,8 +201,20 @@ python eval_llm_reranker.py \
 --doc_max_len 128 \
 --device cuda:1
 ```
+==Rerank==
+map@25_score: 0.14888041588262946
+recall@25_score: 0.9027777777777778
+==Recall==
+map@25_score: 0.48167870154282266
+recall@25_score: 0.9027777777777778
 
-
+Fix and try eval again
+==Rerank==
+map@25_score: 0.5485555580229804
+recall@25_score: 0.9027777777777778
+==Recall==
+map@25_score: 0.48167870154282266
+recall@25_score: 0.9027777777777778
 
 
 # Iter-1
@@ -240,13 +264,14 @@ python hn_mine.py \
 ```
 
 ## 2. Add ranker score to `finetune_data_iter1_hn`
-Train data:
+Train data: [1hr?]
 ```bash
 python add_reranker_score.py \
 --input_file ../data/embedder_train_eval_data/cross_validation/finetune_data_iter1_hn.jsonl \
 --output_file ../data/embedder_train_eval_data/cross_validation/finetune_data_iter1_hn_scored.jsonl \
---reranker_name_or_path ../model_output/cross_validation/reranker_finetune_qwen14b_iter0/merged_model \
+--reranker_name_or_path Qwen/Qwen2.5-14B-Instruct \
 --reranker_model_class decoder-only-base \
+--reranker_peft_path ../model_output/cross_validation/reranker_finetune_qwen14b_iter0/lora_epoch_2 \
 --query_instruction_for_rerank 'A: ' \
 --query_instruction_format '{}{}' \
 --passage_instruction_for_rerank 'B: ' \
@@ -254,10 +279,10 @@ python add_reranker_score.py \
 --prompt 'Given a query A and a passage B, determine whether the passage B explains the mathematical misconception that leads to the wrong answer in query A by providing a prediction of either "Yes" or "No".' \
 --reranker_max_length 512 \
 --use_bf16 True \
---reranker_batch_size 16 \
---devices cuda:0
+--reranker_batch_size 4 \
+--devices cuda:2
 ```
-Test data:
+Test data: [15min]
 ```bash
 python add_reranker_score.py \
 --input_file ../data/embedder_train_eval_data/cross_validation/finetune_data_iter1_hn_test.jsonl \
@@ -271,17 +296,20 @@ python add_reranker_score.py \
 --prompt 'Given a query A and a passage B, determine whether the passage B explains the mathematical misconception that leads to the wrong answer in query A by providing a prediction of either "Yes" or "No".' \
 --reranker_max_length 512 \
 --use_bf16 True \
---reranker_batch_size 16 \
---devices cuda:0
+--reranker_batch_size 4 \
+--devices cuda:3
 ```
 
 ## 3. Finetune Qwen2.5-14B-Instruct with Hard negative mining results [Using embedder iter 0]
 Use Teacher Scores or Not?
-2 epochs / 2 gpus[or 4] / ga = 1 / lr = 1e-4 / total_bs=16 -> 1e-4
+
+Use Teacher Scores:
+
+3 epochs / 2 gpus / ga = 1 / lr = 1e-4 / total_bs=16 -> 1e-4
 ```bash
 sh icl_finetune.sh \
 --knowledge_distillation True \
---epochs 2 \
+--epochs 3 \
 --batch_size 8 \
 --gradient_accumulation_steps 1 \
 --num_gpus 2 \
@@ -292,3 +320,29 @@ sh icl_finetune.sh \
 --output_dir ../model_output/cross_validation/embedder_icl_finetune_qwen14b_iter1_with_kd \
 --model_name_or_path Qwen/Qwen2.5-14B-Instruct
 ```
+| Epoch | eval_loss | MAP@25 | Recall@25/50/75/100 | LB Score |
+|-------|--------|-----------|---------|---------|
+| 1     | 1.5677 | 0.4646 | 0.8865/0.9270/0.9513/0.9652 | ? |
+| 2     | 1.3430 | 0.5169 | 0.9108/0.9432/0.9594/0.9687 | ? |
+
+No Teacher Scores:
+
+2 epochs / 2 gpus / ga = 1 / lr = 1e-4 / total_bs=16 -> 1e-4
+```bash
+sh icl_finetune.sh \
+--knowledge_distillation False \
+--epochs 2 \
+--batch_size 8 \
+--gradient_accumulation_steps 1 \
+--num_gpus 2 \
+--learning_rate 1e-4 \
+--gpu_ids "2,3" \
+--train_data ../data/embedder_train_eval_data/cross_validation/finetune_data_iter1_hn_scored.jsonl \
+--eval_data ../data/embedder_train_eval_data/cross_validation/finetune_data_iter1_hn_test_scored.jsonl \
+--output_dir ../model_output/cross_validation/embedder_icl_finetune_qwen14b_iter1_without_kd \
+--model_name_or_path Qwen/Qwen2.5-14B-Instruct
+```
+| Epoch | eval_loss | MAP@25 | Recall@25/50/75/100 | LB Score |
+|-------|--------|-----------|---------|---------|
+| 1     | 1.0706 | 0.4589 | 0.8842/0.9328/0.9502/0.9629 | ? |
+| 2     | 0.9785 | 0.4934 | 0.9050/0.9444/0.9560/0.9699 | ? |
