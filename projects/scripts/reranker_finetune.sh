@@ -4,6 +4,7 @@
 # sh reranker_finetune.sh --epochs 5 --batch_size 1 --num_gpus 4 --gpu_ids "0,1,2,3" 2>&1 | tee ./logs/reranker_finetune_qwen_$(date +%Y%m%d_%H%M%S).log && /usr/bin/shutdown
 source /etc/network_turbo
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+export NCCL_TIMEOUT=1800
 # 打印初始参数
 echo "输入参数: $@"
 
@@ -101,7 +102,7 @@ echo "learning_rate = $learning_rate"
 : ${eval_retrieval_result_path:="../model_output/icl_finetune_iter1_hn/retrieval_results_top25.jsonl"}
 : ${learning_rate:="2e-4"}
 
-eval_retrieval_sample_ratio=1.0
+eval_retrieval_sample_ratio=0.4
 
 # set large epochs and small batch size for testing
 
