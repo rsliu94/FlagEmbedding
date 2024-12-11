@@ -64,7 +64,7 @@ sh icl_finetune.sh \
 | Epoch | eval_loss | MAP@25 | Recall@25/50/75/100 | LB Score |
 |-------|--------|-----------|---------|---------|
 | 1     | 0.8871 | 0.4547 | 0.8784/0.9247/0.9375/0.9560 | ? |
-| 2     | 0.8026 | 0.4853 | 0.9016/0.9363/0.9490/0.9606 | ? |
+| 2     | 0.8026 | 0.4853 | 0.9016/0.9363/0.9490/0.9606 | 0.422 |
 
 Merge lora [for hn mine]
 ```bash
@@ -140,6 +140,7 @@ recall@100_score: 0.9652777777777778
 
 ## 5. Finetune reranker [Qwen2.5-14B-Instruct-finetuned] using hard negative mine by finetuned embedder [3.5hr]
 bs1*ga8*n4 lr=2e-4; 40G 显存, 3.5hr for 4epochs [sample eval files 0.4 to avoid NCCL timeout]
+[consider early stop at epoch 2/3 -> 1.7hr(100min)]
 ```bash
 sh reranker_finetune.sh \
 --epochs 4 \
@@ -154,19 +155,39 @@ sh reranker_finetune.sh \
 --model_name_or_path Qwen/Qwen2.5-14B-Instruct \
 --output_dir ../model_output/cross_validation/reranker_finetune_qwen14b_iter0
 ```
-| Epoch | eval_loss | MAP@25 | Recall@25 | LB Score |
+| Epoch | eval_loss | MAP@25(rerank/recall) | Recall@25(rerank/recall) | LB Score |
 |-------|--------|-----------|---------|---------|
+| 1     | 0.8703 | 0.5599/0.5080 | 0.9043/0.9043 | ? |
+| 2     | 1.0203 | 0.6190/0.5080 | 0.9043/0.9043 | ? | [early stop, train loss ~ 0.01]
 
 ## 6. Eval reranker
+Merge
+```bash
+python save_merged_model.py \
+--base_model_path Qwen/Qwen2.5-14B-Instruct \
+--lora_path ../model_output/cross_validation/reranker_finetune_qwen14b_iter0/lora_epoch_2 \
+--output_dir ../model_output/cross_validation/reranker_finetune_qwen14b_iter0/merged_model
+```
+Eval [25min]
 ```bash
 python eval_llm_reranker.py \
---retrieval_results_path ../model_output/cross_validation/embedder_icl_finetune_qwen14b_iter0/retrieval_results_top25.jsonl \
+--retrieval_results_path ../model_output/cross_validation/embedder_icl_finetune_qwen14b_iter0/retrieval_results_top25_for_ranker_test.jsonl \
 --model_path Qwen/Qwen2.5-14B-Instruct \
---lora_path ../model_output/cross_validation/reranker_finetune_qwen14b_iter0/xxxxxxxx \
+--lora_path ../model_output/cross_validation/reranker_finetune_qwen14b_iter0/lora_epoch_2 \
 --batch_size 4 \
 --query_max_len 512 \
 --doc_max_len 128 \
 --device cuda:0
+```
+Double check
+```bash
+python eval_llm_reranker.py \
+--retrieval_results_path ../model_output/cross_validation/embedder_icl_finetune_qwen14b_iter0/retrieval_results_top25_for_ranker_test.jsonl \
+--model_path ../model_output/cross_validation/reranker_finetune_qwen14b_iter0/merged_model \
+--batch_size 4 \
+--query_max_len 512 \
+--doc_max_len 128 \
+--device cuda:1
 ```
 
 
@@ -188,7 +209,7 @@ python hn_mine.py \
 --candidate_pool ../data/embedder_train_eval_data/cross_validation/corpus.jsonl \
 --range_for_sampling 2-200 \
 --negative_number 15 \
---devices cuda:0 \
+--devices cuda:2 \
 --shuffle_data True \
 --query_instruction_for_retrieval "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer." \
 --query_instruction_format '<instruct>{}\n<query>{}' \
@@ -208,7 +229,7 @@ python hn_mine.py \
 --candidate_pool ../data/embedder_train_eval_data/cross_validation/corpus.jsonl \
 --range_for_sampling 2-200 \
 --negative_number 15 \
---devices cuda:1 \
+--devices cuda:3 \
 --shuffle_data True \
 --query_instruction_for_retrieval "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer." \
 --query_instruction_format '<instruct>{}\n<query>{}' \
