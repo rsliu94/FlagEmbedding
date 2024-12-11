@@ -1,6 +1,6 @@
 # Iter-0
 
-# 1. Hard negative mining using bge-en-icl
+## 1. Hard negative mining using bge-en-icl
 * range_for_sampling: [2, 200]
 * negative_number: 15
 
@@ -46,39 +46,46 @@ python hn_mine.py \
 --embedder_passage_max_length 512
 ```
 
-# 2. Finetune Qwen2.5-14B-Instruct with Hard negative mining results [Using ICL]
-2 epochs
+## 2. Finetune Qwen2.5-14B-Instruct with Hard negative mining results [Using ICL]
+2 epochs / 2 gpus / ga = 1 / lr = 1e-4 / total_bs=16 -> 1e-4
 ```bash
 sh icl_finetune.sh \
 --epochs 2 \
 --batch_size 8 \
---gradient_accumulation_steps 2 \
---num_gpus 4 \
---gpu_ids "0,1,2,3" \
+--gradient_accumulation_steps 1 \
+--num_gpus 2 \
+--learning_rate 1e-4 \
+--gpu_ids "0,1" \
 --train_data ../data/embedder_train_eval_data/cross_validation/finetune_data_iter0_hn.jsonl \
 --eval_data ../data/embedder_train_eval_data/cross_validation/finetune_data_iter0_hn_test.jsonl \
---output_dir ../model_output/embedder_icl_finetune_qwen14b_iter0 \
+--output_dir ../model_output/cross_validation/embedder_icl_finetune_qwen14b_iter0 \
 --model_name_or_path Qwen/Qwen2.5-14B-Instruct
 ```
+| Epoch | eval_loss | MAP@25 | Recall@25/50/75/100 | LB Score |
+|-------|--------|-----------|---------|---------|
+| 1     | 0.8871 | 0.4547 | 0.8784/0.9247/0.9375/0.9560 | ? |
+| 2     | 0.8026 | 0.4853 | 0.9016/0.9363/0.9490/0.9606 | ? |
 
 Merge lora [for hn mine]
 ```bash
 python save_merged_model.py \
 --base_model_path Qwen/Qwen2.5-14B-Instruct \
---lora_path ../model_output/embedder_icl_finetune_qwen14b_ep3_ds2/checkpoint-162 \
---model_dir ../model_output/embedder_icl_finetune_qwen14b_ep3_ds2 \
---use_flash_attn False \
---output_dir ../model_output/embedder_icl_finetune_qwen14b_ep3_ds2/merged_model_lora_epoch_2
+--lora_path ../model_output/cross_validation/embedder_icl_finetune_qwen14b_iter0/lora_epoch_2 \
+--output_dir ../model_output/cross_validation/embedder_icl_finetune_qwen14b_iter0/merged_model
 ```
-HN mine using merged model
+
+## 3. HN mine using Finetuned model
+* range_for_sampling: [2, 100]
+* negative_number: 15
+
 Train:
 ```bash
 python hn_mine.py \
---embedder_name_or_path ../model_output/embedder_icl_finetune_qwen14b_ep2_ds2_fix_emb_old_saver/merged_model \
+--embedder_name_or_path ../model_output/cross_validation/embedder_icl_finetune_qwen14b_iter0/merged_model \
 --embedder_model_class decoder-only-icl \
 --pooling_method last_token \
 --input_file ../data/embedder_train_eval_data/cross_validation/hn_mine_input.jsonl \
---output_file ../data/embedder_train_eval_data/cross_validation/finetune_data_iter0_hn_qwen14b_for_ranker.jsonl \
+--output_file ../data/embedder_train_eval_data/cross_validation/finetune_data_iter0_hn_from_qwen14b_iter0_for_ranker.jsonl \
 --candidate_pool ../data/embedder_train_eval_data/cross_validation/corpus.jsonl \
 --range_for_sampling 2-100 \
 --negative_number 15 \
@@ -91,4 +98,158 @@ python hn_mine.py \
 --embedder_query_max_length 1024 \
 --embedder_passage_max_length 512
 ```
-# 3. Retrieval using Qwen2.5-7B-Instruct
+Test:
+```bash
+python hn_mine.py \
+--embedder_name_or_path ../model_output/cross_validation/embedder_icl_finetune_qwen14b_iter0/merged_model \
+--embedder_model_class decoder-only-icl \
+--pooling_method last_token \
+--input_file ../data/embedder_train_eval_data/cross_validation/hn_mine_test_input.jsonl \
+--output_file ../data/embedder_train_eval_data/cross_validation/finetune_data_iter0_hn_from_qwen14b_iter0_for_ranker_test.jsonl \
+--candidate_pool ../data/embedder_train_eval_data/cross_validation/corpus.jsonl \
+--range_for_sampling 2-100 \
+--negative_number 15 \
+--devices cuda:1 \
+--shuffle_data True \
+--query_instruction_for_retrieval "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer." \
+--query_instruction_format '<instruct>{}\n<query>{}' \
+--add_examples_for_task True \
+--batch_size 256 \
+--embedder_query_max_length 1024 \
+--embedder_passage_max_length 512
+```
+## 4. Retrieval & Eval using Qwen2.5-7B-Instruct-finetuned
+```bash
+python eval_llm_embedder.py \
+--use_examples_in_query True \
+--model_path ../model_output/cross_validation/embedder_icl_finetune_qwen14b_iter0/merged_model \
+--query_max_len 512 \
+--use_examples_in_query True \
+--device cuda:0 \
+--save_retrieval_results True \
+--k 25 \
+--batch_size 8 \
+--device cuda:2 \
+--retrieval_results_path ../model_output/cross_validation/embedder_icl_finetune_qwen14b_iter0/retrieval_results_top25_for_ranker_test.jsonl
+```
+map@25_score: 0.48167870154282266
+recall@25_score: 0.9027777777777778
+recall@50_score: 0.9293981481481481
+recall@75_score: 0.9432870370370371
+recall@100_score: 0.9652777777777778
+
+## 5. Finetune reranker [Qwen2.5-14B-Instruct-finetuned] using hard negative mine by finetuned embedder [3.5hr]
+bs1*ga8*n4 lr=2e-4; 40G 显存, 3.5hr
+```bash
+sh reranker_finetune.sh \
+--epochs 4 \
+--batch_size 1 \
+--gradient_accumulation_steps 8 \
+--num_gpus 4 \
+--learning_rate 2e-4 \
+--gpu_ids "0,1,2,3" \
+--train_data ../data/embedder_train_eval_data/cross_validation/finetune_data_iter0_hn_from_qwen14b_iter0_for_ranker.jsonl \
+--eval_data ../data/embedder_train_eval_data/cross_validation/finetune_data_iter0_hn_from_qwen14b_iter0_for_ranker_test.jsonl \
+--eval_retrieval_result_path ../model_output/cross_validation/embedder_icl_finetune_qwen14b_iter0/retrieval_results_top25_for_ranker_test.jsonl \
+--model_name_or_path Qwen/Qwen2.5-14B-Instruct \
+--output_dir ../model_output/cross_validation/reranker_finetune_qwen14b_iter0
+```
+
+## 6. Eval reranker
+```bash
+python eval_llm_reranker.py \
+--retrieval_results_path ../model_output/cross_validation/embedder_icl_finetune_qwen14b_iter0/retrieval_results_top25.jsonl \
+--model_path Qwen/Qwen2.5-14B-Instruct \
+--lora_path ../model_output/cross_validation/reranker_finetune_qwen14b_iter0/xxxxxxxx \
+--batch_size 4 \
+--query_max_len 512 \
+--doc_max_len 128 \
+--device cuda:0
+```
+
+
+
+
+# Iter-1
+## 1. Hard negative mining using `embedder_icl_finetune_qwen14b_iter0`
+* range_for_sampling: [2, 200]
+* negative_number: 15
+
+Train:
+```bash
+python hn_mine.py \
+--embedder_name_or_path ../model_output/cross_validation/embedder_icl_finetune_qwen14b_iter0/merged_model \
+--embedder_model_class decoder-only-icl \
+--pooling_method last_token \
+--input_file ../data/embedder_train_eval_data/cross_validation/hn_mine_input.jsonl \
+--output_file ../data/embedder_train_eval_data/cross_validation/finetune_data_iter1_hn.jsonl \
+--candidate_pool ../data/embedder_train_eval_data/cross_validation/corpus.jsonl \
+--range_for_sampling 2-200 \
+--negative_number 15 \
+--devices cuda:0 \
+--shuffle_data True \
+--query_instruction_for_retrieval "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer." \
+--query_instruction_format '<instruct>{}\n<query>{}' \
+--add_examples_for_task True \
+--batch_size 256 \
+--embedder_query_max_length 1024 \
+--embedder_passage_max_length 512
+```
+Test:
+```bash
+python hn_mine.py \
+--embedder_name_or_path ../model_output/cross_validation/embedder_icl_finetune_qwen14b_iter0/merged_model \
+--embedder_model_class decoder-only-icl \
+--pooling_method last_token \
+--input_file ../data/embedder_train_eval_data/cross_validation/hn_mine_test_input.jsonl \
+--output_file ../data/embedder_train_eval_data/cross_validation/finetune_data_iter1_hn_test.jsonl \
+--candidate_pool ../data/embedder_train_eval_data/cross_validation/corpus.jsonl \
+--range_for_sampling 2-200 \
+--negative_number 15 \
+--devices cuda:1 \
+--shuffle_data True \
+--query_instruction_for_retrieval "Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer." \
+--query_instruction_format '<instruct>{}\n<query>{}' \
+--add_examples_for_task True \
+--batch_size 256 \
+--embedder_query_max_length 1024 \
+--embedder_passage_max_length 512
+```
+
+## 2. Add ranker score to `finetune_data_iter1_hn`
+Train data:
+```bash
+python add_reranker_score.py \
+--input_file ../data/embedder_train_eval_data/cross_validation/finetune_data_iter1_hn.jsonl \
+--output_file ../data/embedder_train_eval_data/cross_validation/finetune_data_iter1_hn_scored.jsonl \
+--reranker_name_or_path ../model_output/cross_validation/reranker_finetune_qwen14b_iter0/merged_model \
+--reranker_model_class decoder-only-base \
+--query_instruction_for_rerank 'A: ' \
+--query_instruction_format '{}{}' \
+--passage_instruction_for_rerank 'B: ' \
+--passage_instruction_format '{}{}' \
+--prompt 'Given a query A and a passage B, determine whether the passage B explains the mathematical misconception that leads to the wrong answer in query A by providing a prediction of either "Yes" or "No".' \
+--reranker_max_length 512 \
+--use_fp16 True \
+--reranker_batch_size 16 \
+--compress_ratio 2 \
+--compress_layers 24 40 \
+--cutoff_layers 28 \
+--devices cuda:0
+```
+Test data:
+```bash
+python add_reranker_score.py \
+--input_file ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined_round2_test.jsonl \
+--output_file ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_mined_round2_test_score.jsonl \
+--reranker_name_or_path BAAI/bge-reranker-v2.5-gemma2-lightweight \
+--query_instruction_for_rerank 'A: ' \
+--query_instruction_format '{}{}' \
+--passage_instruction_for_rerank 'B: ' \
+--passage_instruction_format '{}{}' \
+--prompt "Predict whether the passage B explains the mathematical misconception that leads to the wrong answer in query A." \
+--reranker_max_length 384 \
+--use_fp16 True \
+--reranker_batch_size 16 \
+--devices cuda:1
+```
