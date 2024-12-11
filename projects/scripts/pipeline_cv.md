@@ -254,3 +254,18 @@ python add_reranker_score.py \
 
 ## 3. Finetune Qwen2.5-14B-Instruct with Hard negative mining results [Using embedder iter 0]
 Use Teacher Scores or Not?
+2 epochs / 2 gpus[or 4] / ga = 1 / lr = 1e-4 / total_bs=16 -> 1e-4
+```bash
+sh icl_finetune.sh \
+--knowledge_distillation True \
+--epochs 2 \
+--batch_size 8 \
+--gradient_accumulation_steps 1 \
+--num_gpus 2 \
+--learning_rate 1e-4 \
+--gpu_ids "0,1" \
+--train_data ../data/embedder_train_eval_data/cross_validation/finetune_data_iter1_hn_scored.jsonl \
+--eval_data ../data/embedder_train_eval_data/cross_validation/finetune_data_iter1_hn_test_scored.jsonl \
+--output_dir ../model_output/cross_validation/embedder_icl_finetune_qwen14b_iter1_with_kd \
+--model_name_or_path Qwen/Qwen2.5-14B-Instruct
+```

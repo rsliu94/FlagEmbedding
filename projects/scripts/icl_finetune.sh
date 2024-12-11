@@ -64,9 +64,14 @@ while [[ $# -gt 0 ]]; do
       echo "设置 learning_rate = $learning_rate"
       shift 2
       ;;
+    --knowledge_distillation)
+      knowledge_distillation="$2"
+      echo "设置 knowledge_distillation = $knowledge_distillation"
+      shift 2
+      ;;
     *)
       echo "错误: 未知参数 '$key'"
-      echo "可用参数: --epochs, --batch_size, --num_gpus, --gpu_ids, --train_data, --eval_data, --output_dir, --model_name_or_path, --gradient_accumulation_steps, --learning_rate"
+      echo "可用参数: --epochs, --batch_size, --num_gpus, --gpu_ids, --train_data, --eval_data, --output_dir, --model_name_or_path, --gradient_accumulation_steps, --learning_rate, --knowledge_distillation"
       exit 1
       ;;
   esac
@@ -81,6 +86,7 @@ echo "CUDA_VISIBLE_DEVICES = $CUDA_VISIBLE_DEVICES"
 echo "model_name_or_path = $model_name_or_path"
 echo "gradient_accumulation_steps = $gradient_accumulation_steps"
 echo "learning_rate = $learning_rate"
+echo "knowledge_distillation = $knowledge_distillation"
 echo "train_data = $train_data"
 echo "eval_data = $eval_data"
 echo "output_dir = $output_dir"
@@ -95,6 +101,7 @@ echo "output_dir = $output_dir"
 : ${model_name_or_path:="BAAI/bge-en-icl"}
 : ${gradient_accumulation_steps:=1}
 : ${learning_rate:=2e-4}
+: ${knowledge_distillation:=False}
 
 eval_corpus_path="../data/embedder_train_eval_data/cross_validation/corpus.jsonl"
 eval_queries_path="../data/embedder_train_eval_data/cross_validation/test_queries.jsonl"
@@ -168,7 +175,7 @@ data_args="\
     --pad_to_multiple_of 8 \
     --query_instruction_for_retrieval \"Given a multiple choice math question and a student's incorrect answer choice, identify and retrieve the specific mathematical misconception or error in the student's thinking that led to this wrong answer.\" \
     --query_instruction_format '<instruct>{}\n<query>{}' \
-    --knowledge_distillation False \
+    --knowledge_distillation $knowledge_distillation \
     --same_dataset_within_batch True \
     --small_threshold 0 \
     --drop_threshold 0 \
