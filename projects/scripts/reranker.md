@@ -300,14 +300,14 @@ train: qwen 14b, 4 gpus
 ```bash
 sh reranker_finetune.sh \
 --epochs 4 \
---batch_size 2 \
+--batch_size 1 \
 --gradient_accumulation_steps 8 \
 --num_gpus 4 \
 --gpu_ids "0,1,2,3" \
 --train_data ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_from_emb_iter1.jsonl \
 --eval_data ../data/embedder_train_eval_data/cross_validation/finetune_data_hn_from_emb_iter1_test.jsonl \
 --model_name_or_path Qwen/Qwen2.5-14B-Instruct \
---output_dir ../model_output/reranker_ft_qwen14b_ep4_4gpu \
+--output_dir ../model_output/reranker_ft_qwen14b_ep4_4gpu_tst \
 2>&1 | tee ./logs/reranker_finetune_qwen14b_ep4_$(date +%Y%m%d_%H%M%S).log ; /usr/bin/shutdown
 ```
 On Top-25 results
@@ -329,7 +329,7 @@ recall@25_score: 0.8831018518518519
 
 ep3: eval_loss=1.38
 ==Rerank==
-map@25_score: 0.6004591938191238
+map@25_score: 0.6004591938191238 [cv 0.471]
 recall@25_score: 0.8831018518518519
 ==Recall==
 map@25_score: 0.49682847285225723
