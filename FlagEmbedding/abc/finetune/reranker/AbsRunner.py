@@ -120,11 +120,12 @@ class AbsRerankerRunner(ABC):
         Returns:
             AbsRerankerEvalDataset: The evaluation dataset instance.
         """
-        eval_dataset = AbsLLMRerankerEvalDataset(
-                args=self.data_args,
-                tokenizer=self.tokenizer
-            )
-        return eval_dataset
+        if self.data_args.eval_data is not None:
+            eval_dataset = AbsLLMRerankerEvalDataset(
+                    args=self.data_args,
+                    tokenizer=self.tokenizer
+                )
+            return eval_dataset
 
     def load_data_collator(self) -> AbsRerankerCollator:
         """Loads the appropriate data collator.
