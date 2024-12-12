@@ -68,9 +68,17 @@ while [[ $# -gt 0 ]]; do
       learning_rate="$2"
       shift 2
       ;;
+    --knowledge_distillation)
+      knowledge_distillation="$2"
+      shift 2
+      ;;
+    --label_smoothing)
+      label_smoothing="$2"
+      shift 2
+      ;;
     *)
       echo "错误: 未知参数 '$key'"
-      echo "可用参数: --epochs, --batch_size, --num_gpus, --gpu_ids, --train_data, --eval_data, --model_name_or_path, --output_dir, --gradient_accumulation_steps, --eval_retrieval_result_path, --learning_rate"
+      echo "可用参数: --epochs, --batch_size, --num_gpus, --gpu_ids, --train_data, --eval_data, --model_name_or_path, --output_dir, --gradient_accumulation_steps, --eval_retrieval_result_path, --learning_rate, --knowledge_distillation, --label_smoothing"
       exit 1
       ;;
   esac
@@ -89,7 +97,8 @@ echo "output_dir = $output_dir"
 echo "gradient_accumulation_steps = $gradient_accumulation_steps"
 echo "eval_retrieval_result_path = $eval_retrieval_result_path"
 echo "learning_rate = $learning_rate"
-
+echo "knowledge_distillation = $knowledge_distillation"
+echo "label_smoothing = $label_smoothing"
 # 设置默认值
 : ${model_name_or_path:="Qwen/Qwen2.5-14B-Instruct"}
 : ${output_dir:="../model_output/reranker_finetune_iter1_test_qwen_ep5_ds2"}
@@ -101,6 +110,8 @@ echo "learning_rate = $learning_rate"
 : ${gradient_accumulation_steps:=4}
 : ${eval_retrieval_result_path:="../model_output/icl_finetune_iter1_hn/retrieval_results_top25.jsonl"}
 : ${learning_rate:="2e-4"}
+: ${knowledge_distillation:=False}
+: ${label_smoothing:=0.0}
 
 eval_retrieval_sample_ratio=0.4
 
@@ -112,8 +123,6 @@ deepspeed_config_path="./ds_stage2.json"
 
 query_max_len=384
 passage_max_len=64
-
-label_smoothing=0.0
 
 save_merged_lora_model=True
 save_steps=500
@@ -146,7 +155,7 @@ data_args="\
     --query_max_len $query_max_len \
     --passage_max_len $passage_max_len \
     --pad_to_multiple_of 8 \
-    --knowledge_distillation False \
+    --knowledge_distillation $knowledge_distillation \
     --query_instruction_for_rerank 'A: ' \
     --query_instruction_format '{}{}' \
     --passage_instruction_for_rerank 'B: ' \
